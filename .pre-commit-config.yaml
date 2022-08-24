@@ -23,7 +23,7 @@ repos:
     rev: v1.7.0
     hooks:
       - id: autopep8
-        args: [ '--max-line-length=179', '-i' ] # Ideally 119, 79 is way too low
+        args: [ '--max-line-length=140', '-i' ]
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v0.971
     hooks:
@@ -39,4 +39,4 @@ repos:
           - '--disable=import-error'
           - '--disable=broad-except'
           - '--disable=inconsistent-return-statements'
-          - '--max-line-length=139'
+          - '--max-line-length=140'
