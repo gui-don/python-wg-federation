@@ -30,6 +30,11 @@ classifiers = [
 [project.scripts]
 wg-federation = "wg_federation:main"
 
+[project.optional-dependencies]
+dev = ["pytest>=7", "pytest-pep8", "pytest-cov", "pytest-spec", "pre-commit"]
+test = ["pytest>=7", "pytest-pep8", "pytest-cov", "pytest-spec"]
+build = ["setuptools", "build", "wheel"]
+
 [tool.setuptools]
 package-dir = { "" = "src" }
 license-files = ["LICENSE", "NOTICE"]
