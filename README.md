@@ -6,7 +6,7 @@ A Wireguard federation server and client.
 
 ### Install, Develop & Run Package Locally
 
-`virtualenv` and `pip` must be installed on your system.
+`virtualenv` must be installed on your system.
 
 ```bash
 # Setup
@@ -20,8 +20,9 @@ wg-federation # To run wg-federation
 deactivate
 ```
 
-### Run unit tests
+### Run Unit Tests
 
 ```bash
-pytest -v
+pytest -v --spec
+pytest -v --cov # To see coverage
 ```

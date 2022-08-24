@@ -1,4 +1,4 @@
-""" hello.py test suit """
+""" __init__.py test suit """
 import re
 from wg_federation import main
 
