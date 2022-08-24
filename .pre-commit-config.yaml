@@ -22,6 +22,7 @@ repos:
     rev: v2.14.5
     hooks:
       - id: pylint
+        exclude: ^setup.py$
         args:
           - '--disable=too-few-public-methods'
           - '--disable=import-error'

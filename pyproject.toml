@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wg-federation"
+description = "A client/server tool to securely auto-registers peers to a wireguard VPN"
+dynamic = ["version"]
+readme = "README.md"
+requires-python = ">=3.8"
+keywords = ["wireguard", "vpn", "federation", "radius"]
+authors = [{ name = "Anuvu DevOps Team", email = "MTL.DevOps.Team@globaleagle.com" }]
+maintainers = [{ name = "Anuvu DevOps Team", email = "MTL.DevOps.Team@globaleagle.com" }]
+urls = { source = "https://bitbucket.org/GEE_Media/python-wg-federation", container = "https://bitbucket.org/GEE_Media/container-wg-federation" }
+# https://pypi.org/classifiers/
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: System Administrators",
+    "Topic :: System :: Networking",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: POSIX",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3 :: Only",
+]
+#dependencies = [
+#]
+
+[project.scripts]
+wg-federation = "wg_federation:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+license-files = ["LICENSE", "NOTICE"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
