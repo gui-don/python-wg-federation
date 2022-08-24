@@ -1,9 +1,10 @@
 """ wg-federation """
 
-import hello
-from constants import __version__
+from .hello import Hello
+from .constants import __version__
 
 
 def main():
     """ Main """
-    hello.hello(__version__)
+    _hello: Hello = Hello()
+    _hello.hello(__version__)
