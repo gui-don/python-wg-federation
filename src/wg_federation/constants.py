@@ -4,9 +4,23 @@
 import os
 
 CHANGELOG_FILENAME = 'CHANGELOG.md'
+VERSION_FILENAME = '__version__.txt'
 __version__ = 'UNDEFINED'
 
 pwd = os.path.dirname(os.path.realpath(__file__))
 
-with open(os.path.join(pwd, '../../', CHANGELOG_FILENAME), encoding='utf-8') as changelog_file:
-    __version__ = changelog_file.readline().rstrip()
+
+def read_version(filename: str):
+    """
+    Read version from within a file
+    :param filename: the full path and filename of the version file
+    :return: the version
+    """
+    with open(filename, encoding='utf-8') as version_file:
+        return version_file.readline().rstrip()
+
+
+try:
+    __version__ = read_version(os.path.join(pwd, '../../', CHANGELOG_FILENAME))
+except FileNotFoundError:
+    __version__ = read_version(os.path.join(pwd, VERSION_FILENAME))

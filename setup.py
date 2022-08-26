@@ -13,6 +13,9 @@ constants = {'__file__': constants_sourcefile}
 with open(constants_sourcefile) as constants_module:
     exec(constants_module.read(), constants)
 
+with open('src/wg_federation/__version__.txt', 'w') as version_file:
+    version_file.write(constants['__version__'])
+
 setup(
     # Versions should comply with PEP 440:
     # https://www.python.org/dev/peps/pep-0440/

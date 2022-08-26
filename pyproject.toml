@@ -32,8 +32,7 @@ wg-federation = "wg_federation:main"
 
 [project.optional-dependencies]
 dev = ["pytest>=7", "pytest-pep8", "pytest-cov", "pytest-spec", "pre-commit"]
-test = ["pytest>=7", "pytest-pep8", "pytest-cov", "pytest-spec"]
-build = ["setuptools", "build", "wheel"]
+build = ["setuptools", "build", "wheel", "twine"]
 
 [tool.setuptools]
 package-dir = { "" = "src" }
@@ -41,6 +40,9 @@ license-files = ["LICENSE", "NOTICE"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+wg_federation = ["__version__.txt"]
 
 [tool.pytest.ini_options]
 minversion = "7.0"
