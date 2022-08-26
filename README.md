@@ -26,3 +26,21 @@ deactivate
 pytest -v --spec
 pytest -v --cov # To see coverage
 ```
+
+### Deploy Manually
+
+#### Build
+```bash
+python -m build
+```
+#### Publish to Test PyPI
+_Use `__token__` as a username to publish using a token_
+```bash
+twine upload --repository testpypi dist/*
+```
+
+#### Publish in Production (PyPI)
+_Use `__token__` as a username to publish using a token_
+```bash
+twine upload dist/*
+```
