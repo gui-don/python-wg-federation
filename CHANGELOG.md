@@ -1,3 +1,8 @@
+0.0.3
+=====
+
+- feat: adds first documentation
+
 0.0.2
 =====
 

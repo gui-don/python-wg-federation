@@ -31,7 +31,7 @@ classifiers = [
 wg-federation = "wg_federation:main"
 
 [project.optional-dependencies]
-dev = ["pytest>=7", "pytest-pep8", "pytest-cov", "pytest-spec", "pre-commit"]
+dev = ["pytest>=7", "pytest-pep8", "pytest-cov", "pytest-spec", "pre-commit", "sphinx", "sphinx_rtd_theme", "tomli"]
 build = ["setuptools", "build", "wheel", "twine"]
 
 [tool.setuptools]
