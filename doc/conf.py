@@ -39,7 +39,7 @@ with open(constants_sourcefile) as constants_module:
 
 project = pyproject_data['project']['name']
 copyright = year + ', ' + pyproject_data['project']['authors'][0]['name']
-author = 'Anuvu DevOps Team'
+author = pyproject_data['project']['authors'][0]['name']
 release = constants['__version__']
 
 # -- General configuration ---------------------------------------------------
