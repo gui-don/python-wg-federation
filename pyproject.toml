@@ -26,13 +26,18 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3 :: Only",
 ]
+dependencies = [
+    'dependency-injector == 4.*',
+    'pydantic == 1.*',
+    'systemd-python @ git+https://github.com/systemd/python-systemd.git#egg=systemd-python@main',
+]
 
 [project.scripts]
 wg-federation = "wg_federation:main"
 
 [project.optional-dependencies]
-dev = ["pytest>=7", "pytest-pep8", "pytest-cov", "pytest-spec", "pre-commit", "sphinx", "sphinx_rtd_theme", "tomli"]
-build = ["setuptools", "build", "wheel", "twine"]
+dev = ['behave', 'pytest>=7', 'pytest-pep8', 'pytest-cov', 'pytest-spec', 'pre-commit', 'tomli']
+build = ['setuptools', 'build', 'wheel', 'twine', 'sphinx', 'sphinx_rtd_theme']
 
 [tool.setuptools]
 package-dir = { "" = "src" }
@@ -45,8 +50,9 @@ where = ["src"]
 wg_federation = ["__version__.txt"]
 
 [tool.pytest.ini_options]
+spec_test_format = '{result} {docstring_summary}'
 minversion = "7.0"
-addopts = "-ra -q"
+addopts = "-ra"
 testpaths = [
     "tests",
 ]
