@@ -4,7 +4,6 @@ A Wireguard federation server and client.
 
 ## Development
 
-### Install, Develop & Run Package Locally
 
 `virtualenv` must be installed on your system.
 
@@ -26,6 +25,15 @@ deactivate
 pytest -v --spec
 pytest -v --cov # To see coverage
 ```
+
+
+### Setup IDE and debugger
+To avoid having to install the dependencies on your operating system, setup your IDE to use a python virtual environment “SDK”.
+E.g. the `venv` directory you may have created above.
+[Intellij/PyCharm provides this feature](https://www.jetbrains.com/help/idea/creating-virtual-environment.html).
+This will allow the IDE to find the libraries in the virtual environment, run and debug the application.
+
+To debug the application, run `src/wg_federation/__init__.py`
 
 ### Deploy Manually
 
