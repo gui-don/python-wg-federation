@@ -4,8 +4,7 @@ A Wireguard federation server and client.
 
 ## Development
 
-
-`virtualenv` must be installed on your system.
+Python `virtualenv` must be installed on your system.
 
 ```bash
 # Setup
@@ -26,6 +25,12 @@ pytest -v --spec
 pytest -v --cov # To see coverage
 ```
 
+### Run Functional Tests
+
+```bash
+behave tests/features
+behave tests/features -w # To see all outputs of all features tagged @wip
+```
 
 ### Setup IDE and debugger
 To avoid having to install the dependencies on your operating system, setup your IDE to use a python virtual environment “SDK”.
@@ -41,6 +46,7 @@ To debug the application, run `src/wg_federation/__init__.py`
 ```bash
 python -m build
 ```
+
 #### Publish to Test PyPI
 _Use `__token__` as a username to publish using a token_
 ```bash
