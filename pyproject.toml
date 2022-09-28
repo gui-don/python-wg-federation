@@ -54,7 +54,7 @@ spec_test_format = '{result} {docstring_summary}'
 minversion = "7.0"
 addopts = "-ra"
 testpaths = [
-    "tests",
+    "tests/unit",
 ]
 pythonpath = [
     "src"
