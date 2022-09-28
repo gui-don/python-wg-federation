@@ -32,6 +32,7 @@ class TestArgumentReader:
         """ it sets up all possible arguments and options and parses and returns the current argv """
         result = self._subject.parse_all()
 
+        # pylint: disable=duplicate-code
         self._argument_parser.add_argument.assert_any_call(
             '-V',
             '--version',

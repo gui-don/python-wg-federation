@@ -60,11 +60,10 @@ class InputManager:
     ) -> Union[type, object]:
         """
         Get the first user-defined option value for a specific option, among arguments, env vars or configuration files
-        Returns None when the option is not found or undefined
         :param option_name: Option name to get
         :param arguments: User-defined options and arguments
         :param environment_variables: Environment variables defined in the context
-        :return:
+        :return: option value or None when the option is not found or undefined
         """
 
         return getattr(arguments, option_name, None) or \

@@ -27,8 +27,8 @@ class TestEnvironmentVariableReader:
 
         self._logger.debug.assert_called()
         assert 'True' == result.get('debug')
-        assert 'quiet' in result.keys()
-        assert 'verbose' in result.keys()
+        assert 'quiet' in result
+        assert 'verbose' in result
 
     @patch.dict('os.environ', {'WG_FEDERATION_TEST': 'test'})
     def test_read(self):

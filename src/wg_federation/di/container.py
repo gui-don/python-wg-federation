@@ -18,6 +18,8 @@ class Container(containers.DeclarativeContainer):
 
     # logging
     logger = logging.getLogger('root')
+    # This is temporary
+    # To remove once a controller can do the same thing depending on user inputs
     logging.basicConfig(level=logging.DEBUG)
     root_logger = providers.Object(logger)
 

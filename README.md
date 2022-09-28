@@ -32,7 +32,7 @@ behave tests/features
 behave tests/features -w # To see all outputs of all features tagged @wip
 ```
 
-### Setup IDE and debugger
+### Setup IDE and Debugger
 To avoid having to install the dependencies on your operating system, setup your IDE to use a python virtual environment “SDK”.
 E.g. the `venv` directory you may have created above.
 [Intellij/PyCharm provides this feature](https://www.jetbrains.com/help/idea/creating-virtual-environment.html).

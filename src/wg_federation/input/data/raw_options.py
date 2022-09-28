@@ -80,11 +80,11 @@ class RawOptions:
         return list(cls.ALL_OPTIONS.keys())
 
     @classmethod
-    def get_argument_depth(cls, _arguments: list[object] = None, depth_level: int = 1) -> int:
+    def get_argument_depth(cls, _arguments: list[object] = None, _depth_level: int = 1) -> int:
         """
         Returns the maximum number of arguments that may be set
         :param _arguments: List of arguments
-        :param depth_level: Starting depth level
+        :param _depth_level: Starting depth level
         :return:
         """
         if _arguments is None:
@@ -94,9 +94,9 @@ class RawOptions:
             # Specifically for mypy, since mypy cannot infer argument is a dict in this context
             arguments = cast(dict, arguments)
             if isinstance(arguments.get('subcommands', None), list):
-                return cls.get_argument_depth(arguments.get('subcommands'), depth_level + 1)
+                return cls.get_argument_depth(arguments.get('subcommands'), _depth_level + 1)
 
-        return depth_level
+        return _depth_level
 
     @classmethod
     def get_all_argument_keys(cls) -> list[str]:
