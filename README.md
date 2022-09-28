@@ -52,3 +52,8 @@ _Use `__token__` as a username to publish using a token_
 ```bash
 twine upload dist/*
 ```
+
+### Generate the documentation
+```bash
+make -C doc html
+```
