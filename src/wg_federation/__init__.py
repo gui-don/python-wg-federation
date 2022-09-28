@@ -1,10 +1,13 @@
 """ wg-federation """
-
-from .hello import Hello
-from .constants import __version__
+import sys
+from wg_federation.main import Main
+from wg_federation.constants import __version__
 
 
 def main():
     """ Main """
-    _hello: Hello = Hello()
-    _hello.hello(__version__)
+    Main().main()
+
+
+if __name__ == '__main__':
+    sys.exit(main())

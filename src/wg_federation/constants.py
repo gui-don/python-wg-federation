@@ -10,9 +10,9 @@ __version__ = 'UNDEFINED'
 pwd = os.path.dirname(os.path.realpath(__file__))
 
 
-def read_version(filename: str):
+def read_version(filename: str) -> str:
     """
-    Read version from within a file
+    Read the version from a given filename
     :param filename: the full path and filename of the version file
     :return: the version
     """
