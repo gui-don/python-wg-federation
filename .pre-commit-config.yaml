@@ -39,4 +39,5 @@ repos:
           - '--disable=import-error'
           - '--disable=broad-except'
           - '--disable=inconsistent-return-statements'
+          - '--disable=missing-module-docstring'
           - '--max-line-length=140'
