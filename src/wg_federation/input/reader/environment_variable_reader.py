@@ -1,5 +1,7 @@
 import logging
 import os
+from typing import Union
+
 from wg_federation.input.data.raw_options import RawOptions
 
 
@@ -13,6 +15,10 @@ class EnvironmentVariableReader:
     _logger: logging.Logger
 
     def __init__(self, logger: logging.Logger):
+        """
+        Constructor
+        :param logger:
+        """
         self._logger = logger
 
     def fetch_all(self) -> dict:
@@ -27,11 +33,12 @@ class EnvironmentVariableReader:
 
         return retrieved_options
 
-    def read(self, env_var_suffix: str) -> str:
+    def read(self, env_var_suffix: str) -> Union[str, None]:
         """
         Read an environment variable from the current system context.
+        :param env_var_suffix: lowercase substance of the name of the environment variable to be read
+        :return: the environment variable content
         """
-
         self._logger.debug(f'{self.__class__.__name__}: '
                            f'Trying to fetch “{self.get_real_env_var_name(env_var_suffix)}” environment variable.')
 
