@@ -28,7 +28,7 @@ classifiers = [
 dependencies = [
     'dependency-injector == 4.*',
     'pydantic == 1.*',
-    'systemd-python @ git+https://github.com/systemd/python-systemd.git#egg=systemd-python@main',
+    'systemd-python',
 ]
 
 [project.scripts]
