@@ -59,7 +59,10 @@ _Use `__token__` as a username to publish using a token_
 twine upload dist/*
 ```
 
-### Generate the documentation
+### Generate the Documentation
+
 ```bash
-make -C doc html
+sphinx-apidoc -o doc/ src/wg_federation # Generate API documentation directly from the code
+pyreverse -o png -d doc/img --colorized src/wg_federation # Generate UML diagram
+make -C doc html # Generate HTML documentation from .rst source code
 ```
