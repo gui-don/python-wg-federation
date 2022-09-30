@@ -3,6 +3,7 @@
 
 - doc: better explains in the `README.md` how to generate documentation
 - doc: temporarily adds auto-generated module documentation, waiting for a pipeline.
+- refactor: Initializes `InputManager` attributes with `None` to avoid implicit attributions
 
 0.1.0
 =====

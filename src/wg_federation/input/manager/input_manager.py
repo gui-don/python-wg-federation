@@ -14,9 +14,9 @@ class InputManager:
       2. environment variables
       3. user configuration files
     """
-    _argument_reader: ArgumentReader
-    _environment_variable_reader: EnvironmentVariableReader
-    _logger: logging.Logger
+    _argument_reader: ArgumentReader = None
+    _environment_variable_reader: EnvironmentVariableReader = None
+    _logger: logging.Logger = None
 
     def __init__(
             self,
