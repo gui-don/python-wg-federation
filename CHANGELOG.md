@@ -1,3 +1,9 @@
+0.1.1
+=====
+
+- doc: better explains in the `README.md` how to generate documentation
+- doc: temporarily adds auto-generated module documentation, waiting for a pipeline.
+
 0.1.0
 =====
 

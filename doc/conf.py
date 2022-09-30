@@ -5,8 +5,11 @@
 import datetime
 import pathlib
 import os
+import sys
+
 from typing import MutableMapping
-import sphinx_rtd_theme
+
+sys.path.insert(0, os.path.abspath('..'))
 
 
 def get_meta() -> MutableMapping:

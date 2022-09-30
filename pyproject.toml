@@ -35,7 +35,7 @@ dependencies = [
 wg-federation = "wg_federation:main"
 
 [project.optional-dependencies]
-dev = ['behave', 'pytest>=7', 'pytest-pep8', 'pytest-cov', 'pytest-spec', 'pre-commit', 'tomli']
+dev = ['behave', 'pytest>=7', 'pytest-pep8', 'pytest-cov', 'pytest-spec', 'pre-commit', 'pylint', 'tomli']
 build = ['setuptools', 'build', 'wheel', 'twine', 'sphinx', 'sphinx_rtd_theme']
 
 [tool.setuptools]

@@ -1,6 +1,15 @@
 wg\_federation package
 ======================
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   wg_federation.di
+   wg_federation.input
+
 Submodules
 ----------
 
@@ -12,10 +21,10 @@ wg\_federation.constants module
    :undoc-members:
    :show-inheritance:
 
-wg\_federation.hello module
----------------------------
+wg\_federation.main module
+--------------------------
 
-.. automodule:: wg_federation.hello
+.. automodule:: wg_federation.main
    :members:
    :undoc-members:
    :show-inheritance:
