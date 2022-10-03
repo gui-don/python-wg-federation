@@ -35,9 +35,8 @@ repos:
       - id: pylint
         exclude: ^setup.py|conf.py$
         args:
-          - '--disable=too-few-public-methods'
-          - '--disable=import-error'
-          - '--disable=broad-except'
-          - '--disable=inconsistent-return-statements'
-          - '--disable=missing-module-docstring'
+          - '--disable=too-few-public-methods' # Because it's not a good practice per se
+          - '--disable=import-error' # Because pylint can be run from any environment, with or without all the deps
+          - '--disable=no-member' # To avoid errors with the unitest mocking library that perform some magic
+          - '--disable=missing-module-docstring' # Because we have a one file = one class policy. This rule would make comment duplicated.
           - '--max-line-length=140'
