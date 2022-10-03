@@ -1,3 +1,16 @@
+0.2.0
+=====
+
+- feat: adds a `option_has_default` method in  `RawOptions`
+- feat: implements a simple controller module, with `ConfigureLoggingController` as a first concrete implementation
+- feat: allows to set a `EARLY_DEBUG` flag manually or via env var to facilitate debug of early code, like input processing
+- refactor: changes the service `Container` to a dynamic instead of declarative, to ease unit testing.
+- chore: adjust pre-commit `pylint` rules and explains them
+- fix: adds a `CRITICAL` log level, to align with the `logging` library
+- fix: makes sur all options in `RawOptions` delivers a `name`
+- test: adjusts unit test of existing code after the refactor
+- test: adds unit tests for the controller module
+
 0.1.1
 =====
 
