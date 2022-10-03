@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import cast
+from typing import cast, Union
 
 from wg_federation.input.data import LogLevel
 
@@ -108,3 +108,14 @@ class RawOptions:
         """
 
         return list(map(lambda x: 'arg' + str(x), range(cls.get_argument_depth())))
+
+    @classmethod
+    def option_has_default(cls, option_name: str, given_value: Union[bool, str, int]) -> bool:
+        """
+        Whether given option_name has given_value as a default value
+        :param option_name: the option name to check
+        :param given_value: the default value
+        :return: True if given_value is the default value for option_name, False otherwise
+        """
+
+        return given_value == cls.ALL_OPTIONS.get(option_name).get('default')
