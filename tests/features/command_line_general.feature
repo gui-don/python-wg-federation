@@ -41,5 +41,5 @@ Feature: command line general features
 
     Examples: options
       | version_option  |
-      | -V               |
+      | -V              |
       | --version       |
