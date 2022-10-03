@@ -1,42 +1,81 @@
 import logging
+import os
 
 from argparse import ArgumentParser
 from dependency_injector import containers, providers
+from systemd.journal import JournalHandler
+
+from wg_federation.controller.configure_logging_controller import ConfigureLoggingController
+from wg_federation.controller.dispatcher.controller_dispatcher import ControllerDispatcher
 from wg_federation.input.reader.environment_variable_reader import EnvironmentVariableReader
 from wg_federation.input.reader.argument_reader import ArgumentReader
 from wg_federation.input.manager.input_manager import InputManager
 from wg_federation.constants import __version__
 
+# Because it's how the DI lib works
+# pylint: disable=too-many-instance-attributes
 
-class Container(containers.DeclarativeContainer):
+
+class Container(containers.DynamicContainer):
     """
     Container class for Dependency Injection
     """
 
-    # data
-    user_input = providers.Object()
+    EARLY_DEBUG: bool = False
 
-    # logging
-    logger = logging.getLogger('root')
-    # This is temporary
-    # To remove once a controller can do the same thing depending on user inputs
-    logging.basicConfig(level=logging.DEBUG)
-    root_logger = providers.Object(logger)
+    def __init__(self):
+        super().__init__()
 
-    # input
-    environment_variable_reader = providers.Singleton(
-        EnvironmentVariableReader,
-        logger=root_logger
-    )
-    argument_parser = providers.Singleton(ArgumentParser)
-    argument_reader = providers.Singleton(
-        ArgumentReader,
-        argument_parser=argument_parser,
-        program_version=__version__
-    )
-    input_manager = providers.Singleton(
-        InputManager,
-        argument_reader=argument_reader,
-        environment_variable_reader=environment_variable_reader,
-        logger=root_logger
-    )
+        early_debug: bool = 'True' == os.getenv(EnvironmentVariableReader.get_real_env_var_name('DEBUG')) or \
+                            self.EARLY_DEBUG
+
+        # data
+        self.user_input = providers.Object()
+
+        # logging
+        _logger = logging.getLogger('root')
+        _logger_console_handler = logging.StreamHandler()
+        _logger_syslog_handler = JournalHandler()
+
+        if early_debug:
+            # Can help debug very early code, like input processing
+            # This is because the controller that sets log level comes after input processing
+            _logger.setLevel(logging.DEBUG)
+            _logger_console_handler.setLevel(logging.DEBUG)
+
+        _logger.addHandler(_logger_console_handler)
+        _logger.addHandler(_logger_syslog_handler)
+
+        self.logger_console_handler = providers.Object(_logger_console_handler)
+        self.logger_syslog_handler = providers.Object(_logger_syslog_handler)
+
+        self.root_logger = providers.Object(_logger)
+
+        # input
+        self.environment_variable_reader = providers.Singleton(
+            EnvironmentVariableReader,
+            logger=self.root_logger
+        )
+        self.argument_parser = providers.Singleton(ArgumentParser)
+        self.argument_reader = providers.Singleton(
+            ArgumentReader,
+            argument_parser=self.argument_parser,
+            program_version=__version__
+        )
+        self.input_manager = providers.Singleton(
+            InputManager,
+            argument_reader=self.argument_reader,
+            environment_variable_reader=self.environment_variable_reader,
+            logger=self.root_logger
+        )
+
+        # controller
+        self.controller_dispatcher = providers.Singleton(
+            ControllerDispatcher,
+            # careful: controller are FIFO. First registered will be the first to run.
+            controllers=providers.List(
+                providers.Singleton(ConfigureLoggingController, logger_handler=self.logger_console_handler,
+                                    logger=self.root_logger),
+            ),
+            logger=self.root_logger
+        )

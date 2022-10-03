@@ -30,7 +30,6 @@ class InputManager:
         :param environment_variable_reader:
         :param logger:
         """
-
         self._argument_reader = argument_reader
         self._environment_variable_reader = environment_variable_reader
         self._logger = logger
