@@ -41,15 +41,17 @@ class InputManager:
         """
 
         arguments = self._argument_reader.parse_all()
-        self._logger.debug(f'{self.__class__.__name__}: Command line argument processed:\n {arguments}')
+        self._logger.debug(f'{self.__class__.__name__}: Command line argument processed:\n\t{arguments}')
         environment_variables = self._environment_variable_reader.fetch_all()
-        self._logger.debug(f'{self.__class__.__name__}: Environment variables processed:\n {environment_variables}')
+        self._logger.debug(f'{self.__class__.__name__}: Environment variables processed:\n\t{environment_variables}')
 
         user_input = UserInput(
             **dict((option_name, self._get_first_defined_user_input_value(
                 option_name, arguments, environment_variables
             )) for option_name in RawOptions.get_all_options_names() + RawOptions.get_all_argument_keys())
         )
+
+        self._logger.debug(f'{self.__class__.__name__}: Final processed user inputs:\n\t{user_input}')
 
         return user_input
 

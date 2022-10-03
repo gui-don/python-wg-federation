@@ -10,6 +10,7 @@
 - fix: makes sur all options in `RawOptions` delivers a `name`
 - test: adjusts unit test of existing code after the refactor
 - test: adds unit tests for the controller module
+- test: adds scenarios to test the new controller
 - doc: regenerates documentation
 
 0.1.1
