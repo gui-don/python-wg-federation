@@ -28,3 +28,8 @@ class TestRawOptions:
         """ it returns all possible arguments keys """
         assert 'arg0' in RawOptions.get_all_argument_keys()
         assert 'arg1' in RawOptions.get_all_argument_keys()
+
+    def test_option_has_default(self):
+        """ it checks whether an option has a given default or not """
+        assert RawOptions.option_has_default('quiet', False)
+        assert not RawOptions.option_has_default('quiet', True)

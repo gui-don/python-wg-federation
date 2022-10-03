@@ -9,11 +9,14 @@ class TestMain:
 
     _subject: Main = None
     _input_manager = MagicMock()
+    _controller_dispatcher = MagicMock()
     _container = MagicMock()
     _user_input = MagicMock()
 
     def setup(self):
         """ Constructor """
+        self._container.input_manager = MagicMock(return_value=self._input_manager)
+        self._container.controller_dispatcher = MagicMock(return_value=self._controller_dispatcher)
         self._input_manager.parse_all = MagicMock(return_value=self._user_input)
         self._subject = Main(self._container)
 
@@ -24,5 +27,6 @@ class TestMain:
 
     def test_main(self):
         """ it runs the main application """
-        self._subject.main(self._input_manager)
-        assert self._user_input == self._container.user_input
+        self._subject.main()
+        self._input_manager.parse_all.assert_called_once()
+        self._controller_dispatcher.dispatch_all.assert_called_once_with(self._user_input)
