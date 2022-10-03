@@ -7,6 +7,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   wg_federation.controller
    wg_federation.di
    wg_federation.input
 
