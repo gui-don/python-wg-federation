@@ -14,6 +14,7 @@ class RawOptions:
         'quiet': {
             'argument_short': '-q',
             'argument_alias': '--quiet',
+            'name': 'quiet',
             'type': bool,
             'argparse_action': 'store_true',
             'default': False,
@@ -22,6 +23,7 @@ class RawOptions:
         'log_level': {
             'argument_short': '-l',
             'argument_alias': '--log-level',
+            'name': 'log_level',
             'type': int,
             'default': 'INFO',
             'description': f'Maximum kind of messages to log. Can be “{"”, “".join([e.name for e in LogLevel])}”.'
@@ -32,7 +34,7 @@ class RawOptions:
             'name': 'verbose',
             'type': bool,
             'argparse_action': 'store_true',
-            'default': True,
+            'default': False,
             'description': 'Enabled “verbose” mode. Displays INFO logs in the standard output.'
         },
         'debug': {
