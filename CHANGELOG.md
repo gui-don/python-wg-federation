@@ -1,3 +1,8 @@
+0.2.1
+=====
+
+- refactor: changes `RawOptions` dict into an object
+
 0.2.0
 =====
 
