@@ -1,28 +1,8 @@
-from typing import Union, Any, Type
-
-from pydantic import BaseModel
+from typing import Union
 
 from wg_federation.input.data import LogLevel
-
-
-class CommandLineOption(BaseModel):
-    """ Data class representing a command line option """
-
-    argparse_action: str = 'store'
-    argument_alias: str = None
-    argument_short: str = None
-    default: Any = None
-    description: str = None
-    name: str
-    type: Type = None
-
-
-class CommandLineArgument(BaseModel):
-    """ Data class representing a command line argument """
-    command: str = 'store'
-    description: str = None
-    subcommands: list['CommandLineArgument'] = None
-    options: list[CommandLineOption] = None
+from wg_federation.input.data.command_line_argument import CommandLineArgument
+from wg_federation.input.data.command_line_option import CommandLineOption
 
 
 class RawOptions:
