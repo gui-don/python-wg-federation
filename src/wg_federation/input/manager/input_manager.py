@@ -69,4 +69,5 @@ class InputManager:
 
         return getattr(arguments, option_name, None) or \
             environment_variables.get(option_name) or \
-            RawOptions.ALL_OPTIONS.get(option_name, {'default': None}).get('default')
+            (RawOptions.options.get(option_name).default
+             if RawOptions.options.get(option_name) is not None else None)

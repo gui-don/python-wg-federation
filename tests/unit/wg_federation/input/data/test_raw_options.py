@@ -1,4 +1,4 @@
-from wg_federation.input.data.raw_options import RawOptions
+from wg_federation.input.data.raw_options import RawOptions, CommandLineArgument
 
 
 class TestRawOptions:
@@ -16,13 +16,20 @@ class TestRawOptions:
 
     def test_get_argument_depth_2(self):
         """ it returns a specific arguments maximum depth """
-        assert 3 == RawOptions.get_argument_depth([{
-            'subcommands': [
-                {
-                    'subcommands': [{}]
-                }
+        assert 3 == RawOptions.get_argument_depth(
+            [
+                CommandLineArgument(
+                    subcommands=[
+                        CommandLineArgument(
+                            subcommands=[
+                                CommandLineArgument()
+                            ]
+                        ),
+
+                    ],
+                )
             ]
-        }])
+        )
 
     def test_get_all_argument_keys(self):
         """ it returns all possible arguments keys """

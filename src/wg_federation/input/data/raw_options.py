@@ -1,76 +1,93 @@
-from dataclasses import dataclass
-from typing import cast, Union
+from typing import Union, Any, Type
+
+from pydantic import BaseModel
 
 from wg_federation.input.data import LogLevel
 
 
-@dataclass(frozen=True)
+class CommandLineOption(BaseModel):
+    """ Data class representing a command line option """
+
+    argparse_action: str = 'store'
+    argument_alias: str = None
+    argument_short: str = None
+    default: Any = None
+    description: str = None
+    name: str
+    type: Type = None
+
+
+class CommandLineArgument(BaseModel):
+    """ Data class representing a command line argument """
+    command: str = 'store'
+    description: str = None
+    subcommands: list['CommandLineArgument'] = None
+    options: list[CommandLineOption] = None
+
+
 class RawOptions:
     """
     Contains metadata for all options, command line arguments, environment variables and options configuration stanzas.
     """
 
-    GENERAL_OPTIONS = {
-        'quiet': {
-            'argument_short': '-q',
-            'argument_alias': '--quiet',
-            'name': 'quiet',
-            'type': bool,
-            'argparse_action': 'store_true',
-            'default': False,
-            'description': 'Prevent any messages to appear in the standard output, regardless of other options.'
-        },
-        'log_level': {
-            'argument_short': '-l',
-            'argument_alias': '--log-level',
-            'name': 'log_level',
-            'type': int,
-            'default': 'INFO',
-            'description': f'Maximum kind of messages to log. Can be “{"”, “".join([e.name for e in LogLevel])}”.'
-        },
-        'verbose': {
-            'argument_short': '-v',
-            'argument_alias': '--verbose',
-            'name': 'verbose',
-            'type': bool,
-            'argparse_action': 'store_true',
-            'default': False,
-            'description': 'Enabled “verbose” mode. Displays INFO logs in the standard output.'
-        },
-        'debug': {
-            'argument_short': '-vv',
-            'argument_alias': '--debug',
-            'name': 'debug',
-            'type': bool,
-            'argparse_action': 'store_true',
-            'default': False,
-            'description': 'Enabled “debug” mode. Displays DEBUG logs in the standard output.'
-        }
+    options: dict[str, CommandLineOption] = {
+        'quiet': CommandLineOption(
+            argparse_action='store_true',
+            argument_alias='--quiet',
+            argument_short='-q',
+            default=False,
+            description='Prevent any messages to appear in the standard output, regardless of other options.',
+            name='quiet',
+            type=bool,
+        ),
+
+        'log_level': CommandLineOption(
+            argparse_action='store',
+            argument_alias='--log-level',
+            argument_short='-l',
+            default='INFO',
+            description=f'Maximum kind of messages to log. Can be “{"”, “".join([e.name for e in LogLevel])}”.',
+            name='log_level',
+            type=int,
+        ),
+
+        'verbose': CommandLineOption(
+            argparse_action='store_true',
+            argument_alias='--verbose',
+            argument_short='-v',
+            default=False,
+            description='Enabled “verbose” mode. Displays INFO logs in the standard output.',
+            name='verbose',
+            type=bool,
+        ),
+
+        'debug': CommandLineOption(
+            argparse_action='store_true',
+            argument_alias='--debug',
+            argument_short='-vv',
+            default=False,
+            description='Enabled “debug” mode. Displays DEBUG logs in the standard output.',
+            name='debug',
+            type=bool,
+        ),
     }
 
-    ARGUMENTS = [
-        {
-            'command': 'help',
-            'description': 'Displays help',
-        },
-        {
-            'command': 'hq',
-            'description': 'Control the HeadQuarter',
-            'subcommands': [
-                {
-                    'command': 'run',
-                    'description': 'Runs the HeadQuarter daemon.',
-                },
-                {
-                    'command': 'bootstrap',
-                    'description': 'Bootstrap the HeadQuarter.',
-                }
+    arguments: list[CommandLineArgument] = [
+        CommandLineArgument(
+            command='hq',
+            description='Displays help',
+            subcommands=[
+                CommandLineArgument(
+                    command='run',
+                    description='Runs the HeadQuarter daemon.',
+                ),
+                CommandLineArgument(
+                    command='bootstrap',
+                    description='Bootstrap the HeadQuarter.',
+                ),
             ],
-            'options': [],
-        },
+        )
     ]
-
-    ALL_OPTIONS = GENERAL_OPTIONS
 
     @classmethod
     def get_all_options_names(cls) -> list[str]:
@@ -79,10 +96,10 @@ class RawOptions:
         :return:
         """
 
-        return list(cls.ALL_OPTIONS.keys())
+        return list(cls.options.keys())
 
     @classmethod
-    def get_argument_depth(cls, _arguments: list[object] = None, _depth_level: int = 1) -> int:
+    def get_argument_depth(cls, _arguments: list[CommandLineArgument] = None, _depth_level: int = 1) -> int:
         """
         Returns the maximum number of arguments that may be set
         :param _arguments: List of arguments
@@ -90,13 +107,13 @@ class RawOptions:
         :return:
         """
         if _arguments is None:
-            _arguments = cls.ARGUMENTS
+            _arguments = cls.arguments
 
         for arguments in _arguments:
             # Specifically for mypy, since mypy cannot infer argument is a dict in this context
-            arguments = cast(dict, arguments)
-            if isinstance(arguments.get('subcommands', None), list):
-                return cls.get_argument_depth(arguments.get('subcommands'), _depth_level + 1)
+            # arguments = cast(dict, arguments)
+            if isinstance(arguments.subcommands, list):
+                return cls.get_argument_depth(arguments.subcommands, _depth_level + 1)
 
         return _depth_level
 
@@ -118,4 +135,4 @@ class RawOptions:
         :return: True if given_value is the default value for option_name, False otherwise
         """
 
-        return given_value == cls.ALL_OPTIONS.get(option_name).get('default')
+        return given_value == cls.options.get(option_name).default

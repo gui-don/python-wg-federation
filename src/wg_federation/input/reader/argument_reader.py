@@ -1,6 +1,6 @@
 from argparse import ArgumentParser, Namespace, ArgumentDefaultsHelpFormatter, RawTextHelpFormatter
 
-from wg_federation.input.data.raw_options import RawOptions
+from wg_federation.input.data.raw_options import RawOptions, CommandLineArgument
 from wg_federation.input.reader.environment_variable_reader import EnvironmentVariableReader
 
 
@@ -26,19 +26,19 @@ class ArgumentReader:
         self._program_version = program_version
 
     def _setup_sub_parser(
-            self, _parent_argument_parser: ArgumentParser, _arguments: list, depth: int = 0
+            self, _parent_argument_parser: ArgumentParser, _arguments: list[CommandLineArgument], depth: int = 0
     ) -> None:
         subparser_action = _parent_argument_parser.add_subparsers(required=False, dest='arg' + str(depth))
 
         for argument in _arguments:
             parser = subparser_action.add_parser(
-                argument.get('command'),
-                help=argument.get('description', ''),
+                argument.command,
+                help=argument.description,
                 formatter_class=ArgumentDefaultsHelpFormatter
             )
             self._setup_general_options(parser)
-            if len(argument.get('subcommands', [])) != 0:
-                self._setup_sub_parser(parser, argument.get('subcommands', []), depth + 1)
+            if isinstance(argument.subcommands, list) and len(argument.subcommands) != 0:
+                self._setup_sub_parser(parser, argument.subcommands, depth + 1)
 
     def _setup_general_options(self, _parser: ArgumentParser) -> None:
         """
@@ -46,14 +46,14 @@ class ArgumentReader:
         :param _parser:
         :return:
         """
-        for option in RawOptions.GENERAL_OPTIONS.values():
+        for option in RawOptions.options.values():
             _parser.add_argument(
-                str(option.get('argument_short')),
-                str(option.get('argument_alias')),
-                dest=str(option.get('name', '')),
-                action=str(option.get('argparse_action', 'store')),
-                help=f"{option.get('description', '')} "
-                     f"Defaults to “{option.get('default') if option.get('default', None) is not None else ''}”.",
+                option.argument_short,
+                option.argument_alias,
+                dest=option.name,
+                action=option.argparse_action,
+                help=f'{option.description} '
+                     f"Defaults to “{option.default if option.default is not None else ''}”.",
             )
         _parser.add_argument(
             '-V',
@@ -79,14 +79,14 @@ class ArgumentReader:
 
 environment variables:
   {(chr(10) + "  ").join(
-            f"{EnvironmentVariableReader.get_real_env_var_name(name):30} {option.get('description')}"
-            for name, option in RawOptions.ALL_OPTIONS.items()
+            f"{EnvironmentVariableReader.get_real_env_var_name(name):30} {option.description}"
+            for name, option in RawOptions.options.items()
         )}
 """
 
         self._argument_parser.formatter_class = RawTextHelpFormatter
         self._setup_general_options(self._argument_parser)
 
-        self._setup_sub_parser(self._argument_parser, RawOptions.ARGUMENTS)
+        self._setup_sub_parser(self._argument_parser, RawOptions.arguments)
 
         return self._argument_parser.parse_args()
