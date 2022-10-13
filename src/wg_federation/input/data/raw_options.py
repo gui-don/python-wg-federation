@@ -1,6 +1,7 @@
 from typing import Union
 
 from wg_federation.input.data import LogLevel
+from wg_federation.input.data.argparse_action import ArgparseAction
 from wg_federation.input.data.command_line_argument import CommandLineArgument
 from wg_federation.input.data.command_line_option import CommandLineOption
 
@@ -12,7 +13,7 @@ class RawOptions:
 
     options: dict[str, CommandLineOption] = {
         'quiet': CommandLineOption(
-            argparse_action='store_true',
+            argparse_action=ArgparseAction.STORE_TRUE,
             argument_alias='--quiet',
             argument_short='-q',
             default=False,
@@ -22,7 +23,7 @@ class RawOptions:
         ),
 
         'log_level': CommandLineOption(
-            argparse_action='store',
+            argparse_action=ArgparseAction.STORE,
             argument_alias='--log-level',
             argument_short='-l',
             default='INFO',
@@ -32,7 +33,7 @@ class RawOptions:
         ),
 
         'verbose': CommandLineOption(
-            argparse_action='store_true',
+            argparse_action=ArgparseAction.STORE_TRUE,
             argument_alias='--verbose',
             argument_short='-v',
             default=False,
@@ -42,7 +43,7 @@ class RawOptions:
         ),
 
         'debug': CommandLineOption(
-            argparse_action='store_true',
+            argparse_action=ArgparseAction.STORE_TRUE,
             argument_alias='--debug',
             argument_short='-vv',
             default=False,
