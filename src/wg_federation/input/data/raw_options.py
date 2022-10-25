@@ -91,8 +91,6 @@ class RawOptions:
             _arguments = cls.arguments
 
         for arguments in _arguments:
-            # Specifically for mypy, since mypy cannot infer argument is a dict in this context
-            # arguments = cast(dict, arguments)
             if isinstance(arguments.subcommands, list):
                 return cls.get_argument_depth(arguments.subcommands, _depth_level + 1)
 

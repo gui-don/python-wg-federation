@@ -64,5 +64,5 @@ twine upload dist/*
 ```bash
 sphinx-apidoc -o doc/ src/wg_federation # Generate API documentation directly from the code
 pyreverse -o png -d doc/img --colorized src/wg_federation # Generate UML diagram
-make -C doc html # Generate HTML documentation from .rst source code
+make -C doc html # Generate HTML documentation fr²om .rst source code
 ```
