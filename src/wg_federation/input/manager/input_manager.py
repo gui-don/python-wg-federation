@@ -1,10 +1,10 @@
 import logging
 from argparse import Namespace
 from typing import Union
-from wg_federation.input.data.raw_options import RawOptions
+from wg_federation.data.input.raw_options import RawOptions
 from wg_federation.input.reader.argument_reader import ArgumentReader
 from wg_federation.input.reader.environment_variable_reader import EnvironmentVariableReader
-from wg_federation.input.data.user_input import UserInput
+from wg_federation.data.input.user_input import UserInput
 
 
 class InputManager:

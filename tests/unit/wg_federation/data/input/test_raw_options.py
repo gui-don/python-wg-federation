@@ -1,4 +1,5 @@
-from wg_federation.input.data.raw_options import RawOptions, CommandLineArgument
+from wg_federation.data.input.command_line.command_line_argument import CommandLineArgument
+from wg_federation.data.input.raw_options import RawOptions
 
 
 class TestRawOptions:

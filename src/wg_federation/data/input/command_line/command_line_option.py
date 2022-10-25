@@ -2,7 +2,7 @@ from typing import Type, Any
 
 from pydantic import BaseModel
 
-from wg_federation.input.data.argparse_action import ArgparseAction
+from wg_federation.data.input.command_line.argparse_action import ArgparseAction
 
 
 class CommandLineOption(BaseModel):

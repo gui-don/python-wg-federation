@@ -1,9 +1,11 @@
 from typing import Union
 
-from wg_federation.input.data import LogLevel
-from wg_federation.input.data.argparse_action import ArgparseAction
-from wg_federation.input.data.command_line_argument import CommandLineArgument
-from wg_federation.input.data.command_line_option import CommandLineOption
+from pydantic import SecretStr
+
+from wg_federation.data.input.command_line.argparse_action import ArgparseAction
+from wg_federation.data.input.command_line.command_line_argument import CommandLineArgument
+from wg_federation.data.input.command_line.command_line_option import CommandLineOption
+from wg_federation.data.input.log_level import LogLevel
 
 
 class RawOptions:
@@ -51,12 +53,22 @@ class RawOptions:
             name='debug',
             type=bool,
         ),
+
+        'root_passphrase': CommandLineOption(
+            argparse_action=ArgparseAction.STORE,
+            argument_alias='--root-passphrase',
+            argument_short='-P',
+            default=None,
+            description='Root passphrase used to encrypt and decrypt all secrets managed by this program.',
+            name='root_passphrase',
+            type=SecretStr,
+        ),
     }
 
     arguments: list[CommandLineArgument] = [
         CommandLineArgument(
             command='hq',
-            description='Displays help',
+            description='HQ commands',
             subcommands=[
                 CommandLineArgument(
                     command='run',
@@ -65,6 +77,14 @@ class RawOptions:
                 CommandLineArgument(
                     command='bootstrap',
                     description='Bootstrap the HeadQuarter.',
+                ),
+                CommandLineArgument(
+                    command='add-interface',
+                    description='Add a wireguard interface to the Federation.',
+                ),
+                CommandLineArgument(
+                    command='remove-interface',
+                    description='Remove a wireguard interface to the Federation.',
                 ),
             ],
         )

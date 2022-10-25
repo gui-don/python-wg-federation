@@ -1,4 +1,4 @@
-from wg_federation.input.data.user_input import UserInput
+from wg_federation.data.input.user_input import UserInput
 
 
 class TestUserInput:

@@ -1,6 +1,7 @@
 from argparse import ArgumentParser, Namespace, ArgumentDefaultsHelpFormatter, RawTextHelpFormatter
 
-from wg_federation.input.data.raw_options import RawOptions, CommandLineArgument
+from wg_federation.data.input.command_line.command_line_argument import CommandLineArgument
+from wg_federation.data.input.raw_options import RawOptions
 from wg_federation.input.reader.environment_variable_reader import EnvironmentVariableReader
 
 

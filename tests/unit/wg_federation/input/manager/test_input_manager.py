@@ -1,7 +1,7 @@
 """ input_manager.py test suit """
 from unittest.mock import MagicMock
 
-from wg_federation.input.data.user_input import UserInput
+from wg_federation.data.input.user_input import UserInput
 from wg_federation.input.manager.input_manager import InputManager
 
 

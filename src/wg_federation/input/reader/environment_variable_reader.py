@@ -2,7 +2,7 @@ import logging
 import os
 from typing import Union
 
-from wg_federation.input.data.raw_options import RawOptions
+from wg_federation.data.input.raw_options import RawOptions
 
 
 class EnvironmentVariableReader:

@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from wg_federation.input.data.command_line_option import CommandLineOption
+from wg_federation.data.input.command_line.command_line_option import CommandLineOption
 
 
 class CommandLineArgument(BaseModel):

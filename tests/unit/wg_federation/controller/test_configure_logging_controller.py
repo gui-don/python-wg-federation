@@ -6,7 +6,7 @@ import pytest
 
 from wg_federation.controller.configure_logging_controller import ConfigureLoggingController
 from wg_federation.controller.dispatcher.controller_status import Status
-from wg_federation.input.data import LogLevel
+from wg_federation.data.input.log_level import LogLevel
 
 
 class TestConfigureLoggingController:
