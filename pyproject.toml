@@ -29,6 +29,7 @@ dependencies = [
     'dependency-injector == 4.*',
     'pydantic == 1.*',
     'systemd-python',
+    'ipaddr == 2.*'
 ]
 
 [project.scripts]
