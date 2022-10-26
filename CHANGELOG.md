@@ -1,3 +1,13 @@
+0.3.0
+=====
+
+(UNRELEASED)
+
+- refactor: changes code namespacing to prepare for next features
+- feat: adds classes to represent state: `federation`, `state` and `wirguard_interface`.
+- test: adds unit tests for `CommandLineArgument` and `CommandLineOption`
+- test: adds unit tests for newly added `data.state.` classes
+
 0.2.1
 =====
 
