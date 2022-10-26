@@ -22,8 +22,8 @@ class WireguardInterface(BaseModel, frozen=True):
 
     private_key: SecretStr
     public_key: constr(regex=_REGEXP_WIREGUARD_KEY)
+    # pylint: disable=(no-self-argument
 
-    @classmethod
     @validator('private_key')
     def check_forum_min_port(cls, value: SecretStr, values: dict) -> SecretStr:
         """

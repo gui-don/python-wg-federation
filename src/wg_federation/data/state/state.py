@@ -4,6 +4,7 @@ from pydantic import BaseModel, validator
 from wg_federation.data.state.federation import Federation
 from wg_federation.data.state.wireguard_interface import WireguardInterface
 
+
 # mypy: ignore-errors
 # https://github.com/pydantic/pydantic/issues/156
 
@@ -17,7 +18,7 @@ class State(BaseModel, frozen=True):
     federation: Federation
     interfaces: dict[str, WireguardInterface]
 
-    @classmethod
+    # pylint: disable=no-self-argument
     @validator('interfaces')
     def wireguard_interface_are_valid(
             cls, value: dict[str, WireguardInterface], values: dict

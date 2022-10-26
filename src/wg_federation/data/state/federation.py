@@ -18,7 +18,7 @@ class Federation(BaseModel, frozen=True):
     phone_line_max_port: conint(ge=1010, le=65535) = 44199
     phone_line_min_port: conint(ge=1000, le=65525) = 44100
 
-    @classmethod
+    # pylint: disable=(no-self-argument
     @validator('phone_line_min_port')
     def check_phone_line_port(cls, value: int, values: dict) -> int:
         """
@@ -31,8 +31,8 @@ class Federation(BaseModel, frozen=True):
             cls.__check_port_range('phone line', values.get('phone_line_max_port'), value)
 
         return value
+    # pylint: disable=(no-self-argument
 
-    @classmethod
     @validator('forum_min_port')
     def check_forum_min_port(cls, value: int, values: dict) -> int:
         """
