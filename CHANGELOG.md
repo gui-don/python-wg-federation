@@ -3,10 +3,15 @@
 
 (UNRELEASED)
 
-- refactor: changes code namespacing to prepare for next features
+- feat: adds `data_transformation.loader` library
+- feat: adds `YamlFileConfigurationLoader` as first `ConfigurationLoader` implementation
 - feat: adds classes to represent state: `federation`, `state` and `wirguard_interface`.
+- refactor: changes code namespacing to prepare for next features
 - test: adds unit tests for `CommandLineArgument` and `CommandLineOption`
 - test: adds unit tests for newly added `data.state.` classes
+- test: adds unit tests for newly added `data_transformation.loader` lib
+- chore: adds `pyyaml` and `deepmerge` as dependencies
+- maintenance: pre-commit dependency update
 
 0.2.1
 =====
