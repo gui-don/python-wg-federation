@@ -40,4 +40,4 @@ class ConfigurationLoader:
                 return _configuration_loader.load_from_all(sources)
 
         raise RuntimeError(f'Could not load any configuration from “{source_kind}”. '
-                           f'It seems not ConfigurationLoader supports this type of source.')
+                           f'It seems no ConfigurationLoader supports this type of source.')
