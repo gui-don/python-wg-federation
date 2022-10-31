@@ -1,16 +1,19 @@
 import logging
 import os
-
 from argparse import ArgumentParser
+
 from dependency_injector import containers, providers
 from systemd.journal import JournalHandler
 
+from wg_federation.constants import __version__
 from wg_federation.controller.configure_logging_controller import ConfigureLoggingController
 from wg_federation.controller.dispatcher.controller_dispatcher import ControllerDispatcher
-from wg_federation.input.reader.environment_variable_reader import EnvironmentVariableReader
-from wg_federation.input.reader.argument_reader import ArgumentReader
+from wg_federation.data_transformation.loader.configuration_loader import ConfigurationLoader
+from wg_federation.data_transformation.loader.file.yaml_file_configuration_loader import YamlFileConfigurationLoader
 from wg_federation.input.manager.input_manager import InputManager
-from wg_federation.constants import __version__
+from wg_federation.input.reader.argument_reader import ArgumentReader
+from wg_federation.input.reader.environment_variable_reader import EnvironmentVariableReader
+
 
 # Because it's how the DI lib works
 # pylint: disable=too-many-instance-attributes
@@ -69,13 +72,21 @@ class Container(containers.DynamicContainer):
             logger=self.root_logger
         )
 
+        # input
+        self.configuration_loader = providers.Singleton(
+            ConfigurationLoader,
+            configuration_loaders=providers.List(providers.Singleton(YamlFileConfigurationLoader),),
+            logger=self.root_logger
+        )
+
         # controller
         self.controller_dispatcher = providers.Singleton(
             ControllerDispatcher,
             # careful: controller are FIFO. First registered will be the first to run.
             controllers=providers.List(
-                providers.Singleton(ConfigureLoggingController, logger_handler=self.logger_console_handler,
-                                    logger=self.root_logger),
+                providers.Singleton(
+                    ConfigureLoggingController, logger_handler=self.logger_console_handler, logger=self.root_logger
+                ),
             ),
             logger=self.root_logger
         )
