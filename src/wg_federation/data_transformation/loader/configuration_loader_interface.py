@@ -29,4 +29,3 @@ class ConfigurationLoaderInterface(ABC):
         Whether the configuration loader supports the given source
         :return: The kind of source this configuration loader supports.
         """
-        return 'undefined'
