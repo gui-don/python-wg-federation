@@ -5,6 +5,7 @@
 
 - feat: adds `data_transformation.loader` library
 - feat: adds `YamlFileConfigurationLoader` as first `ConfigurationLoader` implementation
+- feat: adds `JsonFileConfigurationLoader` as second `ConfigurationLoader` implementation
 - feat: adds classes to represent state: `federation`, `state` and `wirguard_interface`.
 - refactor: changes code namespacing to prepare for next features
 - test: adds unit tests for `CommandLineArgument` and `CommandLineOption`
