@@ -7,12 +7,12 @@ class ConfigurationLoader:
     """
     Read any configuration from any sources
     """
-    _configuration_loaders: list[ConfigurationLoaderInterface] = None
+    _configuration_loaders: tuple[ConfigurationLoaderInterface, ...] = None
     _logger: logging.Logger = None
 
     def __init__(
             self,
-            configuration_loaders: list[ConfigurationLoaderInterface],
+            configuration_loaders: tuple[ConfigurationLoaderInterface, ...],
             logger: logging.Logger,
     ):
         """
@@ -20,7 +20,7 @@ class ConfigurationLoader:
         :param configuration_loaders:
         :param logger:
         """
-        self._configuration_loaders = configuration_loaders
+        self._configuration_loaders = tuple(configuration_loaders)
         self._logger = logger
 
     def load(self, source_kind: str, sources: tuple[str]):

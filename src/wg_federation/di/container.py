@@ -33,7 +33,7 @@ class Container(containers.DynamicContainer):
         early_debug: bool = 'True' == os.getenv(EnvironmentVariableReader.get_real_env_var_name('DEBUG')) or \
                             self.EARLY_DEBUG
 
-        # data
+        # data input
         self.user_input = providers.Object()
 
         # logging
@@ -73,7 +73,7 @@ class Container(containers.DynamicContainer):
             logger=self.root_logger
         )
 
-        # input
+        # data transformation
         self.configuration_loader = providers.Singleton(
             ConfigurationLoader,
             configuration_loaders=providers.List(

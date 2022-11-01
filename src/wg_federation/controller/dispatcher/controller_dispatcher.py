@@ -9,12 +9,12 @@ class ControllerDispatcher:
     """
     Enroll ControllerInterface objects and dispatch them when needed.
     """
-    _controllers: list[ControllerInterface] = None
+    _controllers: tuple[ControllerInterface, ...] = None
     _logger: logging.Logger = None
 
     def __init__(
             self,
-            controllers: list[ControllerInterface],
+            controllers: tuple[ControllerInterface, ...],
             logger: logging.Logger,
     ):
         """
@@ -22,7 +22,7 @@ class ControllerDispatcher:
         :param controllers: careful, order is very important. Object first in the list will be run first.
         :param logger:
         """
-        self._controllers = controllers
+        self._controllers = tuple(controllers)
         self._logger = logger
 
     def dispatch_all(self, user_input: UserInput) -> None:
@@ -44,13 +44,14 @@ class ControllerDispatcher:
 
     def enroll(self, controller: ControllerInterface) -> None:
         """
-        Enroll a controller to the list of available controller
+        Enroll a controller to the list of available controller.
+        Careful, newly enrolled controllers will always be run after all existing controllers.
         :param controller: the controller to enroll
         :raise RuntimeError: when controller was already enrolled
         """
         self.__enroll_check(controller)
 
-        self._controllers.append(controller)
+        self._controllers += (controller,)
 
     def __enroll_check(self, controller: ControllerInterface) -> None:
         if controller in self._controllers:
