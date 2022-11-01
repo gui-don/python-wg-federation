@@ -1,5 +1,3 @@
-""" controller_dispatcher.py test suit """
-
 from pathlib import Path
 from unittest.mock import patch, mock_open
 
@@ -9,6 +7,9 @@ import yaml
 from wg_federation.data_transformation.loader.file.yaml_file_configuration_loader import YamlFileConfigurationLoader
 
 
+# Because this is a test of a template pattern classes.
+# Therefore, it looks similar of any other test of the subclasses
+# pylint: disable=duplicate-code
 class TestYamlFileConfigurationLoader:
     """ Test ConfigurationLoader class """
 

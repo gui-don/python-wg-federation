@@ -1,4 +1,3 @@
-""" controller_dispatcher.py test suit """
 import json
 from pathlib import Path
 from unittest.mock import patch, mock_open
@@ -8,6 +7,9 @@ import pytest
 from wg_federation.data_transformation.loader.file.json_file_configuration_loader import JsonFileConfigurationLoader
 
 
+# Because this is a test of a template pattern classes.
+# Therefore, it looks similar of any other test of the subclasses
+# pylint: disable=duplicate-code
 class TestJsonFileConfigurationLoader:
     """ Test ConfigurationLoader class """
 
