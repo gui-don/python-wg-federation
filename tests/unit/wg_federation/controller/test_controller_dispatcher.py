@@ -3,8 +3,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from wg_federation.controller.dispatcher.controller_dispatcher import ControllerDispatcher
-from wg_federation.controller.dispatcher.controller_status import Status
+from wg_federation.controller.controller_dispatcher import ControllerDispatcher
+from wg_federation.controller.controller_status import Status
 
 
 class TestControllerDispatcher:

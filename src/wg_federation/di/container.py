@@ -6,8 +6,8 @@ from dependency_injector import containers, providers
 from systemd.journal import JournalHandler
 
 from wg_federation.constants import __version__
-from wg_federation.controller.configure_logging_controller import ConfigureLoggingController
-from wg_federation.controller.dispatcher.controller_dispatcher import ControllerDispatcher
+from wg_federation.controller.baseline.configure_logging_controller import ConfigureLoggingController
+from wg_federation.controller.controller_dispatcher import ControllerDispatcher
 from wg_federation.data_transformation.loader.configuration_loader import ConfigurationLoader
 from wg_federation.data_transformation.loader.file.json_file_configuration_loader import JsonFileConfigurationLoader
 from wg_federation.data_transformation.loader.file.yaml_file_configuration_loader import YamlFileConfigurationLoader

@@ -1,5 +1,5 @@
 """ Main class """
-from wg_federation.controller.dispatcher.controller_dispatcher import ControllerDispatcher
+from wg_federation.controller.controller_dispatcher import ControllerDispatcher
 from wg_federation.di.container import Container
 from wg_federation.input.manager.input_manager import InputManager
 

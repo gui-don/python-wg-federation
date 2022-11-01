@@ -46,7 +46,7 @@ Feature: command line general features
 
   Scenario Outline: wg-federation shows its debug outputs when debug option is set, because this option has the highest precedence
     When we run program with "<logging_options>"
-    Then the stderr contains "<class 'wg_federation.controller.configure_logging_controller.ConfigureLoggingController'> was run."
+    Then the stderr contains "<class 'wg_federation.controller.baseline.configure_logging_controller.ConfigureLoggingController'> was run."
 
     Examples: equivalent options for debug logging
       | logging_options       |

@@ -1,7 +1,7 @@
 import logging
 
-from wg_federation.controller.dispatcher.controller_interface import ControllerInterface
-from wg_federation.controller.dispatcher.controller_status import Status
+from wg_federation.controller.controller_interface import ControllerInterface
+from wg_federation.controller.controller_status import Status
 from wg_federation.data.input.user_input import UserInput
 
 

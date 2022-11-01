@@ -4,8 +4,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from wg_federation.controller.configure_logging_controller import ConfigureLoggingController
-from wg_federation.controller.dispatcher.controller_status import Status
+from wg_federation.controller.baseline.configure_logging_controller import ConfigureLoggingController
+from wg_federation.controller.controller_status import Status
 from wg_federation.data.input.log_level import LogLevel
 
 
