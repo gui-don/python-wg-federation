@@ -3,16 +3,8 @@ from abc import ABC, abstractmethod
 
 class ConfigurationLoaderInterface(ABC):
     """
-    Configuration Loader interface. Represents any configuration loader
+    Configuration Loader interface. Represents any configuration loader.
     """
-
-    @abstractmethod
-    def load_from_all(self, sources: tuple[str]) -> dict:
-        """
-        Look at all given sources and return an unified configuration.
-        :param sources: Source. Order is important. Last source will have precedence for the merge of configurations
-        :return: configuration
-        """
 
     @abstractmethod
     def load_from(self, source: str) -> dict:
@@ -26,6 +18,13 @@ class ConfigurationLoaderInterface(ABC):
     @abstractmethod
     def get_supported_source() -> str:
         """
+        The kind of source this loader supports
+        :return:
+        """
+
+    @abstractmethod
+    def supports(self, source: str) -> bool:
+        """
         Whether the configuration loader supports the given source
-        :return: The kind of source this configuration loader supports.
+        :return: True if the configuration loader supports the source, false otherwise.
         """

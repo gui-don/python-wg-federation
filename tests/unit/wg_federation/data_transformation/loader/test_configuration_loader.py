@@ -1,34 +1,47 @@
-from unittest.mock import MagicMock
-
 import pytest
+from mockito import when, ANY, mock, verify, forget_invocations
 
 from wg_federation.data_transformation.loader.configuration_loader import ConfigurationLoader
+from wg_federation.exception.developer.data_transformation.source_cannot_be_processed_error import \
+    SourceCannotBeProcessedError
 
 
 class TestConfigurationLoader:
     """ Test ConfigurationLoader class """
 
-    _working_configuration_loader = MagicMock()
-    _silent_configuration_loader = MagicMock()
-    _logger = MagicMock()
+    _working_configuration_loader = mock()
+    _working_configuration_loader2 = mock()
+    _silent_configuration_loader = mock()
+    _logger = mock()
 
     _subject: ConfigurationLoader = None
-
-    @pytest.fixture(autouse=True)
-    def run_around_tests(self):
-        """ Resets mocks between tests """
-        self._logger.reset_mock()
 
     def setup(self):
         """ Constructor """
 
-        self._working_configuration_loader.get_supported_source = MagicMock(return_value='valid')
-        self._working_configuration_loader.load_from_all = MagicMock(return_value={'success': 1})
+        when(self._working_configuration_loader).supports(ANY(str)).thenReturn(False)
+        when(self._working_configuration_loader).supports('source1').thenReturn(True)
+        when(self._working_configuration_loader).get_supported_source().thenReturn('valid')
+        when(self._working_configuration_loader).load_from(ANY(str)).thenReturn(
+            {'override': 1, 'list': [1], 'single': 1, 'dict': {'one': 1}}
+        )
 
-        self._silent_configuration_loader.get_supported_source = MagicMock(return_value='unknowns')
+        when(self._working_configuration_loader2).supports(ANY(str)).thenReturn(False)
+        when(self._working_configuration_loader2).supports('source2').thenReturn(True)
+        when(self._working_configuration_loader2).get_supported_source().thenReturn('valid2')
+        when(self._working_configuration_loader2).load_from(ANY(str)).thenReturn(
+            {'override': 2, 'list': [2], 'dict': {'two': 2}}
+        )
+
+        when(self._silent_configuration_loader).get_supported_source().thenReturn('unknown')
+        when(self._silent_configuration_loader).supports(ANY(str)).thenReturn(False)
 
         self._subject = ConfigurationLoader(
-            configuration_loaders=[self._silent_configuration_loader, self._working_configuration_loader, ],
+            configuration_loaders=(
+                self._silent_configuration_loader,
+                self._working_configuration_loader,
+                self._working_configuration_loader2,
+            ),
             logger=self._logger
         )
 
@@ -37,19 +50,62 @@ class TestConfigurationLoader:
         assert isinstance(self._subject, ConfigurationLoader)
 
     def test_load(self):
-        """ it can load configurations from valid sources """
-        result = self._subject.load('valid', ('source1', 'source2', 'source3'))
+        """ it can load a configuration from a valid source """
+        result = self._subject.load('any', 'valid')
 
-        self._working_configuration_loader.load_from_all.assert_called_with(('source1', 'source2', 'source3'))
-        self._silent_configuration_loader.load_from_all.assert_not_called()
-        assert {'success': 1} == result
+        verify(self._working_configuration_loader, times=1).load_from('any')
+        verify(self._working_configuration_loader2, times=0).load_from(ANY)
+        verify(self._silent_configuration_loader, times=0).load_from(ANY)
+        assert {'override': 1, 'list': [1], 'single': 1, 'dict': {'one': 1}} == result
+
+        forget_invocations(self._working_configuration_loader)
+
+        result = self._subject.load('any2', 'valid2')
+
+        verify(self._working_configuration_loader, times=0).load_from(ANY)
+        verify(self._working_configuration_loader2, times=1).load_from('any2')
+        verify(self._silent_configuration_loader, times=0).load_from(ANY)
+
+        assert {'override': 2, 'list': [2], 'dict': {'two': 2}} == result
 
     def test_load2(self):
-        """ it raises an error when no ConfigurationLoader is compatible with given source kind """
+        """ it can load a configuration from a valid source, automatically """
+        result = self._subject.load('source2')
 
-        with pytest.raises(RuntimeError) as error:
-            self._subject.load('not_found', ('source1',))
+        verify(self._working_configuration_loader, times=0).load_from(ANY)
+        verify(self._working_configuration_loader2, times=1).load_from('source2')
+        verify(self._silent_configuration_loader, times=0).load_from(ANY)
 
-        assert 'Could not load any configuration' in str(error.value)
-        self._working_configuration_loader.load_from_all.assert_not_called()
-        self._silent_configuration_loader.load_from_all.assert_not_called()
+        assert {'override': 2, 'list': [2], 'dict': {'two': 2}} == result
+
+    def test_load3(self):
+        """ it raises an error if no configuration loader is found for the given source """
+        with pytest.raises(SourceCannotBeProcessedError) as error:
+            self._subject.load('unknown')
+
+        assert 'Could not load any configuration' in str(error)
+
+    def test_load_if_exists(self):
+        """ it returns None when the source cannot be processed """
+        assert {} == self._subject.load_if_exists('unknown')
+
+    def test_load_all(self):
+        """ it can load from multiple sources and unify them into a single configuration """
+
+        result = self._subject.load_all(('source1', 'source2'))
+
+        assert {'override': 2, 'list': [1, 2], 'single': 1, 'dict': {'one': 1, 'two': 2}} == result
+
+    def test_load_all2(self):
+        """ it raises an error when loading from multiple sources and one of them cannot be processed """
+        with pytest.raises(SourceCannotBeProcessedError) as error:
+            self._subject.load_all(('source1', 'unknown', 'source2'))
+
+        assert 'Could not load any configuration' in str(error)
+
+    def test_load_all_if_exists(self):
+        """ it can load from multiple sources, even when some cannot be processed, into a single configuration """
+
+        result = self._subject.load_all_if_exists(('source1', 'unknown', 'source2'))
+
+        assert {'override': 2, 'list': [1, 2], 'single': 1, 'dict': {'one': 1, 'two': 2}} == result
