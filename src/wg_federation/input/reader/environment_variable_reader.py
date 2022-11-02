@@ -3,6 +3,7 @@ import os
 from typing import Union
 
 from wg_federation.data.input.raw_options import RawOptions
+from wg_federation.utils.utils import Utils
 
 
 class EnvironmentVariableReader:
@@ -39,7 +40,7 @@ class EnvironmentVariableReader:
         :param env_var_suffix: lowercase substance of the name of the environment variable to be read
         :return: the environment variable content
         """
-        self._logger.debug(f'{self.__class__.__name__}: '
+        self._logger.debug(f'{Utils.classname(self)}: '
                            f'Trying to fetch “{self.get_real_env_var_name(env_var_suffix)}” environment variable.')
 
         if self.get_real_env_var_name(env_var_suffix) in os.environ:

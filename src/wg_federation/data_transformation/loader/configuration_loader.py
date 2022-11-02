@@ -6,6 +6,7 @@ from deepmerge import always_merger
 from wg_federation.data_transformation.loader.configuration_loader_interface import ConfigurationLoaderInterface
 from wg_federation.exception.developer.data_transformation.source_cannot_be_processed_error import \
     SourceCannotBeProcessedError
+from wg_federation.utils.utils import Utils
 
 
 class ConfigurationLoader:
@@ -50,7 +51,8 @@ class ConfigurationLoader:
         """
         for _configuration_loader in self._configuration_loaders:
             if _configuration_loader.supports(source) or source_kind == _configuration_loader.get_supported_source():
-                self._logger.debug(f'{_configuration_loader.__class__} configuration loader supports {source}.')
+                self._logger.debug(f'{Utils.classname(_configuration_loader)} '
+                                   f'configuration loader supports {source}.')
 
                 return _configuration_loader.load_from(source)
 

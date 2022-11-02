@@ -1,10 +1,13 @@
 import logging
+import os
 from argparse import Namespace
 from typing import Union
+
 from wg_federation.data.input.raw_options import RawOptions
+from wg_federation.data.input.user_input import UserInput
 from wg_federation.input.reader.argument_reader import ArgumentReader
 from wg_federation.input.reader.environment_variable_reader import EnvironmentVariableReader
-from wg_federation.data.input.user_input import UserInput
+from wg_federation.utils.utils import Utils
 
 
 class InputManager:
@@ -41,9 +44,11 @@ class InputManager:
         """
 
         arguments = self._argument_reader.parse_all()
-        self._logger.debug(f'{self.__class__.__name__}: Command line argument processed:\n\t{arguments}')
+        self._logger.debug(f'{Utils.classname(self)}: Command line argument processed:{os.linesep}\t{arguments}')
         environment_variables = self._environment_variable_reader.fetch_all()
-        self._logger.debug(f'{self.__class__.__name__}: Environment variables processed:\n\t{environment_variables}')
+        self._logger.debug(
+            f'{Utils.classname(self)}: Environment variables processed:{os.linesep}\t{environment_variables}'
+        )
 
         user_input = UserInput(
             **dict((option_name, self._get_first_defined_user_input_value(
@@ -51,7 +56,7 @@ class InputManager:
             )) for option_name in RawOptions.get_all_options_names() + RawOptions.get_all_argument_keys())
         )
 
-        self._logger.debug(f'{self.__class__.__name__}: Final processed user inputs:\n\t{user_input}')
+        self._logger.debug(f'{Utils.classname(self)}: Final processed user inputs:{os.linesep}\t{user_input}')
 
         return user_input
 

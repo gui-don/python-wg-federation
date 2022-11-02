@@ -3,6 +3,7 @@ import logging
 from wg_federation.controller.controller_interface import ControllerInterface
 from wg_federation.controller.controller_status import Status
 from wg_federation.data.input.user_input import UserInput
+from wg_federation.utils.utils import Utils
 
 
 class ControllerDispatcher:
@@ -36,11 +37,11 @@ class ControllerDispatcher:
                 result = controller.run(user_input)
 
                 if Status.SUCCESS != result:
-                    raise RuntimeError(f'{controller.__class__} failed with status code {result}')
+                    raise RuntimeError(f'🔲🔲{Utils.classname(controller)} failed with status code {result}')
 
-                self._logger.debug(f'{controller.__class__} was run.')
+                self._logger.debug(f'{Utils.classname(controller)} was run.')
             else:
-                self._logger.debug(f'{controller.__class__} was queued to run, but it did not in current context.')
+                self._logger.debug(f'{Utils.classname(controller)} was queued to run, but it did not in current context.')
 
     def enroll(self, controller: ControllerInterface) -> None:
         """
