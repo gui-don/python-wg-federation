@@ -5,11 +5,8 @@ from unittest.mock import patch, mock_open
 from wg_federation.data_transformation.loader.file.json_file_configuration_loader import JsonFileConfigurationLoader
 
 
-# Because this is a test of a template pattern classes.
-# Therefore, it looks similar of any other test of the subclasses
-# pylint: disable=duplicate-code
 class TestJsonFileConfigurationLoader:
-    """ Test ConfigurationLoader class """
+    """ Test JsonFileConfigurationLoader class """
 
     _subject: JsonFileConfigurationLoader = None
 

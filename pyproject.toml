@@ -31,7 +31,8 @@ dependencies = [
     'systemd-python',
     'ipaddr == 2.*',
     'PyYAML == 6.*',
-    'deepmerge == 1.*'
+    'deepmerge == 1.*',
+    'xdg == 5.*',
 ]
 
 [project.scripts]
