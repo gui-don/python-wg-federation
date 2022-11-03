@@ -1,5 +1,5 @@
+import os
 from abc import ABC
-from pathlib import Path
 from typing import TextIO
 
 from wg_federation.data_transformation.loader.configuration_loader_interface import ConfigurationLoaderInterface
@@ -23,4 +23,4 @@ class FileConfigurationLoader(ConfigurationLoaderInterface, ABC):
         """
 
     def supports(self, source: str) -> bool:
-        return Path(source).is_file()
+        return os.path.isfile(source)

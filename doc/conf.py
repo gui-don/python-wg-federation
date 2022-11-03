@@ -27,8 +27,6 @@ def get_meta() -> MutableMapping:
     return pyproject
 
 
-print(get_meta()['project'])
-
 date = datetime.date.today()
 year = date.strftime('%Y')
 pyproject_data = get_meta()
