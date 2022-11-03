@@ -13,6 +13,7 @@ from wg_federation.data_transformation.loader.file.json_file_configuration_loade
 from wg_federation.data_transformation.loader.file.yaml_file_configuration_loader import YamlFileConfigurationLoader
 from wg_federation.input.manager.input_manager import InputManager
 from wg_federation.input.reader.argument_reader import ArgumentReader
+from wg_federation.input.reader.configuration_file_reader import ConfigurationFileReader
 from wg_federation.input.reader.environment_variable_reader import EnvironmentVariableReader
 
 
@@ -71,6 +72,11 @@ class Container(containers.DynamicContainer):
             logger=self.root_logger
         )
         self.argument_parser = providers.Singleton(ArgumentParser)
+        self.configuration_file_reader = providers.Singleton(
+            ConfigurationFileReader,
+            logger=self.root_logger,
+            configuration_loader=self.configuration_loader
+        )
         self.argument_reader = providers.Singleton(
             ArgumentReader,
             argument_parser=self.argument_parser,
@@ -80,6 +86,7 @@ class Container(containers.DynamicContainer):
             InputManager,
             argument_reader=self.argument_reader,
             environment_variable_reader=self.environment_variable_reader,
+            configuration_file_reader=self.configuration_file_reader,
             logger=self.root_logger
         )
 

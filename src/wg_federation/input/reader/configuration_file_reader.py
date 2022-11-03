@@ -30,17 +30,20 @@ class ConfigurationFileReader:
         Loads all configuration files into a unified dictionary.
         :return:
         """
-        sources = (
-            f'/etc/{argparse.ArgumentParser().prog}/main.yaml',
-            f'{xdg.xdg_data_home()}/{argparse.ArgumentParser().prog}/main.yaml',
-        )
-
         self._logger.debug(
             f'Trying to load configuration files:{os.linesep}  - '
-            f'{(os.linesep + "  - ").join(sources)}'
+            f'{(os.linesep + "  - ").join(self.get_sources())}'
         )
 
-        return self._configuration_loader.load_all_if_exists((
+        return self._configuration_loader.load_all_if_exists(self.get_sources())
+
+    @staticmethod
+    def get_sources() -> tuple[str, ...]:
+        """
+        Returns supported context configuration files, from the most generic to the most specific
+        :return:
+        """
+        return (
             f'/etc/{argparse.ArgumentParser().prog}/main.yaml',
             f'{xdg.xdg_data_home()}/{argparse.ArgumentParser().prog}/main.yaml',
-        ))
+        )

@@ -28,3 +28,8 @@ class TestConfigurationFileReader:
     def test_load_all(self):
         """ it loads all the configuration files in order """
         assert {'valid': 1} == self._subject.load_all()
+
+    def test_get_sources(self):
+        """ it returns current context configuration sources """
+        assert isinstance(self._subject.get_sources(), tuple)
+        assert len(self._subject.get_sources()) > 0
