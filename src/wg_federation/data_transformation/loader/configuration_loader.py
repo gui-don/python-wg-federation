@@ -53,8 +53,7 @@ class ConfigurationLoader:
             if _configuration_loader.supports(source) or source_kind == _configuration_loader.get_supported_source():
                 self._logger.debug(f'{Utils.classname(_configuration_loader)} '
                                    f'configuration loader supports {source}.')
-
-                return _configuration_loader.load_from(source)
+                return dict(_configuration_loader.load_from(source))
 
         raise SourceCannotBeProcessedError(f'Could not load any configuration from “{source} ({source_kind})”. '
                                            f'It seems no ConfigurationLoader supports this type of source.')
@@ -77,7 +76,7 @@ class ConfigurationLoader:
         return functools.reduce(self.__merge_configuration, sources, {})
 
     def __merge_configuration(self, previous_configuration: dict, next_source: str) -> dict:
-        return always_merger.merge(previous_configuration, self.load(next_source))
+        return dict(always_merger.merge(previous_configuration, self.load(next_source)))
 
     def __merge_configuration_if_exists(self, previous_configuration: dict, next_source: str) -> dict:
-        return always_merger.merge(previous_configuration, self.load_if_exists(next_source))
+        return dict(always_merger.merge(previous_configuration, self.load_if_exists(next_source)))

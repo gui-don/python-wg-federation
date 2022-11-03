@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import TextIO
 
 from wg_federation.data_transformation.loader.file.file_configuration_loader import FileConfigurationLoader
+from wg_federation.utils.utils import Utils
 
 
 class JsonFileConfigurationLoader(FileConfigurationLoader):
@@ -21,4 +22,4 @@ class JsonFileConfigurationLoader(FileConfigurationLoader):
 
     @classmethod
     def _load_file(cls, file: TextIO) -> dict:
-        return json.load(file)
+        return Utils.always_dict(json.load(file))

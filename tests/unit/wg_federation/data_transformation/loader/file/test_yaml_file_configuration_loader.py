@@ -1,4 +1,4 @@
-from pathlib import Path
+import os
 from unittest.mock import patch, mock_open
 
 import yaml
@@ -26,7 +26,7 @@ class TestYamlFileConfigurationLoader:
 
     def test_supports(self):
         """ it returns whether it supports a source or not """
-        with patch.object(Path, 'is_file', return_value=True):
+        with patch.object(os.path, 'isfile', return_value=True):
             assert True is self._subject.supports('/path/to/file.yaml')
             assert True is self._subject.supports('/path/to/file.YAML')
             assert True is self._subject.supports('/path/to/file.yml')
@@ -35,7 +35,7 @@ class TestYamlFileConfigurationLoader:
 
     def test_supports2(self):
         """ it returns it does not support an file that does not exist """
-        with patch.object(Path, 'is_file', return_value=False):
+        with patch.object(os.path, 'isfile', return_value=False):
             assert False is self._subject.supports('/path/to/file.yaml')
             assert False is self._subject.supports('/path/to/file.YAML')
             assert False is self._subject.supports('/path/to/file.yml')
@@ -43,8 +43,17 @@ class TestYamlFileConfigurationLoader:
     def test_load_from(self):
         """ it can load configuration from a valid source """
         with patch('builtins.open', mock_open(read_data='data')):
-            with patch.object(yaml, 'safe_load', return_value='data_yaml') as yaml_load:
+            with patch.object(yaml, 'safe_load', return_value={'data_yaml': 1}) as yaml_load:
                 result = self._subject.load_from('source')
 
-        assert 'data_yaml' == result
+        assert {'data_yaml': 1} == result
         yaml_load.assert_called_once()
+
+    def test_load_from2(self):
+        """ it can load configuration from a valid source, and makes sure to always a dict """
+        with patch('builtins.open', mock_open(read_data='data')):
+            with patch.object(yaml, 'safe_load', return_value='not_dict') as yaml_data:
+                result = self._subject.load_from('source')
+
+        assert {} == result
+        yaml_data.assert_called_once()

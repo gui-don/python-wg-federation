@@ -55,6 +55,16 @@ class Container(containers.DynamicContainer):
 
         self.root_logger = providers.Object(_logger)
 
+        # data transformation
+        self.configuration_loader = providers.Singleton(
+            ConfigurationLoader,
+            configuration_loaders=providers.List(
+                providers.Singleton(YamlFileConfigurationLoader),
+                providers.Singleton(JsonFileConfigurationLoader),
+            ),
+            logger=self.root_logger
+        )
+
         # input
         self.environment_variable_reader = providers.Singleton(
             EnvironmentVariableReader,
@@ -70,16 +80,6 @@ class Container(containers.DynamicContainer):
             InputManager,
             argument_reader=self.argument_reader,
             environment_variable_reader=self.environment_variable_reader,
-            logger=self.root_logger
-        )
-
-        # data transformation
-        self.configuration_loader = providers.Singleton(
-            ConfigurationLoader,
-            configuration_loaders=providers.List(
-                providers.Singleton(YamlFileConfigurationLoader),
-                providers.Singleton(JsonFileConfigurationLoader),
-            ),
             logger=self.root_logger
         )
 
