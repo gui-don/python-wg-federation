@@ -18,15 +18,18 @@ class TestInputManager:
     _logger = MagicMock()
     _environment_variable_reader = MagicMock()
     _argument_reader = MagicMock()
+    _configuration_file_reader = MagicMock()
     _subject: InputManager = None
 
     def setup(self):
         """ Constructor """
         self._environment_variable_reader.fetch_all = MagicMock(return_value={'debug': 'True'})
         self._argument_reader.parse_all = MagicMock(return_value=Struct(**{'verbose': True, 'arg0': 'test'}))
+        self._configuration_file_reader.load_all = MagicMock(return_value={'root_passphrase': 'test'})
         self._subject = InputManager(
             argument_reader=self._argument_reader,
             environment_variable_reader=self._environment_variable_reader,
+            configuration_file_reader=self._configuration_file_reader,
             logger=self._logger
         )
 
@@ -41,8 +44,10 @@ class TestInputManager:
         self._logger.debug.assert_called()
         self._argument_reader.parse_all.assert_called()
         self._environment_variable_reader.fetch_all.assert_called()
+        self._configuration_file_reader.load_all.assert_called()
         assert isinstance(result, UserInput)
         assert True is result.verbose
         assert True is result.debug
         assert False is result.quiet
         assert 'test' == result.arg0
+        assert 'test' == result.root_passphrase.get_secret_value()
