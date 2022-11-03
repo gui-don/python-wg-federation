@@ -2,20 +2,9 @@
 =====
 
 - feat: now able to load configuration from `/(etc|XDG_DATA_HOME)/wg-federation/main.yaml`
-- feat: adds `utils.Utils` class to handle small reusable functions
-- feat: adds `data_transformation.loader` library
-- feat: adds `YamlFileConfigurationLoader` as first `ConfigurationLoader` implementation
-- feat: adds `JsonFileConfigurationLoader` as second `ConfigurationLoader` implementation
-- feat: adds classes to represent state: `federation`, `state` and `wirguard_interface`.
-- feat: adds a `ConfigurationFileReader` to handle user inputs from configuration files
-- feat: adds a `Utils` static class to handle basic functions
+- feat: adds many new classes for data transformation
 - refactor: changes code namespacing to prepare for next features
-- test: adds unit tests for `CommandLineArgument` and `CommandLineOption`
-- test: adds unit tests for newly added `data.state.` classes
-- test: adds unit tests for newly added `data_transformation.loader` lib
-- test: setup functional test environment to better mock system access like env vars and files
 - chore: adds `pyyaml`, `deepmerge` and `xdg` as dependencies
-- maintenance: pre-commit dependency update
 
 0.2.1
 =====
