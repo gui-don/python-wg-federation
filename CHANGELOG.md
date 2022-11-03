@@ -4,6 +4,7 @@
 - feat: now able to load configuration from `/(etc|XDG_DATA_HOME)/wg-federation/main.yaml`
 - feat: adds many new classes for data transformation
 - refactor: changes code namespacing to prepare for next features
+- test: introduces `mockito` as a mock framework
 - chore: adds `pyyaml`, `deepmerge` and `xdg` as dependencies
 
 0.2.1
