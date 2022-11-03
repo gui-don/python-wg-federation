@@ -1,5 +1,6 @@
 Feature: command line general features
 
+  @command-line-general
   Scenario Outline: wg-federation shows help in all circumstances
     When we run program with "<help_option>"
     Then the output contains "usage\: wg\-federation"
@@ -14,6 +15,7 @@ Feature: command line general features
       | hq run -h   |
       | hq -h run   |
 
+  @command-line-general
   Scenario: wg-federation shows supported environment variables
     When we run program with "-h"
     Then the output contains "environment variables:"
@@ -22,6 +24,7 @@ Feature: command line general features
     And the output contains "WG_FEDERATION_VERBOSE"
     And the output contains "WG_FEDERATION_DEBUG"
 
+  @command-line-general
   Scenario Outline: wg-federation shows it allows general options, even after arguments
     When we run program with "<help_command>"
     Then the output contains "-q, --quiet"
@@ -35,6 +38,7 @@ Feature: command line general features
       | hq run -h       |
       | hq -h bootstrap |
 
+  @command-line-general
   Scenario Outline: wg-federation shows its current version
     When we run program with "<version_option>"
     Then the output only contains current version
@@ -44,9 +48,10 @@ Feature: command line general features
       | -V             |
       | --version      |
 
+  @command-line-general
   Scenario Outline: wg-federation shows its debug outputs when debug option is set, because this option has the highest precedence
     When we run program with "<logging_options>"
-    Then the stderr contains "<class 'wg_federation.controller.baseline.configure_logging_controller.ConfigureLoggingController'> was run."
+    Then the stderr contains "ConfigureLoggingController♦ was run."
 
     Examples: equivalent options for debug logging
       | logging_options       |
@@ -55,11 +60,12 @@ Feature: command line general features
       | -vv -v                |
       | --log-level DEBUG     |
 
+  @command-line-general
   Scenario Outline: wg-federation do not info debug outputs by default
     When we run program with "<logging_options>"
-    Then the stderr does not contain "wg_federation.controller.configure_logging_controller.ConfigureLoggingController"
-    And the output does not contain "wg_federation.controller.configure_logging_controller.ConfigureLoggingController"
-    And the syslog does not contain "wg_federation.controller.configure_logging_controller.ConfigureLoggingController"
+    Then the stderr does not contain "ConfigureLoggingController"
+    And the output does not contain "ConfigureLoggingController"
+    And the syslog does not contain "ConfigureLoggingController"
 
     Examples: options
       | logging_options      |
@@ -69,10 +75,29 @@ Feature: command line general features
       | --log-level WARNING  |
       | --log-level INFO     |
 
+  @command-line-general @environment-variables
   Scenario: setting up the debug flag displays all early debug outputs
     Given the environment variable "WG_FEDERATION_DEBUG" contains "True"
     When we run program with "--log-level CRITICAL"
     Then the stderr contains "Trying to fetch “WG_FEDERATION_QUIET” environment variable"
-    Then the stderr contains "InputManager: Command line argument processed"
-    Then the stderr contains "InputManager: Environment variables processed"
-    Then the stderr contains "InputManager: Final processed user inputs"
+    Then the stderr contains "InputManager♦: Command line argument processed"
+    Then the stderr contains "InputManager♦: Environment variables processed"
+    Then the stderr contains "InputManager♦: Final processed user inputs"
+
+  @command-line-general @configuration-files @wip
+  Scenario Outline: wg-federation show its debug outputs when debug option is set from configuration files
+    Given a system file “<configuration_path>” contains the following content “debug: True”
+    When we run program with "--log-level CRITICAL"
+    Then the stderr contains "ConfigureLoggingController♦ was run."
+
+    Examples: system files
+      | configuration_path                     |
+      | /etc/wg-federation/main.yaml           |
+      | ~/.local/share/wg-federation/main.yaml |
+
+  @command-line-general @configuration-files @wip
+  Scenario: wg-federation overrides configuration files by the most specific
+    Given a system file “/etc/wg-federation/main.yaml” contains the following content “debug: True”
+    Given a system file “~/.local/share/wg-federation/main.yaml” contains the following content “debug: False”
+    When we run program with "--log-level CRITICAL"
+    Then the stderr does not contain "ConfigureLoggingController"
