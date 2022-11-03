@@ -37,7 +37,7 @@ class ControllerDispatcher:
                 result = controller.run(user_input)
 
                 if Status.SUCCESS != result:
-                    raise RuntimeError(f'🔲🔲{Utils.classname(controller)} failed with status code {result}')
+                    raise RuntimeError(f'{Utils.classname(controller)} failed with status code {result}')
 
                 self._logger.debug(f'{Utils.classname(controller)} was run.')
             else:
