@@ -15,5 +15,4 @@ class TestUtils:
         assert {} == Utils.always_dict(Utils())
         assert {} == Utils.always_dict('')
         assert {} == Utils.always_dict(123)
-        assert {} == Utils.always_dict({})
         assert {'one': True} == Utils.always_dict({'one': True})

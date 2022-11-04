@@ -87,7 +87,8 @@ class TestConfigurationLoader:
 
     def test_load_if_exists(self):
         """ it returns None when the source cannot be processed """
-        assert {} == self._subject.load_if_exists('unknown')
+        assert isinstance(self._subject.load_if_exists('unknown'), dict)
+        assert not self._subject.load_if_exists('unknown')
 
     def test_load_all(self):
         """ it can load from multiple sources and unify them into a single configuration """
