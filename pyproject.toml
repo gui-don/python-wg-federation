@@ -30,7 +30,7 @@ dependencies = [
     'dependency-injector == 4.*',
     'ipaddr == 2.*',
     'portalocker == 2.*',
-    'pycryptodome == 3.*',
+    'pycryptodomex == 3.*',
     'pydantic == 1.*',
     'pyyaml == 6.*',
     'systemd-python',

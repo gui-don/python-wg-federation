@@ -8,6 +8,7 @@ from systemd.journal import JournalHandler
 from wg_federation.constants import __version__
 from wg_federation.controller.baseline.configure_logging_controller import ConfigureLoggingController
 from wg_federation.controller.controller_dispatcher import ControllerDispatcher
+from wg_federation.crypto.cryptographic_key_deriver import CryptographicKeyDeriver
 from wg_federation.data_transformation.loader.configuration_loader import ConfigurationLoader
 from wg_federation.data_transformation.loader.file.json_file_configuration_loader import JsonFileConfigurationLoader
 from wg_federation.data_transformation.loader.file.yaml_file_configuration_loader import YamlFileConfigurationLoader
@@ -56,6 +57,11 @@ class Container(containers.DynamicContainer):
 
         self.root_logger = providers.Object(_logger)
 
+        # Crypto
+        self.cryptographic_key_deriver = providers.Singleton(
+            CryptographicKeyDeriver,
+            user_input=self.user_input
+        )
         # data transformation
         self.configuration_loader = providers.Singleton(
             ConfigurationLoader,
