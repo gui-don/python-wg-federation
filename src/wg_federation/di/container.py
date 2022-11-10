@@ -2,6 +2,7 @@ import logging
 import os
 from argparse import ArgumentParser
 
+from Cryptodome.Cipher import AES
 from Cryptodome.Hash import Poly1305
 from dependency_injector import containers, providers
 from systemd.journal import JournalHandler
@@ -10,6 +11,7 @@ from wg_federation.constants import __version__
 from wg_federation.controller.baseline.configure_logging_controller import ConfigureLoggingController
 from wg_federation.controller.controller_dispatcher import ControllerDispatcher
 from wg_federation.crypto.cryptographic_key_deriver import CryptographicKeyDeriver
+from wg_federation.crypto.message_encrypter import MessageEncrypter
 from wg_federation.crypto.message_signer import MessageSigner
 from wg_federation.data_transformation.loader.configuration_loader import ConfigurationLoader
 from wg_federation.data_transformation.loader.file.json_file_configuration_loader import JsonFileConfigurationLoader
@@ -69,6 +71,12 @@ class Container(containers.DynamicContainer):
             cryptographic_key_deriver=self.cryptographic_key_deriver,
             cryptodome_poly1305=Poly1305
         )
+        self.message_encrypter = providers.Singleton(
+            MessageEncrypter,
+            cryptographic_key_deriver=self.cryptographic_key_deriver,
+            cryptodome_aes=AES
+        )
+
         # data transformation
         self.configuration_loader = providers.Singleton(
             ConfigurationLoader,
