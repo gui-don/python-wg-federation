@@ -3,6 +3,8 @@ import os
 from argparse import Namespace
 from typing import Union
 
+from pydantic import SecretStr
+
 from wg_federation.data.input.raw_options import RawOptions
 from wg_federation.data.input.user_input import UserInput
 from wg_federation.input.reader.argument_reader import ArgumentReader
@@ -63,9 +65,20 @@ class InputManager:
             )) for option_name in RawOptions.get_all_options_names() + RawOptions.get_all_argument_keys())
         )
 
+        self._warn_if_secrets_are_in_configuration(user_input, configuration)
+
         self._logger.debug(f'{Utils.classname(self)}: Final processed user inputs:{os.linesep}\t{user_input}')
 
         return user_input
+
+    def _warn_if_secrets_are_in_configuration(self, user_input: UserInput, configuration: dict):
+        for attribute, value in user_input:
+            if isinstance(value, SecretStr) and configuration.get(attribute):
+                self._logger.warning(
+                    f'The secret “{attribute}” was loaded from a configuration file. '
+                    f'This secret might be readable by whomever access the disk or the configuration file. '
+                    f'Consider using an environment variable or command line argument to pass the secret.'
+                )
 
     @classmethod
     def _get_first_defined_user_input_value(

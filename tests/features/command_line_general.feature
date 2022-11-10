@@ -84,7 +84,7 @@ Feature: command line general features
     Then the stderr contains "InputManager♦: Environment variables processed"
     Then the stderr contains "InputManager♦: Final processed user inputs"
 
-  @command-line-general @configuration-files @wip
+  @command-line-general @configuration-files
   Scenario Outline: wg-federation show its debug outputs when debug option is set from configuration files
     Given a system file “<configuration_path>” contains the following content “debug: True”
     When we run program with "--log-level CRITICAL"
@@ -95,9 +95,15 @@ Feature: command line general features
       | /etc/wg-federation/main.yaml           |
       | ~/.local/share/wg-federation/main.yaml |
 
-  @command-line-general @configuration-files @wip
+  @command-line-general @configuration-files
   Scenario: wg-federation overrides configuration files by the most specific
     Given a system file “/etc/wg-federation/main.yaml” contains the following content “debug: True”
     Given a system file “~/.local/share/wg-federation/main.yaml” contains the following content “debug: False”
     When we run program with "--log-level CRITICAL"
     Then the stderr does not contain "ConfigureLoggingController"
+
+  @command-line-general @configuration-files
+  Scenario: wg-federation displays a warning if a root passphrase secret is found in the configuration
+    Given a system file “~/.local/share/wg-federation/main.yaml” contains the following content “root_passphrase: 'not so secret'”
+    When we run program with "--log-level INFO"
+    Then the stderr contains "This secret might be readable by whomever access the disk or the configuration file"
