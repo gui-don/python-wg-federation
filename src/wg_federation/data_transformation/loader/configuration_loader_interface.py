@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 class ConfigurationLoaderInterface(ABC):
     """
-    Configuration Loader interface. Represents any configuration loader.
+    Configuration Loader interface. Represents any configuration loader for a single source.
     """
 
     @abstractmethod

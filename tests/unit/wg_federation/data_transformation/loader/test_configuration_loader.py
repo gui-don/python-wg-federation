@@ -1,9 +1,9 @@
 import pytest
 from mockito import when, ANY, mock, verify, forget_invocations
 
+from wg_federation.data_transformation.loader.can_load_configuration_interface import CanLoadConfigurationInterface
 from wg_federation.data_transformation.loader.configuration_loader import ConfigurationLoader
-from wg_federation.exception.developer.data_transformation.source_cannot_be_processed_error import \
-    SourceCannotBeProcessedError
+from wg_federation.exception.developer.data_transformation.source_unsupported_error import SourceUnsupportedError
 
 
 class TestConfigurationLoader:
@@ -48,6 +48,7 @@ class TestConfigurationLoader:
     def test_init(self):
         """ it can be instantiated """
         assert isinstance(self._subject, ConfigurationLoader)
+        assert isinstance(self._subject, CanLoadConfigurationInterface)
 
     def test_load(self):
         """ it can load a configuration from a valid source """
@@ -80,7 +81,7 @@ class TestConfigurationLoader:
 
     def test_load3(self):
         """ it raises an error if no configuration loader is found for the given source """
-        with pytest.raises(SourceCannotBeProcessedError) as error:
+        with pytest.raises(SourceUnsupportedError) as error:
             self._subject.load('unknown')
 
         assert 'Could not load any configuration' in str(error)
@@ -99,7 +100,7 @@ class TestConfigurationLoader:
 
     def test_load_all2(self):
         """ it raises an error when loading from multiple sources and one of them cannot be processed """
-        with pytest.raises(SourceCannotBeProcessedError) as error:
+        with pytest.raises(SourceUnsupportedError) as error:
             self._subject.load_all(('source1', 'unknown', 'source2'))
 
         assert 'Could not load any configuration' in str(error)
