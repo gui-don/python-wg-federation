@@ -1,3 +1,9 @@
+0.6.0
+=====
+
+- feat: makes `systemd-python` an optional library
+- tech: add `ci` environment dependency environment
+
 0.5.0
 =====
 
