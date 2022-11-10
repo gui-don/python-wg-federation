@@ -10,8 +10,12 @@ from Cryptodome import Random
 from Cryptodome.Cipher import AES
 from Cryptodome.Hash import Poly1305
 from dependency_injector import containers, providers
-from nacl import public
-from systemd.journal import JournalHandler
+try:
+    from systemd.journal import JournalHandler
+except ImportError:
+    _has_systemd = False  # pylint: disable-msg=C0103
+else:
+    _has_systemd = True  # pylint: disable-msg=C0103
 
 from wg_federation.constants import __version__
 from wg_federation.controller.api.hq_get_private_key_controller import HQGetPrivateKeyController
@@ -75,7 +79,8 @@ class Container(containers.DynamicContainer):
         # logging
         _logger = logging.getLogger('root')
         _logger_console_handler = logging.StreamHandler()
-        _logger_syslog_handler = JournalHandler()
+        if _has_systemd:
+            _logger_syslog_handler = JournalHandler()
 
         if early_debug:
             # Can help debug very early code, like input processing
@@ -84,10 +89,12 @@ class Container(containers.DynamicContainer):
             _logger_console_handler.setLevel(logging.DEBUG)
 
         _logger.addHandler(_logger_console_handler)
-        _logger.addHandler(_logger_syslog_handler)
+        if _has_systemd:
+            _logger.addHandler(_logger_syslog_handler)
 
         self.logger_console_handler = providers.Object(_logger_console_handler)
-        self.logger_syslog_handler = providers.Object(_logger_syslog_handler)
+        if _has_systemd:
+            self.logger_syslog_handler = providers.Object(_logger_syslog_handler)
 
         self.root_logger = providers.Object(_logger)
 

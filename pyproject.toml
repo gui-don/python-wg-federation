@@ -50,6 +50,8 @@ dev = [
     'pylint'
 ]
 build = ['setuptools', 'build', 'wheel', 'twine', 'tomli', 'sphinx', 'sphinx_rtd_theme']
+ci = ['wg-federation[dev, build]']
+dev-with-systemd = ['wg-federation[dev]', 'systemd-python']
 
 [tool.setuptools]
 package-dir = { "" = "src" }
