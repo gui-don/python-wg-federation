@@ -26,12 +26,14 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
 ]
 dependencies = [
-    'dependency-injector == 4.*',
-    'pydantic == 1.*',
-    'systemd-python',
-    'ipaddr == 2.*',
-    'PyYAML == 6.*',
     'deepmerge == 1.*',
+    'dependency-injector == 4.*',
+    'ipaddr == 2.*',
+    'portalocker == 2.*',
+    'pycryptodome == 3.*',
+    'pydantic == 1.*',
+    'pyyaml == 6.*',
+    'systemd-python',
     'xdg == 5.*',
 ]
 
@@ -39,8 +41,14 @@ dependencies = [
 wg-federation = "wg_federation:main"
 
 [project.optional-dependencies]
-dev = ['behave', 'pytest>=7', 'pytest-pep8', 'pytest-cov', 'pytest-spec', 'pre-commit', 'pylint', 'tomli', 'mockito']
-build = ['setuptools', 'build', 'wheel', 'twine', 'sphinx', 'sphinx_rtd_theme']
+dev = [
+    'behave', 'mockito',
+    'bandit', 'bandit[toml]',
+    'pytest>=7', 'pytest-pep8', 'pytest-cov', 'pytest-spec',
+    'pre-commit',
+    'pylint'
+]
+build = ['setuptools', 'build', 'wheel', 'twine', 'tomli', 'sphinx', 'sphinx_rtd_theme']
 
 [tool.setuptools]
 package-dir = { "" = "src" }
@@ -65,3 +73,6 @@ pythonpath = [
 
 [tool.mypy]
 enable_recursive_aliases = true
+
+[tool.bandit]
+exclude_dirs = ["tests", "doc", "build", "dist", "venv", "setup.py"]
