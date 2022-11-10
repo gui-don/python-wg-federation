@@ -2,6 +2,10 @@
 
 A WireGuard federation server and client.
 
+## Optional dependencies
+
+- `systemd-python`: enable logging into systemd journal
+
 ## Development
 
 Python `virtualenv` must be installed on your system.
