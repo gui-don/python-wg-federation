@@ -68,7 +68,6 @@ class CryptographicKeyDeriver:
     def _get_salt_from_file(self) -> str:
         try:
             with open(self.get_salt_full_path(), 'r', encoding='UTF-8') as file_handler:
-                print(file_handler.read())
                 return file_handler.read()
         except FileNotFoundError as error:
             raise SaltFileNotFound(
