@@ -8,7 +8,7 @@ class TestWireguardInterfaceConfig:
 
     _subject: WireguardInterface = None
 
-    def setup(self):
+    def setup_method(self):
         """ Constructor """
         self._subject = WireguardInterface(
             name='a_name',

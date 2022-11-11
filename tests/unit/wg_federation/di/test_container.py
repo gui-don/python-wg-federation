@@ -13,7 +13,7 @@ class TestContainer:
 
     _subject: DeclarativeContainer = None
 
-    def setup(self):
+    def setup_method(self):
         """ Constructor """
         self._subject = Container()
 

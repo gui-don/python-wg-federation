@@ -12,7 +12,7 @@ class TestConfigurationFileReader:
 
     _subject: ConfigurationFileReader = None
 
-    def setup(self):
+    def setup_method(self):
         """ Constructor """
         when(self._configuration_loader).load_all_if_exists(ANY(tuple)).thenReturn({'valid': 1})
 

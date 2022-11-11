@@ -10,7 +10,7 @@ class TestEnvironmentVariableReader:
     _subject: EnvironmentVariableReader = None
     _logger = MagicMock()
 
-    def setup(self):
+    def setup_method(self):
         """ Constructor """
         self._subject = EnvironmentVariableReader(
             logger=self._logger,

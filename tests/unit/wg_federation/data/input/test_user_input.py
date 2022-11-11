@@ -6,7 +6,7 @@ class TestUserInput:
 
     _subject: UserInput = None
 
-    def setup(self):
+    def setup_method(self):
         """ Constructor """
         self._subject = UserInput(
             verbose=True,

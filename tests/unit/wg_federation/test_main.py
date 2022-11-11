@@ -13,7 +13,7 @@ class TestMain:
     _container = MagicMock()
     _user_input = MagicMock()
 
-    def setup(self):
+    def setup_method(self):
         """ Constructor """
         self._container.input_manager = MagicMock(return_value=self._input_manager)
         self._container.controller_dispatcher = MagicMock(return_value=self._controller_dispatcher)

@@ -13,7 +13,7 @@ class TestArgumentReader:
     _sub_argument_parser_action = MagicMock()
     _sub_argument_parser = MagicMock()
 
-    def setup(self):
+    def setup_method(self):
         """ Constructor """
         self._sub_argument_parser_action.add_parser = MagicMock(return_value=self._sub_argument_parser)
         self._argument_parser.add_subparsers = MagicMock(return_value=self._sub_argument_parser_action)

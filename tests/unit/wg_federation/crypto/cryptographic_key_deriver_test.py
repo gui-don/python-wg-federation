@@ -23,9 +23,9 @@ class TestCryptographicKeyDeriver:
     def run_around_tests(self):
         """ Resets mock between tests """
         unstub()
-        self.setup()
+        self.setup_method()
 
-    def setup(self):
+    def setup_method(self):
         """ Constructor """
         argument_parser = mock({'prog': 'program'})
         when(xdg).xdg_data_home().thenReturn('/home/data_path')
@@ -48,7 +48,7 @@ class TestCryptographicKeyDeriver:
             user_input=self._user_input,
         )
 
-    def teardown(self):
+    def teardown_method(self):
         """ Resets mocks """
         unstub()
 

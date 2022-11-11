@@ -26,7 +26,7 @@ class TestConfigureLoggingController:
         self._logger.reset_mock()
         self._logger_handler.reset_mock()
 
-    def setup(self):
+    def setup_method(self):
         """ Constructor """
         self._user_input_quiet.quiet = True
 

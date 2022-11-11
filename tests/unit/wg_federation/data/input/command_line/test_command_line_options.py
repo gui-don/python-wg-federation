@@ -7,7 +7,7 @@ class TestCommandLineOption:
 
     _subject: CommandLineOption = None
 
-    def setup(self):
+    def setup_method(self):
         """ Constructor """
         self._subject = CommandLineOption(
             argparse_action=ArgparseAction.STORE,

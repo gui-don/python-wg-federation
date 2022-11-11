@@ -1,4 +1,3 @@
-import pytest
 from Cryptodome.Cipher import AES
 from mockito import mock, unstub, when, kwargs
 
@@ -12,12 +11,6 @@ class TestMessageEncrypter:
     _cryptographic_key_deriver: CryptographicKeyDeriver = mock()
     _cryptodome_aes: AES = mock()
     _subject: MessageEncrypter = None
-
-    @pytest.fixture(autouse=True)
-    def run_around_tests(self):
-        """ Resets mock between tests """
-        unstub()
-        self.setup_method()
 
     def setup_method(self):
         """ Constructor """

@@ -16,7 +16,7 @@ class TestConfigurationLoader:
 
     _subject: ConfigurationLoader = None
 
-    def setup(self):
+    def setup_method(self):
         """ Constructor """
 
         when(self._working_configuration_loader).supports(ANY(str)).thenReturn(False)

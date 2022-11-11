@@ -10,7 +10,7 @@ class TestJsonFileConfigurationLoader:
 
     _subject: JsonFileConfigurationLoader = None
 
-    def setup(self):
+    def setup_method(self):
         """ Constructor """
 
         self._subject = JsonFileConfigurationLoader()

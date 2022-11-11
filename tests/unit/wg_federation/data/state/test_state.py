@@ -10,7 +10,7 @@ class TestState:
 
     _subject: State = None
 
-    def setup(self):
+    def setup_method(self):
         """ Constructor """
         self._subject = State(
             federation=Federation(name='a_name'),

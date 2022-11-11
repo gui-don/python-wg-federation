@@ -12,7 +12,7 @@ class TestCommandLineArgument:
     _command_line_argument: CommandLineArgument = MagicMock()
     _command_line_option: CommandLineOption = MagicMock()
 
-    def setup(self):
+    def setup_method(self):
         """ Constructor """
         self._subject = CommandLineArgument(
             command='a_command',

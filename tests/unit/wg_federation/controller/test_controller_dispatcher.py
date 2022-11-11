@@ -24,7 +24,7 @@ class TestControllerDispatcher:
         """ Resets mocks between tests """
         self._logger.reset_mock()
 
-    def setup(self):
+    def setup_method(self):
         """ Constructor """
 
         self._working_controller.should_run = MagicMock(return_value=True)

@@ -11,7 +11,7 @@ class TestYamlFileConfigurationLoader:
 
     _subject: YamlFileConfigurationLoader = None
 
-    def setup(self):
+    def setup_method(self):
         """ Constructor """
 
         self._subject = YamlFileConfigurationLoader()

@@ -8,7 +8,7 @@ class TestFederationConfig:
 
     _subject: Federation = None
 
-    def setup(self):
+    def setup_method(self):
         """ Constructor """
         self._subject = Federation(
             name='a_name',
