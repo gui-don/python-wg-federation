@@ -1,8 +1,7 @@
-from binascii import unhexlify
-
 from Cryptodome.Cipher import AES
 
 from wg_federation.crypto.cryptographic_key_deriver import CryptographicKeyDeriver
+from wg_federation.crypto.data.encrypted_message import EncryptedMessage
 
 
 class MessageEncrypter:
@@ -22,11 +21,11 @@ class MessageEncrypter:
         self._cryptographic_key_deriver = cryptographic_key_deriver
         self._cryptodome_aes = cryptodome_aes
 
-    def encrypt(self, message: bytes) -> dict[str, str]:
+    def encrypt(self, message: bytes) -> EncryptedMessage:
         """
         Encrypted a given message
         :param message: Message to encrypt
-        :return: dict containing: 'ciphertext' = ciphertext in hex, 'digest' = digest in hex, 'nonce' = nonce in hex
+        :return: EncryptedMessage
         """
         cipher = self._cryptodome_aes.new(
             key=self._cryptographic_key_deriver.derive_32b_key_from_root_passphrase(),
@@ -35,22 +34,20 @@ class MessageEncrypter:
 
         ciphertext, digest = cipher.encrypt_and_digest(message)
 
-        return {
-            'ciphertext': ciphertext.hex(),
-            'digest': digest.hex(),
-            'nonce': cipher.nonce.hex()
-        }
+        return EncryptedMessage(
+            ciphertext=ciphertext,
+            digest=digest,
+            nonce=cipher.nonce,
+        )
 
-    def decrypt(self, ciphertext_hex: str, nonce_hex: str, digest_hex: str) -> bytes:
+    def decrypt(self, encrypted_message: EncryptedMessage) -> bytes:
         """
         Decipher a given ciphertext with the nonce and digest
-        :param ciphertext_hex: Ciphertext in hexadecimal format
-        :param nonce_hex: Nonce used for encryption in hexadecimal format
-        :param digest_hex: Digest used for encryption in hexadecimal format
+        :param encrypted_message: EncryptedMessage
         :return:
         """
         return self._cryptodome_aes.new(
             key=self._cryptographic_key_deriver.derive_32b_key_from_root_passphrase(),
             mode=AES.MODE_EAX,
-            nonce=unhexlify(nonce_hex)
-        ).decrypt_and_verify(unhexlify(ciphertext_hex), unhexlify(digest_hex))
+            nonce=encrypted_message.nonce
+        ).decrypt_and_verify(encrypted_message.ciphertext, encrypted_message.digest)

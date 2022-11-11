@@ -2,6 +2,7 @@ from Cryptodome.Cipher import AES
 from mockito import mock, unstub, when, kwargs
 
 from wg_federation.crypto.cryptographic_key_deriver import CryptographicKeyDeriver
+from wg_federation.crypto.data.encrypted_message import EncryptedMessage
 from wg_federation.crypto.message_encrypter import MessageEncrypter
 
 
@@ -40,10 +41,15 @@ class TestMessageEncrypter:
         """ it encrypts a given message """
         result = self._subject.encrypt(b'message')
 
-        assert result.get('ciphertext') == b'ciphertext'.hex()
-        assert result.get('digest') == b'digest'.hex()
-        assert result.get('nonce') == b'nonce'.hex()
+        assert result.ciphertext == b'ciphertext'
+        assert result.digest == b'digest'
+        assert result.nonce == b'nonce'
 
     def test_decrypt(self):
         """ it decrypts a given message """
-        assert b'message' == self._subject.decrypt(b'ciphertext'.hex(), b'nonce'.hex(), b'digest'.hex())
+
+        assert b'message' == self._subject.decrypt(EncryptedMessage(
+            ciphertext=b'ciphertext',
+            digest=b'digest',
+            nonce=b'nonce',
+        ))
