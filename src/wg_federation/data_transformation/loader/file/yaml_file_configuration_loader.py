@@ -13,10 +13,6 @@ class YamlFileConfigurationLoader(FileConfigurationLoader):
     Read any configuration from YAML files
     """
 
-    @staticmethod
-    def get_supported_source() -> str:
-        return 'yaml_file'
-
     def supports(self, source: str) -> bool:
         return super().supports(source) and \
             bool(re.match(r'^\.(yaml|yml)$', Path(source).suffix, re.IGNORECASE))

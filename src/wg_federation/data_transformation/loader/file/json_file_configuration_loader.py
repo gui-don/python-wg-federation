@@ -12,10 +12,6 @@ class JsonFileConfigurationLoader(FileConfigurationLoader):
     Read any configuration from JSON files
     """
 
-    @staticmethod
-    def get_supported_source() -> str:
-        return 'json_file'
-
     def supports(self, source: str) -> bool:
         return super().supports(source) and \
             bool(re.match(r'^\.json$', Path(source).suffix, re.IGNORECASE))

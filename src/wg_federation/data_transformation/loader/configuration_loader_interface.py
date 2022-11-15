@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 
 
@@ -12,14 +14,6 @@ class ConfigurationLoaderInterface(ABC):
         Load configuration from the source.
         :param source: source of configuration
         :return: configuration
-        """
-
-    @staticmethod
-    @abstractmethod
-    def get_supported_source() -> str:
-        """
-        The kind of source this loader supports
-        :return:
         """
 
     @abstractmethod

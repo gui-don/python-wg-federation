@@ -1,5 +1,6 @@
 import pytest
 from mockito import when, ANY, mock, verify, forget_invocations
+from mockito.mocking import _Dummy
 
 from wg_federation.data_transformation.loader.can_load_configuration_interface import CanLoadConfigurationInterface
 from wg_federation.data_transformation.loader.configuration_loader import ConfigurationLoader
@@ -21,26 +22,23 @@ class TestConfigurationLoader:
 
         when(self._working_configuration_loader).supports(ANY(str)).thenReturn(False)
         when(self._working_configuration_loader).supports('source1').thenReturn(True)
-        when(self._working_configuration_loader).get_supported_source().thenReturn('valid')
         when(self._working_configuration_loader).load_from(ANY(str)).thenReturn(
             {'override': 1, 'list': [1], 'single': 1, 'dict': {'one': 1}}
         )
 
         when(self._working_configuration_loader2).supports(ANY(str)).thenReturn(False)
         when(self._working_configuration_loader2).supports('source2').thenReturn(True)
-        when(self._working_configuration_loader2).get_supported_source().thenReturn('valid2')
         when(self._working_configuration_loader2).load_from(ANY(str)).thenReturn(
             {'override': 2, 'list': [2], 'dict': {'two': 2}}
         )
 
-        when(self._silent_configuration_loader).get_supported_source().thenReturn('unknown')
         when(self._silent_configuration_loader).supports(ANY(str)).thenReturn(False)
 
         self._subject = ConfigurationLoader(
             configuration_loaders=(
-                self._silent_configuration_loader,
                 self._working_configuration_loader,
                 self._working_configuration_loader2,
+                self._silent_configuration_loader,
             ),
             logger=self._logger
         )
@@ -51,8 +49,8 @@ class TestConfigurationLoader:
         assert isinstance(self._subject, CanLoadConfigurationInterface)
 
     def test_load(self):
-        """ it can load a configuration from a valid source """
-        result = self._subject.load('any', 'valid')
+        """ it can load a configuration from a valid configuration loader """
+        result = self._subject.load('any', _Dummy)
 
         verify(self._working_configuration_loader, times=1).load_from('any')
         verify(self._working_configuration_loader2, times=0).load_from(ANY)
@@ -60,14 +58,6 @@ class TestConfigurationLoader:
         assert {'override': 1, 'list': [1], 'single': 1, 'dict': {'one': 1}} == result
 
         forget_invocations(self._working_configuration_loader)
-
-        result = self._subject.load('any2', 'valid2')
-
-        verify(self._working_configuration_loader, times=0).load_from(ANY)
-        verify(self._working_configuration_loader2, times=1).load_from('any2')
-        verify(self._silent_configuration_loader, times=0).load_from(ANY)
-
-        assert {'override': 2, 'list': [2], 'dict': {'two': 2}} == result
 
     def test_load2(self):
         """ it can load a configuration from a valid source, automatically """
@@ -85,6 +75,13 @@ class TestConfigurationLoader:
             self._subject.load('unknown')
 
         assert 'Could not load any configuration' in str(error)
+
+    def test_load4(self):
+        """ it raises an error if the specific ConfigurationLoader given does not exist """
+        with pytest.raises(TypeError) as error:
+            self._subject.load('any', str)
+
+        assert 'Unable to fetch ConfigurationLoader of type “<class \'str\'>”' in str(error)
 
     def test_load_if_exists(self):
         """ it returns None when the source cannot be processed """

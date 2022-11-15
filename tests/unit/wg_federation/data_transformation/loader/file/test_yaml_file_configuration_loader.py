@@ -20,10 +20,6 @@ class TestYamlFileConfigurationLoader:
         """ it can be instantiated """
         assert isinstance(self._subject, YamlFileConfigurationLoader)
 
-    def test_get_supported_source(self):
-        """ it returns its supported source """
-        assert 'yaml_file' == self._subject.get_supported_source()
-
     def test_supports(self):
         """ it returns whether it supports a source or not """
         with patch.object(os.path, 'isfile', return_value=True):

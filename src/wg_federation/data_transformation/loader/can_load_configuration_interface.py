@@ -7,23 +7,23 @@ class CanLoadConfigurationInterface(ABC):
     """
 
     @abstractmethod
-    def load_if_exists(self, source: str, source_kind: str = '') -> dict:
+    def load_if_exists(self, source: str, configuration_loader: type = None) -> dict:
         """
         Load a configuration source of source_kind, ignoring whether the source can be processed
         :raise InvalidDataError When source was loaded but contains invalid data
         :param source: Source of the configuration
-        :param source_kind: Kind of the source of the configuration.
+        :param configuration_loader: ConfigurationLoader to be forcefully used
         :return: Configuration as a dict or empty dict if source is unsupported
         """
 
     @abstractmethod
-    def load(self, source: str, source_kind: str = '') -> dict:
+    def load(self, source: str, configuration_loader: type = None) -> dict:
         """
         Load a configuration source of source_kind.
         :raise SourceUnsupportedError When source is not supported because no ConfigurationLoader can handle it.
         :raise InvalidDataError When source was loaded but contains invalid data
         :param source: Source of the configuration
-        :param source_kind: Force a ConfigurationLoader of the kind to be used. Not recommended but may be useful.
+        :param configuration_loader: ConfigurationLoader to be forcefully used
         :return: Configuration as a dict
         """
 

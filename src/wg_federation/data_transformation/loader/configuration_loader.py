@@ -29,27 +29,47 @@ class ConfigurationLoader(CanLoadConfigurationInterface):
         self._configuration_loaders = tuple(configuration_loaders)
         self._logger = logger
 
-    def load_if_exists(self, source: str, source_kind: str = '') -> dict:
+    def load_if_exists(self, source: str, configuration_loader: type = None) -> dict:
         try:
-            return self.load(source, source_kind)
+            return self.load(source, configuration_loader)
         except SourceUnsupportedError:
             return {}
 
-    def load(self, source: str, source_kind: str = '') -> dict:
-        for _configuration_loader in self._configuration_loaders:
-            if _configuration_loader.supports(source) or source_kind == _configuration_loader.get_supported_source():
-                self._logger.debug(f'{Utils.classname(_configuration_loader)} '
-                                   f'configuration loader supports {source}.')
-                return dict(_configuration_loader.load_from(source))
+    def load(self, source: str, configuration_loader: type = None) -> dict:
+        if configuration_loader:
+            return self.__do_load_from(self._fetch(configuration_loader), source)
 
-        raise SourceUnsupportedError(f'Could not load any configuration from “{source} ({source_kind})”. '
-                                     f'It seems no ConfigurationLoader supports this type of source.')
+        for _configuration_loader in self._configuration_loaders:
+            if _configuration_loader.supports(source):
+                return self.__do_load_from(_configuration_loader, source)
+
+        raise SourceUnsupportedError(
+            f'Could not load any configuration from “{source} ({configuration_loader})”. '
+            f'It seems no ConfigurationLoader supports this type of source.'
+        )
 
     def load_all_if_exists(self, sources: tuple[str, ...]) -> dict:
         return functools.reduce(self.__merge_configuration_if_exists, sources, {})
 
     def load_all(self, sources: tuple[str, ...]) -> dict:
         return functools.reduce(self.__merge_configuration, sources, {})
+
+    def _fetch(self, configuration_loader: type = None) -> ConfigurationLoaderInterface:
+        for _configuration_loader in self._configuration_loaders:
+            if isinstance(_configuration_loader, configuration_loader):
+                return _configuration_loader
+
+        raise TypeError(
+            f'Unable to fetch ConfigurationLoader of type “{configuration_loader}”. '
+            f'Either this type does not implement ConfigurationLoaderInterface or it was not registered.'
+        )
+
+    def __do_load_from(self, configuration_loader: ConfigurationLoaderInterface, source: str) -> dict:
+        self._logger.debug(
+            f'{Utils.classname(configuration_loader)} '
+            f'configuration loader supports {source}.'
+        )
+        return dict(configuration_loader.load_from(source))
 
     def __merge_configuration(self, previous_configuration: dict, next_source: str) -> dict:
         return dict(always_merger.merge(previous_configuration, self.load(next_source)))
