@@ -1,3 +1,5 @@
+import re
+from pathlib import Path
 from typing import Any
 
 
@@ -27,3 +29,13 @@ class Utils:
             return {}
 
         return instance
+
+    @staticmethod
+    def has_extension(path: str, extension: str) -> bool:
+        """
+        Check that a path has a given extension.
+        :param path: path to check
+        :param extension: extension to check against the path. Can be a regular expression.
+        :return: True if the path has extension, False otherwise
+        """
+        return bool(re.match(fr'^\.{extension}$', Path(path).suffix, re.IGNORECASE))

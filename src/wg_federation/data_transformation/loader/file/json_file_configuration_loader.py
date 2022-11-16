@@ -1,6 +1,4 @@
 import json
-import re
-from pathlib import Path
 from typing import TextIO
 
 from wg_federation.data_transformation.loader.file.file_configuration_loader import FileConfigurationLoader
@@ -14,7 +12,7 @@ class JsonFileConfigurationLoader(FileConfigurationLoader):
 
     def supports(self, source: str) -> bool:
         return super().supports(source) and \
-            bool(re.match(r'^\.json$', Path(source).suffix, re.IGNORECASE))
+            Utils.has_extension(source, 'json')
 
     @classmethod
     def _load_file(cls, file: TextIO) -> dict:

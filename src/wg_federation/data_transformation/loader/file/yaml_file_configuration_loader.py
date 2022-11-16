@@ -1,5 +1,3 @@
-import re
-from pathlib import Path
 from typing import TextIO
 
 import yaml
@@ -15,7 +13,7 @@ class YamlFileConfigurationLoader(FileConfigurationLoader):
 
     def supports(self, source: str) -> bool:
         return super().supports(source) and \
-            bool(re.match(r'^\.(yaml|yml)$', Path(source).suffix, re.IGNORECASE))
+            Utils.has_extension(source, r'(yaml|yml)')
 
     @classmethod
     def _load_file(cls, file: TextIO) -> dict:
