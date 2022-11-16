@@ -2,6 +2,7 @@ import logging
 import os
 from argparse import ArgumentParser
 
+import portalocker
 from Cryptodome.Cipher import AES
 from Cryptodome.Hash import Poly1305
 from dependency_injector import containers, providers
@@ -16,6 +17,8 @@ from wg_federation.crypto.message_signer import MessageSigner
 from wg_federation.data_transformation.loader.configuration_loader import ConfigurationLoader
 from wg_federation.data_transformation.loader.file.json_file_configuration_loader import JsonFileConfigurationLoader
 from wg_federation.data_transformation.loader.file.yaml_file_configuration_loader import YamlFileConfigurationLoader
+from wg_federation.data_transformation.locker.configuration_locker import ConfigurationLocker
+from wg_federation.data_transformation.locker.file_configuration_locker import FileConfigurationLocker
 from wg_federation.input.manager.input_manager import InputManager
 from wg_federation.input.reader.argument_reader import ArgumentReader
 from wg_federation.input.reader.configuration_file_reader import ConfigurationFileReader
@@ -83,6 +86,17 @@ class Container(containers.DynamicContainer):
             configuration_loaders=providers.List(
                 providers.Singleton(YamlFileConfigurationLoader),
                 providers.Singleton(JsonFileConfigurationLoader),
+            ),
+            logger=self.root_logger
+        )
+        self.configuration_locker = providers.Singleton(
+            ConfigurationLocker,
+            configuration_lockers=providers.List(
+                providers.Singleton(
+                    FileConfigurationLocker,
+                    file_locker=portalocker,
+                    os_lib=os,
+                ),
             ),
             logger=self.root_logger
         )
