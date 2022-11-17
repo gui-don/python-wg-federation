@@ -19,6 +19,9 @@ from wg_federation.data_transformation.loader.file.json_file_configuration_loade
 from wg_federation.data_transformation.loader.file.yaml_file_configuration_loader import YamlFileConfigurationLoader
 from wg_federation.data_transformation.locker.configuration_locker import ConfigurationLocker
 from wg_federation.data_transformation.locker.file_configuration_locker import FileConfigurationLocker
+from wg_federation.data_transformation.saver.configuration_saver import ConfigurationSaver
+from wg_federation.data_transformation.saver.file.json_file_configuration_saver import JsonFileConfigurationSaver
+from wg_federation.data_transformation.saver.file.yaml_file_configuration_saver import YamlFileConfigurationSaver
 from wg_federation.input.manager.input_manager import InputManager
 from wg_federation.input.reader.argument_reader import ArgumentReader
 from wg_federation.input.reader.configuration_file_reader import ConfigurationFileReader
@@ -97,6 +100,15 @@ class Container(containers.DynamicContainer):
                     file_locker=portalocker,
                     os_lib=os,
                 ),
+            ),
+            logger=self.root_logger
+        )
+
+        self.configuration_saver = providers.Singleton(
+            ConfigurationSaver,
+            configuration_savers=providers.List(
+                providers.Singleton(YamlFileConfigurationSaver),
+                providers.Singleton(JsonFileConfigurationSaver),
             ),
             logger=self.root_logger
         )
