@@ -1,3 +1,5 @@
+from binascii import unhexlify
+
 from pydantic import BaseModel
 
 
@@ -34,3 +36,29 @@ class EncryptedMessage(BaseModel, frozen=True):
         :return:
         """
         return self.nonce.hex()
+
+    @classmethod
+    def from_hex(cls, ciphertext: str, digest: str, nonce: str) -> 'EncryptedMessage':
+        """
+        Returns a new EncryptedMessage instance base on hex strings inputs.
+        :param ciphertext: Hexadecimal ciphertext
+        :param digest: Hexadecimal digest
+        :param nonce: Hexadecimal nonce
+        :return:
+        """
+        return cls(
+            ciphertext=unhexlify(ciphertext),
+            digest=unhexlify(digest),
+            nonce=unhexlify(nonce)
+        )
+
+    def hex_dict(self) -> dict:
+        """
+        Get this object as a dict, all field as hex.
+        :return:
+        """
+        return {
+            'ciphertext': self.get_hex_ciphertext(),
+            'digest': self.get_hex_digest(),
+            'nonce': self.get_hex_nonce(),
+        }
