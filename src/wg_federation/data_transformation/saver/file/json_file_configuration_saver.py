@@ -1,5 +1,6 @@
 import json
-from typing import TextIO, Any
+from io import TextIOWrapper
+from typing import Any
 
 from wg_federation.data_transformation.saver.file.file_configuration_saver import FileConfigurationSaver
 from wg_federation.utils.utils import Utils
@@ -12,8 +13,9 @@ class JsonFileConfigurationSaver(FileConfigurationSaver):
 
     def supports(self, data: dict, destination: Any) -> bool:
         return super().supports(data, destination) and \
-            (isinstance(destination, TextIO) or Utils.has_extension(destination, 'json'))
+            Utils.has_extension(super()._get_destination_name(destination), 'json')
 
     @classmethod
-    def _save_data(cls, data: dict, file: TextIO) -> None:
-        return json.dump(data, file)
+    def _save_data(cls, data: dict, file: TextIOWrapper) -> None:
+        super()._save_data(data, file)
+        json.dump(data, file)

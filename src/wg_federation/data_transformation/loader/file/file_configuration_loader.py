@@ -1,6 +1,6 @@
 import os
 from abc import ABC
-from typing import TextIO
+from io import TextIOWrapper
 
 from wg_federation.data_transformation.loader.configuration_loader_interface import ConfigurationLoaderInterface
 
@@ -11,11 +11,11 @@ class FileConfigurationLoader(ConfigurationLoaderInterface, ABC):
     """
 
     def load_from(self, source: str) -> dict:
-        with open(file=source, mode='r', encoding='utf-8') as file:
+        with open(file=source, mode='r+', encoding='utf-8') as file:
             return self._load_file(file)
 
     @classmethod
-    def _load_file(cls, file: TextIO) -> dict:
+    def _load_file(cls, file: TextIOWrapper) -> dict:
         """
         Process an open file and returns configuration
         :param file: open file handler

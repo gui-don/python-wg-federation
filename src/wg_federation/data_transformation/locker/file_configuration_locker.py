@@ -23,7 +23,7 @@ class FileConfigurationLocker(ConfigurationLockerInterface):
     def obtain_lock_exclusive(self, location: str) -> _GeneratorContextManager:
         return self._do_lock(
             location,
-            'w+',
+            'a+',
             self._file_locker.LockFlags.NON_BLOCKING | self._file_locker.LockFlags.EXCLUSIVE
         )
 

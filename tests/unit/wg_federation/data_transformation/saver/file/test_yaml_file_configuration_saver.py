@@ -1,6 +1,6 @@
 import builtins
 import os
-from typing import TextIO
+from io import TextIOWrapper
 from unittest.mock import patch
 
 import pytest
@@ -25,10 +25,11 @@ class TestYamlFileConfigurationSaver:
     def setup_method(self):
         """ Constructor """
 
-        self._file = mock(TextIO)
+        self._file = mock({'name': 'test.yaml'}, spec=TextIOWrapper)
         # pylint: disable=unnecessary-dunder-call
         when(self._file).__enter__(...).thenReturn(self._file)
         when(self._file).__exit__(...).thenReturn(None)
+        when(self._file).truncate(0).thenReturn(None)
 
         when(builtins).open(...).thenCallOriginalImplementation()
         when(builtins).open('test.yaml', encoding='UTF-8').thenReturn(self._file)
@@ -63,10 +64,12 @@ class TestYamlFileConfigurationSaver:
         """ it can save configuration to a valid file destination """
         self._subject.save_to({'yaml_data': 1}, self._file)
 
+        verify(self._file, times=1).truncate(0)
         verify(yaml, times=1).safe_dump({'yaml_data': 1}, self._file)
 
     def test_save_to2(self):
         """ it can save configuration to a valid path destination """
         self._subject.save_to({'yaml_data': 1}, 'test.yaml')
 
+        verify(self._file, times=1).truncate(0)
         verify(yaml, times=1).safe_dump({'yaml_data': 1}, self._file)

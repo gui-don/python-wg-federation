@@ -1,5 +1,5 @@
 import json
-from typing import TextIO
+from io import TextIOWrapper
 
 from wg_federation.data_transformation.loader.file.file_configuration_loader import FileConfigurationLoader
 from wg_federation.utils.utils import Utils
@@ -15,5 +15,5 @@ class JsonFileConfigurationLoader(FileConfigurationLoader):
             Utils.has_extension(source, 'json')
 
     @classmethod
-    def _load_file(cls, file: TextIO) -> dict:
+    def _load_file(cls, file: TextIOWrapper) -> dict:
         return Utils.always_dict(json.load(file))
