@@ -8,6 +8,8 @@ from wg_federation.data_transformation.loader.file.signature_file_configuration_
     SignatureFileConfigurationLoader
 
 
+# pylint: disable=duplicate-code
+
 class TestSignatureFileConfigurationLoader:
     """ Test SignatureFileConfigurationLoader class """
 
