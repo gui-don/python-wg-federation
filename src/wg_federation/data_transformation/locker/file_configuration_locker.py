@@ -20,14 +20,14 @@ class FileConfigurationLocker(ConfigurationLockerInterface):
         self._file_locker = file_locker
         self._os_lib = os_lib
 
-    def obtain_lock_exclusive(self, location: str) -> _GeneratorContextManager:
+    def obtain_exclusive_lock(self, location: str) -> _GeneratorContextManager:
         return self._do_lock(
             location,
             'a+',
             self._file_locker.LockFlags.NON_BLOCKING | self._file_locker.LockFlags.EXCLUSIVE
         )
 
-    def obtain_lock_shared(self, location: str) -> _GeneratorContextManager:
+    def obtain_shared_lock(self, location: str) -> _GeneratorContextManager:
         return self._do_lock(
             location,
             'r+',

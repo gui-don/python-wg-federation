@@ -44,42 +44,42 @@ class TestConfigurationLocker:
         assert isinstance(self._subject, ConfigurationLocker)
         assert isinstance(self._subject, CanLockConfigurationInterface)
 
-    def test_lock_exclusive(self):
+    def test_lock_exclusively(self):
         """ it tries to obtain an exclusive lock of a location """
 
-        expect(self._working_configuration_locker2, times=1).obtain_lock_exclusive('location2').thenReturn(True)
-        expect(self._working_configuration_locker, times=0).obtain_lock_exclusive('location2').thenReturn(None)
+        expect(self._working_configuration_locker2, times=1).obtain_exclusive_lock('location2').thenReturn(True)
+        expect(self._working_configuration_locker, times=0).obtain_exclusive_lock('location2').thenReturn(None)
 
-        self._subject.lock_exclusive('location2')
+        self._subject.lock_exclusively('location2')
 
         verifyNoUnwantedInteractions()
         verifyNoMoreInteractions()
 
-    def test_lock_exclusive2(self):
+    def test_lock_exclusively2(self):
         """ it tries to obtain an exclusive lock of a location, given a specific configuration locker """
 
-        expect(self._working_configuration_locker2, times=0).obtain_lock_exclusive('location2').thenReturn(True)
-        expect(self._working_configuration_locker, times=1).obtain_lock_exclusive('location2').thenReturn(None)
+        expect(self._working_configuration_locker2, times=0).obtain_exclusive_lock('location2').thenReturn(True)
+        expect(self._working_configuration_locker, times=1).obtain_exclusive_lock('location2').thenReturn(None)
 
-        self._subject.lock_exclusive('location2', _Dummy)
+        self._subject.lock_exclusively('location2', _Dummy)
 
         verifyNoUnwantedInteractions()
         verifyNoMoreInteractions()
 
-    def test_lock_exclusive3(self):
+    def test_lock_exclusively3(self):
         """ it raises an error if no ConfigurationLocker can lock exclusively the given location """
 
         with pytest.raises(LockUnsupportedError) as error:
-            self._subject.lock_exclusive('unknown')
+            self._subject.lock_exclusively('unknown')
 
         assert 'Failed to lock' in str(error)
         assert 'No default ConfigurationLockInterface class for' in str(error)
 
-    def test_lock_exclusive4(self):
+    def test_lock_exclusively4(self):
         """ it raises an error if the given ConfigurationLock cannot lock exclusively the given location """
 
         with pytest.raises(LockUnsupportedError) as error:
-            self._subject.lock_exclusive('location2', ConfigurationLoader)
+            self._subject.lock_exclusively('location2', ConfigurationLoader)
 
         assert 'Failed to lock' in str(error)
         assert 'does not implement a ConfigurationLockInterface' in str(error)
@@ -87,8 +87,8 @@ class TestConfigurationLocker:
     def test_lock_shared(self):
         """ it tries to obtain a shared lock of a location """
 
-        expect(self._working_configuration_locker2, times=1).obtain_lock_shared('location2').thenReturn(True)
-        expect(self._working_configuration_locker, times=0).obtain_lock_shared('location2').thenReturn(None)
+        expect(self._working_configuration_locker2, times=1).obtain_shared_lock('location2').thenReturn(True)
+        expect(self._working_configuration_locker, times=0).obtain_shared_lock('location2').thenReturn(None)
 
         self._subject.lock_shared('location2')
 
@@ -98,8 +98,8 @@ class TestConfigurationLocker:
     def test_lock_shared2(self):
         """ it tries to obtain a shared lock of a location, given a specific configuration locker """
 
-        expect(self._working_configuration_locker2, times=0).obtain_lock_shared('location2').thenReturn(True)
-        expect(self._working_configuration_locker, times=1).obtain_lock_shared('location2').thenReturn(None)
+        expect(self._working_configuration_locker2, times=0).obtain_shared_lock('location2').thenReturn(True)
+        expect(self._working_configuration_locker, times=1).obtain_shared_lock('location2').thenReturn(None)
 
         self._subject.lock_shared('location2', _Dummy)
 

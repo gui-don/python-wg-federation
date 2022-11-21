@@ -8,7 +8,7 @@ class ConfigurationLockerInterface(ABC):
     """
 
     @abstractmethod
-    def obtain_lock_exclusive(self, location: str) -> ContextManager:
+    def obtain_exclusive_lock(self, location: str) -> ContextManager:
         """
         Obtain the exclusive lock for a location.
         To be used with a python "with".
@@ -21,7 +21,7 @@ class ConfigurationLockerInterface(ABC):
         """
 
     @abstractmethod
-    def obtain_lock_shared(self, location: str) -> ContextManager:
+    def obtain_shared_lock(self, location: str) -> ContextManager:
         """
         Obtain the shared lock for a location.
         To be used with a python "with".

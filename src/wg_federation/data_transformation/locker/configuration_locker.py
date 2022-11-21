@@ -28,15 +28,15 @@ class ConfigurationLocker(CanLockConfigurationInterface):
         self._configuration_lockers = tuple(configuration_lockers)
         self._logger = logger
 
-    def lock_exclusive(self, location: str, configuration_locker: type = None) -> Generator:
+    def lock_exclusively(self, location: str, configuration_locker: type = None) -> Generator:
         def lock(locker: ConfigurationLockerInterface, _location: str):
-            return locker.obtain_lock_exclusive(_location)
+            return locker.obtain_exclusive_lock(_location)
 
         return self._do_lock(lock, location, configuration_locker)
 
     def lock_shared(self, location: str, configuration_locker: type = None) -> Generator:
         def lock(locker: ConfigurationLockerInterface, _location: str):
-            return locker.obtain_lock_shared(_location)
+            return locker.obtain_shared_lock(_location)
 
         return self._do_lock(lock, location, configuration_locker)
 

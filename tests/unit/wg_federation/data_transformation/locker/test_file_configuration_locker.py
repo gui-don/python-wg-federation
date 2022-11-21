@@ -60,27 +60,27 @@ class TestFileConfigurationLocker:
         assert self._subject.is_default_for('default_location')
         assert not self._subject.is_default_for('other_location')
 
-    def test_obtain_lock_shared(self):
+    def test_obtain_shared_lock(self):
         """ it can obtain a shared lock """
 
         expect(self._file_locker).Lock(
             'default_location', 'r+', timeout=5, flags=5
         ).thenReturn(self._lock)
 
-        with self._subject.obtain_lock_shared('default_location') as file:
+        with self._subject.obtain_shared_lock('default_location') as file:
             assert self._file == file
 
         verifyNoUnwantedInteractions()
         verifyNoMoreInteractions()
 
-    def test_obtain_lock_exclusive(self):
+    def test_obtain_exclusive_lock(self):
         """ it can obtain a exclusive lock """
 
         expect(self._file_locker).Lock(
             'default_location', 'w+', timeout=5, flags=6
         ).thenReturn(self._lock)
 
-        with self._subject.obtain_lock_exclusive('default_location') as file:
+        with self._subject.obtain_exclusive_lock('default_location') as file:
             assert self._file == file
 
         verifyNoUnwantedInteractions()

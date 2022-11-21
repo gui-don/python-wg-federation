@@ -8,9 +8,9 @@ class CanLockConfigurationInterface(ABC):
     """
 
     @abstractmethod
-    def lock_exclusive(self, location: str, configuration_locker: type = None) -> Generator:
+    def lock_exclusively(self, location: str, configuration_locker: type = None) -> Generator:
         """
-        Lock a location, with an exclusive lick.
+        Lock a location, with an exclusive lock.
         :param location: Location to be locked.
         :param configuration_locker: ConfigurationLock class to use
         :raise LockUnsupportedError if the location have no default or lock_class is not a ConfigurationLockerInterface
