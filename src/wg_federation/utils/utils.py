@@ -1,6 +1,7 @@
 import re
+from io import TextIOWrapper
 from pathlib import Path
-from typing import Any
+from typing import Any, Union
 
 
 class Utils:
@@ -31,11 +32,14 @@ class Utils:
         return instance
 
     @staticmethod
-    def has_extension(path: str, extension: str) -> bool:
+    def has_extension(path_or_file: Union[str, TextIOWrapper], extension: str) -> bool:
         """
         Check that a path has a given extension.
         :param path: path to check
         :param extension: extension to check against the path. Can be a regular expression.
         :return: True if the path has extension, False otherwise
         """
-        return bool(re.match(fr'^\.{extension}$', Path(path).suffix, re.IGNORECASE))
+        if isinstance(path_or_file, TextIOWrapper):
+            path_or_file = path_or_file.name
+
+        return bool(re.match(fr'^\.{extension}$', Path(path_or_file).suffix, re.IGNORECASE))

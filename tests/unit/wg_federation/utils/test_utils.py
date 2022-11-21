@@ -1,3 +1,7 @@
+from io import TextIOWrapper
+
+from mockito import mock
+
 from wg_federation.utils.utils import Utils
 
 
@@ -27,3 +31,10 @@ class TestUtils:
         assert not Utils.has_extension('/home/test/test.yml', '(txt|text|rtf)')
         assert not Utils.has_extension('/home/test/test.doc', 'docx')
         assert not Utils.has_extension('/home/test/yaml', 'yaml')
+
+    def test_has_extension2(self):
+        """ it tests whether a file handler have a given extension """
+        _file = mock({'name': '/var/test.json'}, spec=TextIOWrapper)
+
+        assert Utils.has_extension(_file, 'json')
+        assert not Utils.has_extension(_file, 'yaml')
