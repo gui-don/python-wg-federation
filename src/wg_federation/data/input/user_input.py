@@ -1,5 +1,6 @@
 from pydantic import BaseModel, SecretStr
 
+from wg_federation.data.input.configuration_backend import ConfigurationBackend
 from wg_federation.data.input.log_level import LogLevel
 
 
@@ -12,6 +13,8 @@ class UserInput(BaseModel):
     quiet: bool = None
     log_level: LogLevel = None
     root_passphrase: SecretStr = None
+    state_backend: ConfigurationBackend = None
+    state_digest_backend: ConfigurationBackend = None
 
     arg0: str = None
     arg1: str = None

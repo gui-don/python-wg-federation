@@ -1,9 +1,11 @@
+import argparse
 import logging
 import os
 import pathlib
 from argparse import ArgumentParser
 
 import portalocker
+import xdg
 from Cryptodome.Cipher import AES
 from Cryptodome.Hash import Poly1305
 from dependency_injector import containers, providers
@@ -15,6 +17,7 @@ from wg_federation.controller.controller_dispatcher import ControllerDispatcher
 from wg_federation.crypto.cryptographic_key_deriver import CryptographicKeyDeriver
 from wg_federation.crypto.message_encrypter import MessageEncrypter
 from wg_federation.crypto.message_signer import MessageSigner
+from wg_federation.data_transformation.configuration_location_finder import ConfigurationLocationFinder
 from wg_federation.data_transformation.loader.configuration_loader import ConfigurationLoader
 from wg_federation.data_transformation.loader.file.json_file_configuration_loader import JsonFileConfigurationLoader
 from wg_federation.data_transformation.loader.file.signature_file_configuration_reader import \
@@ -91,6 +94,14 @@ class Container(containers.DynamicContainer):
         )
 
         # data transformation
+        self.configuration_location_finder = providers.Singleton(
+            ConfigurationLocationFinder,
+            user_input=self.user_input,
+            xdg_lib=xdg,
+            pathlib_lib=pathlib,
+            application_name=argparse.ArgumentParser().prog,
+        )
+
         self.configuration_loader = providers.Singleton(
             ConfigurationLoader,
             configuration_loaders=providers.List(
