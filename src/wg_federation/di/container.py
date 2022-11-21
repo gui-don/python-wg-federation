@@ -24,6 +24,8 @@ from wg_federation.data_transformation.locker.configuration_locker import Config
 from wg_federation.data_transformation.locker.file_configuration_locker import FileConfigurationLocker
 from wg_federation.data_transformation.saver.configuration_saver import ConfigurationSaver
 from wg_federation.data_transformation.saver.file.json_file_configuration_saver import JsonFileConfigurationSaver
+from wg_federation.data_transformation.saver.file.signature_file_configuration_saver import \
+    SignatureFileConfigurationSaver
 from wg_federation.data_transformation.saver.file.yaml_file_configuration_saver import YamlFileConfigurationSaver
 from wg_federation.data_transformation.saver.proxy.encrypt_configuration_saver_proxy import \
     EncryptConfigurationSaverProxy
@@ -115,6 +117,7 @@ class Container(containers.DynamicContainer):
             configuration_savers=providers.List(
                 providers.Singleton(YamlFileConfigurationSaver, pathlib_lib=pathlib),
                 providers.Singleton(JsonFileConfigurationSaver, pathlib_lib=pathlib),
+                providers.Singleton(SignatureFileConfigurationSaver, pathlib_lib=pathlib, os_lib=os),
             ),
             logger=self.root_logger
         )
