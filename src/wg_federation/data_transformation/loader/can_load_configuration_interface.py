@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
 
 class CanLoadConfigurationInterface(ABC):
@@ -7,7 +8,7 @@ class CanLoadConfigurationInterface(ABC):
     """
 
     @abstractmethod
-    def load_if_exists(self, source: str, configuration_loader: type = None) -> dict:
+    def load_if_exists(self, source: Any, configuration_loader: type = None) -> dict:
         """
         Load a configuration source of source_kind, ignoring whether the source can be processed
         :raise InvalidDataError When source was loaded but contains invalid data
@@ -17,7 +18,7 @@ class CanLoadConfigurationInterface(ABC):
         """
 
     @abstractmethod
-    def load(self, source: str, configuration_loader: type = None) -> dict:
+    def load(self, source: Any, configuration_loader: type = None) -> dict:
         """
         Load a configuration source of source_kind.
         :raise SourceUnsupportedError When source is not supported because no ConfigurationLoader can handle it.
@@ -28,7 +29,7 @@ class CanLoadConfigurationInterface(ABC):
         """
 
     @abstractmethod
-    def load_all_if_exists(self, sources: tuple[str, ...]) -> dict:
+    def load_all_if_exists(self, sources: tuple[Any, ...]) -> dict:
         """
         Load multiple sources and unify them into a single configuration with a deep merge.
         Ignore sources that are not supported
@@ -38,7 +39,7 @@ class CanLoadConfigurationInterface(ABC):
         """
 
     @abstractmethod
-    def load_all(self, sources: tuple[str, ...]) -> dict:
+    def load_all(self, sources: tuple[Any, ...]) -> dict:
         """
         Load multiple sources and unify them into a single configuration with a deep merge.
         :raise SourceUnsupportedError When a source is not supported because no ConfigurationLoader can handle it.

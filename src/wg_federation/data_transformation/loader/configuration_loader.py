@@ -1,5 +1,6 @@
 import functools
 import logging
+from typing import Any
 
 from deepmerge import always_merger
 
@@ -29,13 +30,13 @@ class ConfigurationLoader(CanLoadConfigurationInterface):
         self._configuration_loaders = tuple(configuration_loaders)
         self._logger = logger
 
-    def load_if_exists(self, source: str, configuration_loader: type = None) -> dict:
+    def load_if_exists(self, source: Any, configuration_loader: type = None) -> dict:
         try:
             return self.load(source, configuration_loader)
         except SourceUnsupportedError:
             return {}
 
-    def load(self, source: str, configuration_loader: type = None) -> dict:
+    def load(self, source: Any, configuration_loader: type = None) -> dict:
         if configuration_loader:
             return self.__do_load_from(self._fetch(configuration_loader), source)
 
@@ -48,10 +49,10 @@ class ConfigurationLoader(CanLoadConfigurationInterface):
             f'It seems no ConfigurationLoader supports this type of source.'
         )
 
-    def load_all_if_exists(self, sources: tuple[str, ...]) -> dict:
+    def load_all_if_exists(self, sources: tuple[Any, ...]) -> dict:
         return functools.reduce(self.__merge_configuration_if_exists, sources, {})
 
-    def load_all(self, sources: tuple[str, ...]) -> dict:
+    def load_all(self, sources: tuple[Any, ...]) -> dict:
         return functools.reduce(self.__merge_configuration, sources, {})
 
     def _fetch(self, configuration_loader: type = None) -> ConfigurationLoaderInterface:
@@ -64,15 +65,15 @@ class ConfigurationLoader(CanLoadConfigurationInterface):
             f'Either this type does not implement ConfigurationLoaderInterface or it was not registered.'
         )
 
-    def __do_load_from(self, configuration_loader: ConfigurationLoaderInterface, source: str) -> dict:
+    def __do_load_from(self, configuration_loader: ConfigurationLoaderInterface, source: Any) -> dict:
         self._logger.debug(
             f'{Utils.classname(configuration_loader)} '
             f'configuration loader supports {source}.'
         )
         return dict(configuration_loader.load_from(source))
 
-    def __merge_configuration(self, previous_configuration: dict, next_source: str) -> dict:
+    def __merge_configuration(self, previous_configuration: dict, next_source: Any) -> dict:
         return dict(always_merger.merge(previous_configuration, self.load(next_source)))
 
-    def __merge_configuration_if_exists(self, previous_configuration: dict, next_source: str) -> dict:
+    def __merge_configuration_if_exists(self, previous_configuration: dict, next_source: Any) -> dict:
         return dict(always_merger.merge(previous_configuration, self.load_if_exists(next_source)))

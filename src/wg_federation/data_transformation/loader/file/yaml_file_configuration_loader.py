@@ -1,4 +1,5 @@
-from typing import TextIO
+from io import TextIOWrapper
+from typing import Any
 
 import yaml
 
@@ -11,10 +12,10 @@ class YamlFileConfigurationLoader(FileConfigurationLoader):
     Read any configuration from YAML files
     """
 
-    def supports(self, source: str) -> bool:
+    def supports(self, source: Any) -> bool:
         return super().supports(source) and \
             Utils.has_extension(source, r'(yaml|yml)')
 
-    @classmethod
-    def _load_file(cls, file: TextIO) -> dict:
+    def _load_file(self, file: TextIOWrapper) -> dict:
+        super()._load_file(file)
         return Utils.always_dict(yaml.safe_load(file))
