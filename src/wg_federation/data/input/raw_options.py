@@ -5,6 +5,7 @@ from pydantic import SecretStr
 from wg_federation.data.input.command_line.argparse_action import ArgparseAction
 from wg_federation.data.input.command_line.command_line_argument import CommandLineArgument
 from wg_federation.data.input.command_line.command_line_option import CommandLineOption
+from wg_federation.data.input.configuration_backend import ConfigurationBackend
 from wg_federation.data.input.log_level import LogLevel
 
 
@@ -29,9 +30,9 @@ class RawOptions:
             argument_alias='--log-level',
             argument_short='-l',
             default='INFO',
-            description=f'Maximum kind of messages to log. Can be “{"”, “".join([e.name for e in LogLevel])}”.',
+            description=f'Maximum kind of messages to log. Can be “{"”, “".join([e.value for e in LogLevel])}”.',
             name='log_level',
-            type=int,
+            type=str,
         ),
 
         'verbose': CommandLineOption(
@@ -62,6 +63,29 @@ class RawOptions:
             description='Root passphrase used to encrypt and decrypt all secrets managed by this program.',
             name='root_passphrase',
             type=SecretStr,
+        ),
+
+        'state_backend': CommandLineOption(
+            argparse_action=ArgparseAction.STORE,
+            argument_alias='--state-backend',
+            argument_short='--sb',
+            default=ConfigurationBackend.FILE,
+            description=f'What backend to use for the state. '
+                        f'Can be “{"”, “".join([e.value for e in ConfigurationBackend])}”.',
+            name='state_backend',
+            type=str,
+        ),
+
+        'state_digest_backend': CommandLineOption(
+            argparse_action=ArgparseAction.STORE,
+            argument_alias='--state-digest-backend',
+            argument_short='--sdb',
+            default=ConfigurationBackend.FILE,
+            description=f'What backend to use for the digest state. '
+                        f'If “DEFAULT” is used, digest will be merged with state_backend.'
+                        f'Can be “{"”, “".join([e.value for e in ConfigurationBackend])}”.',
+            name='state_digest_backend',
+            type=str,
         ),
     }
 
