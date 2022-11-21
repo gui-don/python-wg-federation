@@ -1,5 +1,6 @@
 import logging
 import os
+import pathlib
 from argparse import ArgumentParser
 
 import portalocker
@@ -16,6 +17,8 @@ from wg_federation.crypto.message_encrypter import MessageEncrypter
 from wg_federation.crypto.message_signer import MessageSigner
 from wg_federation.data_transformation.loader.configuration_loader import ConfigurationLoader
 from wg_federation.data_transformation.loader.file.json_file_configuration_loader import JsonFileConfigurationLoader
+from wg_federation.data_transformation.loader.file.signature_file_configuration_reader import \
+    SignatureFileConfigurationLoader
 from wg_federation.data_transformation.loader.file.yaml_file_configuration_loader import YamlFileConfigurationLoader
 from wg_federation.data_transformation.locker.configuration_locker import ConfigurationLocker
 from wg_federation.data_transformation.locker.file_configuration_locker import FileConfigurationLocker
@@ -89,8 +92,9 @@ class Container(containers.DynamicContainer):
         self.configuration_loader = providers.Singleton(
             ConfigurationLoader,
             configuration_loaders=providers.List(
-                providers.Singleton(YamlFileConfigurationLoader),
-                providers.Singleton(JsonFileConfigurationLoader),
+                providers.Singleton(YamlFileConfigurationLoader, pathlib_lib=pathlib),
+                providers.Singleton(JsonFileConfigurationLoader, pathlib_lib=pathlib),
+                providers.Singleton(SignatureFileConfigurationLoader, pathlib_lib=pathlib),
             ),
             logger=self.root_logger
         )
@@ -109,8 +113,8 @@ class Container(containers.DynamicContainer):
         self.configuration_saver = providers.Singleton(
             ConfigurationSaver,
             configuration_savers=providers.List(
-                providers.Singleton(YamlFileConfigurationSaver),
-                providers.Singleton(JsonFileConfigurationSaver),
+                providers.Singleton(YamlFileConfigurationSaver, pathlib_lib=pathlib),
+                providers.Singleton(JsonFileConfigurationSaver, pathlib_lib=pathlib),
             ),
             logger=self.root_logger
         )

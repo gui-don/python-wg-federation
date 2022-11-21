@@ -60,6 +60,13 @@ class ConfigurationSaver(CanSaveConfigurationInterface):
         )
 
     def __do_save_to(self, data: dict, destination: Any, configuration_saver: ConfigurationSaverInterface) -> None:
+        if not configuration_saver.is_initialized(data, destination):
+            self._logger.debug(
+                f'{Utils.classname(configuration_saver)} '
+                f'configuration saver initializing {str(destination)}.'
+            )
+            configuration_saver.initialize(data, destination)
+
         self._logger.debug(
             f'{Utils.classname(configuration_saver)} '
             f'configuration saver used for {str(destination)}.'

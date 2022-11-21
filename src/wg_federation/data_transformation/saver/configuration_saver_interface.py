@@ -24,3 +24,21 @@ class ConfigurationSaverInterface(ABC):
         :param destination: destination for the data to save. Can be a string or an open handler to the destination.
         :return: True if the configuration saver supports the destination, false otherwise.
         """
+
+    @abstractmethod
+    def is_initialized(self, data: dict, destination: Any) -> bool:
+        """
+        Whether data and destination are properly initialized
+        :param data: data to save
+        :param destination: destination for the data to save. Can be a string or an open handler to the destination.
+        :return: True if the configuration location is initialized, False otherwise
+        """
+
+    @abstractmethod
+    def initialize(self, data: dict, destination: Any) -> None:
+        """
+        Initialize the destination the first time it is accessed
+        :param data: data to save
+        :param destination: destination for the data to save. Can be a string or an open handler to the destination.
+        :return:
+        """

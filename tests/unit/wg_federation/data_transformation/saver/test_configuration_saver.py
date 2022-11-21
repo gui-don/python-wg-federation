@@ -35,11 +35,14 @@ class TestConfigurationSaver:
         when(self._configuration_saver_yaml).supports(...).thenReturn(False)
         when(self._configuration_saver_yaml).supports(ANY, 'yaml').thenReturn(True)
         when(self._configuration_saver_yaml).save_to(...)
+        when(self._configuration_saver_yaml).is_initialized(...).thenReturn(True)
 
         self._configuration_saver_json = mock(JsonFileConfigurationSaver)
         when(self._configuration_saver_json).supports(...).thenReturn(False)
         when(self._configuration_saver_json).supports(ANY, 'json').thenReturn(True)
         when(self._configuration_saver_json).save_to(...)
+        when(self._configuration_saver_json).is_initialized(...).thenReturn(False)
+        when(self._configuration_saver_json).initialize(...)
 
         self._subject = ConfigurationSaver(
             configuration_savers=(
@@ -90,6 +93,17 @@ class TestConfigurationSaver:
             self._subject.save({'data': 1}, 'unknown')
 
         assert 'It seems no ConfigurationSaver supports this type of data' in str(error)
+
+    def test_save5(self):
+        """ it can save a configuration without an explicit ConfigurationSaver """
+        self._subject.save({'data': 2}, 'json')
+        self._subject.save_try({'try': 2}, 'json')
+
+        verify(self._configuration_saver_json, times=1).save_to({'data': 2}, 'json')
+        verify(self._configuration_saver_json, times=1).save_to({'try': 2}, 'json')
+        verify(self._configuration_saver_json, times=1).initialize({'data': 2}, 'json')
+        verify(self._configuration_saver_json, times=1).initialize({'try': 2}, 'json')
+        verifyNoMoreInteractions()
 
     def test_save_try2(self):
         """ it does not raise any error even if the destination is not supported by any ConfigurationSaver """
