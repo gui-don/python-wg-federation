@@ -1,2 +1,2 @@
 class InvalidDataError(RuntimeError):
-    """ When a configuration data is invalid """
+    """ A configuration data is invalid """
