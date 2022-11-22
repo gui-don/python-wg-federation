@@ -23,6 +23,10 @@ from wg_federation.data_transformation.loader.file.json_file_configuration_loade
 from wg_federation.data_transformation.loader.file.signature_file_configuration_reader import \
     SignatureFileConfigurationLoader
 from wg_federation.data_transformation.loader.file.yaml_file_configuration_loader import YamlFileConfigurationLoader
+from wg_federation.data_transformation.loader.proxy.decrypt_configuration_loader_proxy import \
+    DecryptConfigurationLoaderProxy
+from wg_federation.data_transformation.loader.proxy.verify_signature_configuration_loader_proxy import \
+    VerifySignatureConfigurationLoaderProxy
 from wg_federation.data_transformation.locker.configuration_locker import ConfigurationLocker
 from wg_federation.data_transformation.locker.file_configuration_locker import FileConfigurationLocker
 from wg_federation.data_transformation.saver.configuration_saver import ConfigurationSaver
@@ -122,6 +126,14 @@ class Container(containers.DynamicContainer):
                 ),
             ),
             logger=self.root_logger
+        )
+        self.verify_signature_configuration_loader_proxy_factory = providers.Factory(
+            VerifySignatureConfigurationLoaderProxy,
+            message_signer=self.message_signer
+        )
+        self.decrypt_configuration_loader_proxy_factory = providers.Factory(
+            DecryptConfigurationLoaderProxy,
+            message_encrypter=self.message_encrypter
         )
 
         self.configuration_saver = providers.Singleton(
