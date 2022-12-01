@@ -1,7 +1,8 @@
 import re
+from collections.abc import MutableMapping, MutableSet, MutableSequence, Sequence
 from io import TextIOWrapper
 from pathlib import Path
-from typing import Any, Union
+from typing import Any, Union, Callable
 
 
 class Utils:
@@ -43,3 +44,20 @@ class Utils:
             path_or_file = path_or_file.name
 
         return bool(re.match(fr'^\.{extension}$', Path(path_or_file).suffix, re.IGNORECASE))
+
+    @staticmethod
+    def recursive_map(callback: Callable[[Any], Any], data_ref) -> Sequence:
+        """
+        Apply a callback function on all the element of data_ref
+        Careful, this function mutates data_ref in memory.
+        :param callback: Function that transforms its only argument
+        :param data_ref: Iterable to be processed
+        :return: The modified data_ref
+        """
+        for key in data_ref.keys() if isinstance(data_ref, MutableMapping) else range(len(data_ref)):
+            data_ref[key] = callback(data_ref[key])
+
+            if isinstance(data_ref[key], (MutableMapping, MutableSet, MutableSequence)):
+                Utils.recursive_map(callback, data_ref[key])
+
+        return data_ref

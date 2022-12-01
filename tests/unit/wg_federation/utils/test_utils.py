@@ -38,3 +38,21 @@ class TestUtils:
 
         assert Utils.has_extension(_file, 'json')
         assert not Utils.has_extension(_file, 'yaml')
+
+    def test_recursive_map(self):
+        """ it performs a function on each element of a multidimentional iterable """
+
+        assert ['content1', 'other1'] == Utils.recursive_map(
+            lambda x: str(x) + '1',
+            ['content', 'other']
+        )
+
+        def test(value):
+            if isinstance(value, str):
+                return str(value) + '2'
+            return value
+
+        assert {'content': {'ok': 'value2'}, '2': ['second2']} == Utils.recursive_map(
+            test,
+            {'content': {'ok': 'value'}, '2': ['second']}
+        )
