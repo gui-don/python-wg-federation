@@ -122,7 +122,7 @@ class Container(containers.DynamicContainer):
                 providers.Singleton(
                     FileConfigurationLocker,
                     file_locker=portalocker,
-                    os_lib=os,
+                    path_lib=pathlib,
                 ),
             ),
             logger=self.root_logger

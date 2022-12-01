@@ -5,16 +5,21 @@ from portalocker import LockFlags
 from wg_federation.data_transformation.locker.configuration_locker_interface import ConfigurationLockerInterface
 from wg_federation.data_transformation.locker.file_configuration_locker import FileConfigurationLocker
 
+# irrelevant in a test class
+# pylint: disable=too-many-instance-attributes
+
 
 class TestFileConfigurationLocker:
     """ Test FileConfigurationLocker class """
 
     _file = None
-    _path_mock = None
     _lock = None
-
     _file_locker = None
-    _os_lib = None
+    _parent_path = None
+    _parent_path_not_exist = None
+    _path_mock = None
+    _path_mock_not_exist = None
+    _path_lib = None
 
     _subject: FileConfigurationLocker = None
 
@@ -29,23 +34,31 @@ class TestFileConfigurationLocker:
 
         self._file = mock()
         self._lock = mock()
-        self._path_mock = mock()
 
         # pylint: disable=unnecessary-dunder-call
         when(self._lock).__enter__(...).thenReturn(self._file)
         when(self._lock).__exit__(...).thenReturn(self._file)
 
         self._file_locker = mock({'LockFlags': LockFlags})
-        self._os_lib = mock({'path': self._path_mock})
+
+        self._parent_path = mock()
+        when(self._parent_path).is_dir().thenReturn(True)
+
+        self._parent_path_not_exist = mock()
+        when(self._parent_path_not_exist).is_dir().thenReturn(False)
+
+        self._path_mock = mock({'parent': self._parent_path})
+        self._path_mock_not_exist = mock({'parent': self._parent_path_not_exist})
+
+        self._path_lib = mock()
+        when(self._path_lib).Path(...).thenReturn(self._path_mock_not_exist)
+        when(self._path_lib).Path('default_location').thenReturn(self._path_mock)
 
         when(self._file_locker).Lock(...).thenReturn(self._lock)
 
-        when(self._path_mock).isfile(...).thenReturn(False)
-        when(self._path_mock).isfile('default_location').thenReturn(True)
-
         self._subject = FileConfigurationLocker(
             file_locker=self._file_locker,
-            os_lib=self._os_lib
+            path_lib=self._path_lib
         )
 
     def test_init(self):
