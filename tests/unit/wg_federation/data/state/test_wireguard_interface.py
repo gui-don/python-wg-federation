@@ -13,8 +13,9 @@ class TestWireguardInterface:
         """ Constructor """
         self._subject = WireguardInterface(
             name='a_name',
-            private_key='L9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
-            public_key='L9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4YRE=',
+            private_key='9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
+            public_key='1OAiqIBY7Xx7OxjWVBXzPFKDfLNY1SOnTYyBJDaAaxs=',
+            psk='xoSmoykbONQY6XfMYMHpcp/ta3x+FPCUOc4/SQfEQ1E=',
             listen_port=35233,
             mtu=68,
             dns=('1.1.1.1',),
@@ -28,19 +29,22 @@ class TestWireguardInterface:
     def test_data(self):
         """ it returns its data """
         assert 'a_name' == self._subject.name
-        assert 'L9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4YRE=' == self._subject.public_key
-        assert not 'L9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4YRE=' == self._subject.private_key
+        assert '1OAiqIBY7Xx7OxjWVBXzPFKDfLNY1SOnTYyBJDaAaxs=' == self._subject.public_key
+        assert 'xoSmoykbONQY6XfMYMHpcp/ta3x+FPCUOc4/SQfEQ1E=' == self._subject.psk.get_secret_value()
+        assert not '9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4YRE=' == self._subject.private_key
         assert 35233 == self._subject.listen_port
         assert 68 == self._subject.mtu
         assert '1.1.1.1' == str(self._subject.dns[0])
         assert '10.10.100.1/24' == str(self._subject.addresses[0])
+        assert 'NEW' == self._subject.status
 
     def test_addresses(self):
         """ it raises one of the addresses is not a valid address """
         with pytest.raises(ValueError):
             WireguardInterface(
-                private_key='L9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
-                public_key='L9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4YRE=',
+                public_key='1OAiqIBY7Xx7OxjWVBXzPFKDfLNY1SOnTYyBJDaAaxs=',
+                private_key='9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
+                psk='v3513CYaiFXqcPoqRgj28GT4tCTcnSO/ywUQM/e1104=',
                 addresses=('fails',),
             )
 
@@ -48,8 +52,8 @@ class TestWireguardInterface:
         """ it raises one of the DNS is not a valid IP """
         with pytest.raises(ValueError):
             WireguardInterface(
-                private_key='L9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
-                public_key='L9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4YRE=',
+                private_key='9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
+                public_key='1OAiqIBY7Xx7OxjWVBXzPFKDfLNY1SOnTYyBJDaAaxs=',
                 dns=('1.1.1.1', 'not_ip',),
             )
 
@@ -57,8 +61,8 @@ class TestWireguardInterface:
         """ it raises an error if listen port is higher than 65535 """
         with pytest.raises(ValueError):
             WireguardInterface(
-                private_key='L9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
-                public_key='L9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4YRE=',
+                public_key='1OAiqIBY7Xx7OxjWVBXzPFKDfLNY1SOnTYyBJDaAaxs=',
+                private_key='9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
                 listen_port=75000,
             )
 
@@ -66,8 +70,8 @@ class TestWireguardInterface:
         """ it raises an error if MTU is less than 68 """
         with pytest.raises(ValueError):
             WireguardInterface(
-                private_key='L9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
-                public_key='L9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4YRE=',
+                private_key='9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
+                public_key='1OAiqIBY7Xx7OxjWVBXzPFKDfLNY1SOnTYyBJDaAaxs=',
                 mtu=50,
             )
 
@@ -75,8 +79,8 @@ class TestWireguardInterface:
         """ it raises an error if MTU is more than 65535 """
         with pytest.raises(ValueError):
             WireguardInterface(
-                private_key='L9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
-                public_key='L9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4YRE=',
+                private_key='9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
+                public_key='1OAiqIBY7Xx7OxjWVBXzPFKDfLNY1SOnTYyBJDaAaxs=',
                 mtu=70535,
             )
 
@@ -90,8 +94,8 @@ class TestWireguardInterface:
         ]:
             with pytest.raises(ValueError):
                 WireguardInterface(
-                    private_key='L9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
-                    public_key='L9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4YRE=',
+                    private_key='9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
+                    public_key='1OAiqIBY7Xx7OxjWVBXzPFKDfLNY1SOnTYyBJDaAaxs=',
                     name=wrong_name,
                 )
 
@@ -104,9 +108,17 @@ class TestWireguardInterface:
         ]:
             with pytest.raises(ValueError):
                 WireguardInterface(
-                    private_key='L9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
+                    private_key='9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
                     public_key=wrong_key,
                 )
+
+        with pytest.raises(ValueError) as error:
+            WireguardInterface(
+                private_key='Oh4sAyz3cjJtAAa8thXqZIuLJiy4NFVHSpOfrOM9kn4=',
+                public_key='1OAiqIBY7Xx7OxjWVBXzPFKDfLNY1SOnTYyBJDaAaxs=',
+                psk='Oh4sAyz3cjJtAAa8thXqZIuLJiy4NFVHSpOfrOM9kn4=',
+            )
+        assert 'private key, public key and psk must be different from each others' in str(error)
 
     def test_check_private_key(self):
         """ it raises an error when the public key is not valid """
@@ -118,7 +130,7 @@ class TestWireguardInterface:
             with pytest.raises(ValueError):
                 WireguardInterface(
                     private_key=wrong_key,
-                    public_key='L9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
+                    public_key='9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
                 )
 
     def test_check_psk(self):
@@ -132,6 +144,6 @@ class TestWireguardInterface:
             with pytest.raises(ValueError):
                 WireguardInterface(
                     psk=wrong_psk,
-                    private_key='L9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
-                    public_key='L9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
+                    private_key='9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
+                    public_key='1OAiqIBY7Xx7OxjWVBXzPFKDfLNY1SOnTYyBJDaAaxs=',
                 )
