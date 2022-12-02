@@ -1,5 +1,6 @@
 from pydantic import BaseModel, constr, conint, validator
 
+
 # mypy: ignore-errors
 # https://github.com/pydantic/pydantic/issues/156
 
@@ -31,6 +32,7 @@ class Federation(BaseModel, frozen=True):
             cls.__check_port_range('phone line', values.get('phone_line_max_port'), value)
 
         return value
+
     # pylint: disable=(no-self-argument
 
     @validator('forum_min_port')
@@ -61,13 +63,6 @@ class Federation(BaseModel, frozen=True):
         :return: True if port is within range, false otherwise
         """
         return self.forum_max_port >= port >= self.forum_min_port
-
-    def to_yaml_ready_dict(self) -> dict:
-        """
-        Return a dict version of this object, ready to be serialized in a configuration file
-        :return:
-        """
-        return self.dict()
 
     @classmethod
     def __check_port_range(cls, field: str, max_port: int, min_port: int) -> None:

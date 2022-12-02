@@ -3,8 +3,8 @@ import pytest
 from wg_federation.data.state.federation import Federation
 
 
-class TestFederationConfig:
-    """ Test FederationConfig class """
+class TestFederation:
+    """ Test Federation class """
 
     _subject: Federation = None
 
@@ -29,10 +29,6 @@ class TestFederationConfig:
         assert 5400 == self._subject.forum_min_port
         assert 5600 == self._subject.phone_line_max_port
         assert 5501 == self._subject.phone_line_min_port
-
-    def test_to_yaml_ready_dict(self):
-        """ it exposes itself as a dict ready to be converted to YAML """
-        assert 'a_name' == self._subject.to_yaml_ready_dict().get('name')
 
     def test_port_within_forum_range(self):
         """ it returns whether or not a given port is part of the forum ports range """
