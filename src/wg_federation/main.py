@@ -21,9 +21,11 @@ class Main:
     def main(self) -> int:
         """ main """
         input_manager: InputManager = self._container.input_manager()
+        user_input = input_manager.parse_all()
+        self._container.user_input.override(user_input)
+
         controller_dispatcher: ControllerDispatcher = self._container.controller_dispatcher()
 
-        user_input = input_manager.parse_all()
         controller_dispatcher.dispatch_all(user_input)
 
         return 0
