@@ -2,6 +2,9 @@ import re
 
 from pydantic import BaseModel, IPvAnyAddress, conint, constr, IPvAnyInterface, SecretStr, validator
 
+from wg_federation.data.state.interface_status import InterfaceStatus
+
+
 # mypy: ignore-errors
 # https://github.com/pydantic/pydantic/issues/156
 
@@ -19,30 +22,37 @@ class WireguardInterface(BaseModel, frozen=True):
     listen_port: conint(le=65535) = 35200
     mtu: conint(ge=68, le=65535) = None
     name: constr(regex=_REGEXP_WIREGUARD_INTERFACE_NAME) = 'wg-federation0'
+    status: InterfaceStatus = InterfaceStatus.NEW
 
     private_key: SecretStr
+    psk: SecretStr = None
     public_key: constr(regex=_REGEXP_WIREGUARD_KEY)
-    # pylint: disable=(no-self-argument
 
+    # pylint: disable=no-self-argument
     @validator('private_key')
-    def check_forum_min_port(cls, value: SecretStr, values: dict) -> SecretStr:
+    def check_private_key(cls, value: SecretStr, values: dict) -> SecretStr:
         """
         Validate private_key
         :param value: private_key value
         :param values: rest of the current object’s attributes
         :return:
         """
-        if not re.match(cls._REGEXP_WIREGUARD_KEY, value.get_secret_value()):
-            raise ValueError(f'The interface {values.get("name")} was provided an invalid private key.')
+        return cls._check_wireguard_key(value, values, 'private_key')
 
-        return value
-
-    def to_yaml_ready_dict(self) -> dict:
+    # pylint: disable=no-self-argument
+    @validator('psk')
+    def check_psk(cls, value: SecretStr, values: dict) -> SecretStr:
         """
-        Return a dict version of this object, ready to be serialized in a configuration file
+        Validate psk
+        :param value: psk value
+        :param values: rest of the current object’s attributes
         :return:
         """
-        return dict(self.copy(exclude={'server_private_key'}, update={
-            'addresses': [str(address) for address in self.addresses],
-            'dns': [str(dns) for dns in self.dns]
-        }))
+        return cls._check_wireguard_key(value, values, 'psk')
+
+    @classmethod
+    def _check_wireguard_key(cls, value: SecretStr, values: dict, kind: str) -> SecretStr:
+        if not re.match(cls._REGEXP_WIREGUARD_KEY, value.get_secret_value()):
+            raise ValueError(f'The interface {values.get("name")} was provided an invalid {kind}.')
+
+        return value

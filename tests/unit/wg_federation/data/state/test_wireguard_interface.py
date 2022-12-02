@@ -1,10 +1,11 @@
 import pytest
+from pydantic import SecretStr
 
 from wg_federation.data.state.wireguard_interface import WireguardInterface
 
 
-class TestWireguardInterfaceConfig:
-    """ Test WireguardInterfaceConfig class """
+class TestWireguardInterface:
+    """ Test WireguardInterface class """
 
     _subject: WireguardInterface = None
 
@@ -33,10 +34,6 @@ class TestWireguardInterfaceConfig:
         assert 68 == self._subject.mtu
         assert '1.1.1.1' == str(self._subject.dns[0])
         assert '10.10.100.1/24' == str(self._subject.addresses[0])
-
-    def test_to_yaml_ready_dict(self):
-        """ it exposes itself as a dict ready to be converted to YAML """
-        assert '10.10.100.1/24' == self._subject.to_yaml_ready_dict().get('addresses')[0]
 
     def test_addresses(self):
         """ it raises one of the addresses is not a valid address """
@@ -121,5 +118,20 @@ class TestWireguardInterfaceConfig:
             with pytest.raises(ValueError):
                 WireguardInterface(
                     private_key=wrong_key,
+                    public_key='L9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
+                )
+
+    def test_check_psk(self):
+        """ it raises an error when the public key is not valid """
+        for wrong_psk in [
+            'nota_valid_psk',
+            SecretStr('test'),
+            '*invalid_key',
+            'L9kYW/Kej96/L4A???????e2lK5X46gJMfrplRAY4WbK0w4iYRE=',
+        ]:
+            with pytest.raises(ValueError):
+                WireguardInterface(
+                    psk=wrong_psk,
+                    private_key='L9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
                     public_key='L9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
                 )
