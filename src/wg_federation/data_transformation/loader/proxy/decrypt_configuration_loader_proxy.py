@@ -1,8 +1,10 @@
+from collections.abc import MutableMapping
 from typing import Any
 
 from wg_federation.crypto.data.encrypted_message import EncryptedMessage
 from wg_federation.crypto.message_encrypter import MessageEncrypter
 from wg_federation.data_transformation.loader.can_load_configuration_interface import CanLoadConfigurationInterface
+from wg_federation.utils.utils import Utils
 
 
 class DecryptConfigurationLoaderProxy(CanLoadConfigurationInterface):
@@ -23,36 +25,42 @@ class DecryptConfigurationLoaderProxy(CanLoadConfigurationInterface):
         self._message_encrypter = message_encrypter
 
     def load_if_exists(self, source: str, configuration_loader: type = None) -> dict:
-        return self._decrypt_data(
+        return dict(Utils.recursive_map(
+            self._find_and_decrypt_secrets,
             self._configuration_loader.load_if_exists(source, configuration_loader)
-        )
+        ))
 
     def load(self, source: str, configuration_loader: type = None) -> dict:
-        return self._decrypt_data(
+        return dict(Utils.recursive_map(
+            self._find_and_decrypt_secrets,
             self._configuration_loader.load(source, configuration_loader)
-        )
+        ))
 
     def load_all_if_exists(self, sources: tuple[str, ...]) -> dict:
-        return self._decrypt_data(
+        return dict(Utils.recursive_map(
+            self._find_and_decrypt_secrets,
             self._configuration_loader.load_all_if_exists(sources)
-        )
+        ))
 
     def load_all(self, sources: tuple[str, ...]) -> dict:
-        return self._decrypt_data(
+        return dict(Utils.recursive_map(
+            self._find_and_decrypt_secrets,
             self._configuration_loader.load_all(sources)
-        )
+        ))
 
-    def _decrypt_data(self, data: dict) -> dict:
-        for key, value in data.items():
-            if self._contains_encrypted_message(value):
-                data[key] = self._decrypt_message(value)
-            elif isinstance(value, dict):
-                self._decrypt_data(value)
+    def _find_and_decrypt_secrets(self, value: Any) -> Any:
+        """
+        Converts value if it found to be a secret to an encrypted dict
+        :param value:
+        :return: dict with encrypted values if value is a secret, unmodified value otherwise
+        """
+        if self._contains_encrypted_message(value):
+            return self._decrypt_message(value)
 
-        return data
+        return value
 
     def _contains_encrypted_message(self, value: Any) -> bool:
-        return isinstance(value, dict) and 'ciphertext' in value.keys() and 'nonce' in value.keys()
+        return isinstance(value, MutableMapping) and 'ciphertext' in value.keys() and 'nonce' in value.keys()
 
     def _decrypt_message(self, message: dict[str, str]) -> str:
         return self._message_encrypter.decrypt(

@@ -129,6 +129,7 @@ class Container(containers.DynamicContainer):
         )
         self.verify_signature_configuration_loader_proxy_factory = providers.Factory(
             VerifySignatureConfigurationLoaderProxy,
+            configuration_location_finder=self.configuration_location_finder,
             message_signer=self.message_signer
         )
         self.decrypt_configuration_loader_proxy_factory = providers.Factory(
