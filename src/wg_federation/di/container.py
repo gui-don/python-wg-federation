@@ -6,9 +6,11 @@ from argparse import ArgumentParser
 
 import portalocker
 import xdg
+from Cryptodome import Random
 from Cryptodome.Cipher import AES
 from Cryptodome.Hash import Poly1305
 from dependency_injector import containers, providers
+from nacl import public
 from systemd.journal import JournalHandler
 
 from wg_federation.constants import __version__
@@ -17,6 +19,7 @@ from wg_federation.controller.controller_dispatcher import ControllerDispatcher
 from wg_federation.crypto.cryptographic_key_deriver import CryptographicKeyDeriver
 from wg_federation.crypto.message_encrypter import MessageEncrypter
 from wg_federation.crypto.message_signer import MessageSigner
+from wg_federation.crypto.wireguard_key_generator import WireguardKeyGenerator
 from wg_federation.data_transformation.configuration_location_finder import ConfigurationLocationFinder
 from wg_federation.data_transformation.loader.configuration_loader import ConfigurationLoader
 from wg_federation.data_transformation.loader.file.json_file_configuration_loader import JsonFileConfigurationLoader
@@ -85,6 +88,11 @@ class Container(containers.DynamicContainer):
         self.root_logger = providers.Object(_logger)
 
         # Crypto
+        self.wireguard_key_generator = providers.Singleton(
+            WireguardKeyGenerator,
+            nacl_public_lib=public,
+            cryptodome_random_lib=Random,
+        )
         self.cryptographic_key_deriver = providers.Singleton(
             CryptographicKeyDeriver,
             user_input=self.user_input
