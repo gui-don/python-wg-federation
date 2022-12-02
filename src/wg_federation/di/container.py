@@ -36,6 +36,8 @@ from wg_federation.data_transformation.saver.file.signature_file_configuration_s
 from wg_federation.data_transformation.saver.file.yaml_file_configuration_saver import YamlFileConfigurationSaver
 from wg_federation.data_transformation.saver.proxy.encrypt_configuration_saver_proxy import \
     EncryptConfigurationSaverProxy
+from wg_federation.data_transformation.saver.proxy.mutable_transform_configuration_saver_proxy import \
+    MutableTransformConfigurationSaverProxy
 from wg_federation.data_transformation.saver.proxy.sign_configuration_saver_proxy import SignConfigurationSaverProxy
 from wg_federation.input.manager.input_manager import InputManager
 from wg_federation.input.reader.argument_reader import ArgumentReader
@@ -145,6 +147,9 @@ class Container(containers.DynamicContainer):
                 providers.Singleton(SignatureFileConfigurationSaver, pathlib_lib=pathlib, os_lib=os),
             ),
             logger=self.root_logger
+        )
+        self.mutable_transform_configuration_saver_proxy_factory = providers.Factory(
+            MutableTransformConfigurationSaverProxy,
         )
         self.encrypt_configuration_saver_proxy_factory = providers.Factory(
             EncryptConfigurationSaverProxy,
