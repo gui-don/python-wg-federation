@@ -27,7 +27,7 @@ class WireguardInterface(BaseModel, frozen=True):
 
     public_key: constr(regex=_REGEXP_WIREGUARD_KEY)
     private_key: SecretStr
-    psk: SecretStr
+    psk: SecretStr = None
 
     # pylint: disable=no-self-argument
     @validator('private_key')

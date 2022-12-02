@@ -1,5 +1,7 @@
 from pydantic import BaseModel, constr, conint, validator
 
+from wg_federation.exception.developer.data.data_validation_error import DataValidationError
+
 
 # mypy: ignore-errors
 # https://github.com/pydantic/pydantic/issues/156
@@ -67,12 +69,12 @@ class Federation(BaseModel, frozen=True):
     @classmethod
     def __check_port_range(cls, field: str, max_port: int, min_port: int) -> None:
         if max_port - min_port < 10:
-            raise ValueError(
+            raise DataValidationError(
                 f'The federation {field} port ranges must be at minimum 10, to insure potential {field} rotation.'
                 f' Port range given: “{min_port}” to “{max_port}”.'
             )
         if max_port - min_port > 100:
-            raise ValueError(
+            raise DataValidationError(
                 f'The federation {field} port ranges must be at maximum 100 to avoid reserving too much ports. '
                 f' Port range given: “{min_port}” to “{max_port}”.'
             )
