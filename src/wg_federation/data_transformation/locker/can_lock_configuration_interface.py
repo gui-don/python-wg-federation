@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Generator
+from typing import ContextManager
 
 
 class CanLockConfigurationInterface(ABC):
@@ -8,7 +8,7 @@ class CanLockConfigurationInterface(ABC):
     """
 
     @abstractmethod
-    def lock_exclusively(self, location: str, configuration_locker: type = None) -> Generator:
+    def lock_exclusively(self, location: str, configuration_locker: type = None) -> ContextManager:
         """
         Lock a location, with an exclusive lock.
         :param location: Location to be locked.
@@ -18,7 +18,7 @@ class CanLockConfigurationInterface(ABC):
         """
 
     @abstractmethod
-    def lock_shared(self, location: str, configuration_locker: type = None) -> Generator:
+    def lock_shared(self, location: str, configuration_locker: type = None) -> ContextManager:
         """
         Lock a location, with a shared lock
         :param location: Location to be locked.

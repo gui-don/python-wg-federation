@@ -1,8 +1,8 @@
-""" container.py test suit """
 import logging
 from unittest.mock import patch, MagicMock
 
 from dependency_injector.containers import DeclarativeContainer, DynamicContainer
+
 from wg_federation.di.container import Container
 
 

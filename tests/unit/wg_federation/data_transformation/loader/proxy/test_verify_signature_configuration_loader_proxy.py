@@ -10,6 +10,9 @@ from wg_federation.data_transformation.loader.proxy.verify_signature_configurati
 from wg_federation.exception.developer.data_transformation.invalid_data_error import InvalidDataError
 
 
+# pylint: disable=duplicate-code
+
+
 class TestVerifySignatureConfigurationLoaderProxy:
     """ Test VerifySignatureConfigurationLoaderProxy class """
 
