@@ -1,3 +1,5 @@
+from typing import Any
+
 from pydantic import BaseModel, constr, conint, validator
 
 from wg_federation.exception.developer.data.data_validation_error import DataValidationError
@@ -65,6 +67,15 @@ class Federation(BaseModel, frozen=True):
         :return: True if port is within range, false otherwise
         """
         return self.forum_max_port >= port >= self.forum_min_port
+
+    @classmethod
+    def from_dict(cls, configuration: dict[str, Any]) -> 'Federation':
+        """
+        Create a new Federation from a dict of key/values.
+        :param configuration:
+        :return: Federation
+        """
+        return cls(**configuration)
 
     @classmethod
     def __check_port_range(cls, field: str, max_port: int, min_port: int) -> None:

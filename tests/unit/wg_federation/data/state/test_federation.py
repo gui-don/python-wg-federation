@@ -128,3 +128,13 @@ class TestFederation:
                 phone_line_max_port=9000,
                 phone_line_min_port=9050,
             )
+
+    def test_from_dict(self):
+        """ it instantiates itself using a dict of values """
+        assert isinstance(Federation.from_dict({
+            'name': 'a_name',
+            'forum_max_port': 5500,
+            'forum_min_port': 5400,
+            'phone_line_max_port': 5600,
+            'phone_line_min_port': 5501,
+        }), Federation)

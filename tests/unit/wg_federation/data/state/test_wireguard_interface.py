@@ -147,3 +147,26 @@ class TestWireguardInterface:
                     private_key='9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
                     public_key='1OAiqIBY7Xx7OxjWVBXzPFKDfLNY1SOnTYyBJDaAaxs=',
                 )
+
+    def test_from_dict(self):
+        """ it instantiates itself using a dict of values """
+        assert isinstance(WireguardInterface.from_dict({
+            'public_key': '1OAiqIBY7Xx7OxjWVBXzPFKDfLNY1SOnTYyBJDaAaxs=',
+            'private_key': '9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
+            'psk': 'v3513CYaiFXqcPoqRgj28GT4tCTcnSO/ywUQM/e1104=',
+        }), WireguardInterface)
+
+    def test_from_list(self):
+        """ it instantiates itself using a list of dicts of values """
+        assert isinstance(WireguardInterface.from_list([{
+            'public_key': '1OAiqIBY7Xx7OxjWVBXzPFKDfLNY1SOnTYyBJDaAaxs=',
+            'private_key': '9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
+            'psk': 'v3513CYaiFXqcPoqRgj28GT4tCTcnSO/ywUQM/e1104=',
+        }, {
+            'name': 'a_name',
+            'private_key': '9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
+            'public_key': '1OAiqIBY7Xx7OxjWVBXzPFKDfLNY1SOnTYyBJDaAaxs=',
+            'psk': 'xoSmoykbONQY6XfMYMHpcp/ta3x+FPCUOc4/SQfEQ1E=',
+            'listen_port': 35233,
+            'addresses': ('10.10.100.1/24',),
+        }]), tuple)

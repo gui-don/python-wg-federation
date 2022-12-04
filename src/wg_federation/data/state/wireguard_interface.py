@@ -1,4 +1,5 @@
 import re
+from typing import Any
 
 from pydantic import BaseModel, IPvAnyAddress, conint, constr, IPvAnyInterface, SecretStr, validator
 
@@ -60,6 +61,24 @@ class WireguardInterface(BaseModel, frozen=True):
         )
 
         return value
+
+    @classmethod
+    def from_dict(cls, configuration: dict[str, Any]) -> 'WireguardInterface':
+        """
+        Create a new WireguardInterface from a dict of key/values.
+        :param configuration:
+        :return: WireguardInterface
+        """
+        return cls(**configuration)
+
+    @classmethod
+    def from_list(cls, configurations: list[dict[str, Any]]) -> tuple['WireguardInterface', ...]:
+        """
+        Instantiate a tuple of WireguardInterface using a list of dict of keys/values
+        :param configurations:
+        :return: tuple of WireguardInterface
+        """
+        return tuple(map(cls.from_dict, configurations))
 
     @classmethod
     def _check_wireguard_key(cls, value: SecretStr, values: dict, kind: str) -> SecretStr:
