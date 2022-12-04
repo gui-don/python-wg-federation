@@ -46,6 +46,7 @@ from wg_federation.input.manager.input_manager import InputManager
 from wg_federation.input.reader.argument_reader import ArgumentReader
 from wg_federation.input.reader.configuration_file_reader import ConfigurationFileReader
 from wg_federation.input.reader.environment_variable_reader import EnvironmentVariableReader
+from wg_federation.state.manager.state_data_manager import StateDataManager
 
 
 # Because it's how the DI lib works
@@ -191,6 +192,45 @@ class Container(containers.DynamicContainer):
             argument_reader=self.argument_reader,
             environment_variable_reader=self.environment_variable_reader,
             configuration_file_reader=self.configuration_file_reader,
+            logger=self.root_logger
+        )
+
+        # State
+
+        self.state_manager_configuration_loader = providers.Singleton(
+            DecryptConfigurationLoaderProxy,
+            message_encrypter=self.message_encrypter,
+            configuration_loader=providers.Singleton(
+                VerifySignatureConfigurationLoaderProxy,
+                message_signer=self.message_signer,
+                configuration_loader=self.configuration_loader,
+                configuration_location_finder=self.configuration_location_finder,
+                digest_configuration_loader=self.configuration_loader,
+            )
+        )
+
+        self.state_manager_configuration_saver = providers.Singleton(
+            MutableTransformConfigurationSaverProxy,
+            configuration_saver=providers.Singleton(
+                EncryptConfigurationSaverProxy,
+                message_encrypter=self.message_encrypter,
+                configuration_saver=providers.Singleton(
+                    SignConfigurationSaverProxy,
+                    configuration_location_finder=self.configuration_location_finder,
+                    digest_configuration_saver=self.configuration_saver,
+                    message_signer=self.message_signer,
+                    configuration_saver=self.configuration_saver
+                )
+            )
+        )
+
+        self.state_data_manager = providers.Singleton(
+            StateDataManager,
+            configuration_location_finder=self.configuration_location_finder,
+            configuration_loader=self.state_manager_configuration_loader,
+            configuration_saver=self.state_manager_configuration_saver,
+            configuration_locker=self.configuration_locker,
+            wireguard_key_generator=self.wireguard_key_generator,
             logger=self.root_logger
         )
 
