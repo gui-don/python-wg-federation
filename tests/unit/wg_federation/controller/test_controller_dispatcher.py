@@ -1,4 +1,3 @@
-""" controller_dispatcher.py test suit """
 from unittest.mock import MagicMock
 
 import pytest

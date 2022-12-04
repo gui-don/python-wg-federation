@@ -15,6 +15,7 @@ from systemd.journal import JournalHandler
 
 from wg_federation.constants import __version__
 from wg_federation.controller.baseline.configure_logging_controller import ConfigureLoggingController
+from wg_federation.controller.bootstrap.state_hq_bootstrap_controller import StateHQBootstrapController
 from wg_federation.controller.controller_dispatcher import ControllerDispatcher
 from wg_federation.crypto.cryptographic_key_deriver import CryptographicKeyDeriver
 from wg_federation.crypto.message_encrypter import MessageEncrypter
@@ -241,6 +242,10 @@ class Container(containers.DynamicContainer):
             controllers=providers.List(
                 providers.Singleton(
                     ConfigureLoggingController, logger_handler=self.logger_console_handler, logger=self.root_logger
+                ),
+                providers.Singleton(
+                    StateHQBootstrapController,
+                    state_data_manager=self.state_data_manager,
                 ),
             ),
             logger=self.root_logger
