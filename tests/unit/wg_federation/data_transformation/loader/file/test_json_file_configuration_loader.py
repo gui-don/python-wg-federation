@@ -15,7 +15,7 @@ class TestJsonFileConfigurationLoader:
     _exist_path = None
     _non_exist_path = None
 
-    _pathlib_lib = None
+    _os_path_lib = None
     _subject: JsonFileConfigurationLoader = None
 
     @pytest.fixture(autouse=True)
@@ -33,15 +33,9 @@ class TestJsonFileConfigurationLoader:
         when(self._file).__exit__(...).thenReturn(None)
         when(self._file).seek(ANY).thenReturn(None)
 
-        self._exist_path = mock()
-        when(self._exist_path).exists().thenReturn(True)
-
-        self._non_exist_path = mock()
-        when(self._non_exist_path).exists().thenReturn(False)
-
-        self._pathlib_lib = mock()
-        when(self._pathlib_lib).Path(...).thenReturn(self._exist_path)
-        when(self._pathlib_lib).Path('unknown.json').thenReturn(self._non_exist_path)
+        self._os_path_lib = mock()
+        when(self._os_path_lib).exists(...).thenReturn(True)
+        when(self._os_path_lib).exists('unknown.json').thenReturn(False)
 
         when(builtins).open(...).thenCallOriginalImplementation()
         when(builtins).open(file='source.json', **kwargs).thenReturn(self._file)
@@ -49,7 +43,7 @@ class TestJsonFileConfigurationLoader:
         when(json).load(...).thenCallOriginalImplementation()
         when(json).load(self._file).thenReturn({'json_data': 1})
 
-        self._subject = JsonFileConfigurationLoader(pathlib_lib=self._pathlib_lib)
+        self._subject = JsonFileConfigurationLoader(os_path_lib=self._os_path_lib)
 
     def test_init(self):
         """ it can be instantiated """

@@ -1,5 +1,4 @@
-from io import TextIOWrapper
-from typing import Any
+from typing import Any, TextIO
 
 import yaml
 
@@ -16,6 +15,6 @@ class YamlFileConfigurationLoader(FileConfigurationLoader):
         return super().supports(source) and \
             Utils.has_extension(source, r'(yaml|yml)')
 
-    def _load_file(self, file: TextIOWrapper) -> dict:
+    def _load_file(self, file: TextIO) -> dict:
         super()._load_file(file)
         return Utils.always_dict(yaml.safe_load(file))

@@ -1,9 +1,10 @@
 from abc import ABC
 from io import TextIOWrapper
 from types import ModuleType
-from typing import Any
+from typing import Any, TextIO
 
 from wg_federation.data_transformation.saver.configuration_saver_interface import ConfigurationSaverInterface
+from wg_federation.utils.utils import Utils
 
 
 class FileConfigurationSaver(ConfigurationSaverInterface, ABC):
@@ -22,7 +23,7 @@ class FileConfigurationSaver(ConfigurationSaverInterface, ABC):
 
     def save_to(self, data: dict, destination: Any) -> None:
         if not isinstance(destination, TextIOWrapper):
-            with open(file=destination, mode='w+', encoding='utf-8') as file:
+            with Utils.open(file=destination, mode='w+', encoding='utf-8') as file:
                 self._save_data(data, file)
                 return
 
@@ -41,7 +42,7 @@ class FileConfigurationSaver(ConfigurationSaverInterface, ABC):
         self._pathlib_lib.Path(destination).parents[0].mkdir(parents=True, exist_ok=True)
 
     # pylint: disable=unused-argument
-    def _save_data(self, data: dict, file: TextIOWrapper) -> None:
+    def _save_data(self, data: dict, file: TextIO) -> None:
         """
         Process an open file and returns configuration
         :param file: open file handler

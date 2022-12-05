@@ -1,6 +1,5 @@
-from io import TextIOWrapper
 from types import ModuleType
-from typing import Any
+from typing import Any, TextIO
 
 from wg_federation.data_transformation.saver.file.file_configuration_saver import FileConfigurationSaver
 from wg_federation.utils.utils import Utils
@@ -20,7 +19,7 @@ class SignatureFileConfigurationSaver(FileConfigurationSaver):
         return super().supports(data, destination) and \
             Utils.has_extension(destination, r'(digest|sha([0-9]{3})?|md5|sig)')
 
-    def _save_data(self, data: dict, file: TextIOWrapper) -> None:
+    def _save_data(self, data: dict, file: TextIO) -> None:
         super()._save_data(data, file)
 
         file.write(self._os_lib.linesep.join(

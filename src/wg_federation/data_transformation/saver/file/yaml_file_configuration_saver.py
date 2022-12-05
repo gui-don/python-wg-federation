@@ -1,5 +1,4 @@
-from io import TextIOWrapper
-from typing import Any
+from typing import Any, TextIO
 
 import yaml
 
@@ -16,6 +15,6 @@ class YamlFileConfigurationSaver(FileConfigurationSaver):
         return super().supports(data, destination) and \
             Utils.has_extension(destination, '(yaml|yml)')
 
-    def _save_data(self, data: dict, file: TextIOWrapper) -> None:
+    def _save_data(self, data: dict, file: TextIO) -> None:
         super()._save_data(data, file)
         yaml.safe_dump(data, file)

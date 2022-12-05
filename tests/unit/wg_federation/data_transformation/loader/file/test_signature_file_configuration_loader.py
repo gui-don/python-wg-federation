@@ -17,7 +17,7 @@ class TestSignatureFileConfigurationLoader:
     _exist_path = None
     _non_exist_path = None
 
-    _pathlib_lib = None
+    _os_path_lib = None
     _subject: SignatureFileConfigurationLoader = None
 
     @pytest.fixture(autouse=True)
@@ -36,20 +36,14 @@ class TestSignatureFileConfigurationLoader:
         when(self._file).seek(ANY).thenReturn(None)
         when(self._file).read().thenReturn('signature')
 
-        self._exist_path = mock()
-        when(self._exist_path).exists().thenReturn(True)
-
-        self._non_exist_path = mock()
-        when(self._non_exist_path).exists().thenReturn(False)
-
-        self._pathlib_lib = mock()
-        when(self._pathlib_lib).Path(...).thenReturn(self._exist_path)
-        when(self._pathlib_lib).Path('unknown.signature').thenReturn(self._non_exist_path)
+        self._os_path_lib = mock()
+        when(self._os_path_lib).exists(...).thenReturn(True)
+        when(self._os_path_lib).exists('unknown.signature').thenReturn(False)
 
         when(builtins).open(...).thenCallOriginalImplementation()
         when(builtins).open(file='source.signature', **kwargs).thenReturn(self._file)
 
-        self._subject = SignatureFileConfigurationLoader(pathlib_lib=self._pathlib_lib)
+        self._subject = SignatureFileConfigurationLoader(os_path_lib=self._os_path_lib)
 
     def test_init(self):
         """ it can be instantiated """

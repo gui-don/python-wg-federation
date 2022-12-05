@@ -122,9 +122,9 @@ class Container(containers.DynamicContainer):
         self.configuration_loader = providers.Singleton(
             ConfigurationLoader,
             configuration_loaders=providers.List(
-                providers.Singleton(YamlFileConfigurationLoader, pathlib_lib=pathlib),
-                providers.Singleton(JsonFileConfigurationLoader, pathlib_lib=pathlib),
-                providers.Singleton(SignatureFileConfigurationLoader, pathlib_lib=pathlib),
+                providers.Singleton(YamlFileConfigurationLoader, os_path_lib=os.path),
+                providers.Singleton(JsonFileConfigurationLoader, os_path_lib=os.path),
+                providers.Singleton(SignatureFileConfigurationLoader, os_path_lib=os.path),
             ),
             logger=self.root_logger
         )

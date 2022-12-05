@@ -4,6 +4,8 @@ from io import TextIOWrapper
 from pathlib import Path
 from typing import Any, Union, Callable
 
+from typing.io import IO
+
 
 class Utils:
     """
@@ -61,3 +63,20 @@ class Utils:
                 Utils.recursive_map(callback, data_ref[key])
 
         return data_ref
+
+    @staticmethod
+    def open(file: str, mode: str, encoding: str) -> IO:
+        """
+        Opens a files.
+        This method simplifies mocking of the builtins.open
+        :param file:
+        :param mode: Among normal "open" modes, adds a 'a++' that acts like 'a+' but also creates parent path.
+        :param encoding:
+        :return:
+        """
+        if 'a++' == mode:
+            # pathlib is badly made and thus untestable
+            Path(file).parents[0].mkdir(parents=True, exist_ok=True)
+            mode = 'a+'
+
+        return open(file=file, mode=mode, encoding=encoding)
