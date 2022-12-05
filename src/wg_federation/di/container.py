@@ -40,8 +40,8 @@ from wg_federation.data_transformation.saver.file.signature_file_configuration_s
 from wg_federation.data_transformation.saver.file.yaml_file_configuration_saver import YamlFileConfigurationSaver
 from wg_federation.data_transformation.saver.proxy.encrypt_configuration_saver_proxy import \
     EncryptConfigurationSaverProxy
-from wg_federation.data_transformation.saver.proxy.mutable_transform_configuration_saver_proxy import \
-    MutableTransformConfigurationSaverProxy
+from wg_federation.data_transformation.saver.proxy.normalize_filter_configuration_saver_proxy import \
+    NormalizeFilterConfigurationSaverProxy
 from wg_federation.data_transformation.saver.proxy.sign_configuration_saver_proxy import SignConfigurationSaverProxy
 from wg_federation.input.manager.input_manager import InputManager
 from wg_federation.input.reader.argument_reader import ArgumentReader
@@ -158,8 +158,8 @@ class Container(containers.DynamicContainer):
             ),
             logger=self.root_logger
         )
-        self.mutable_transform_configuration_saver_proxy_factory = providers.Factory(
-            MutableTransformConfigurationSaverProxy,
+        self.normalize_filter_configuration_saver_proxy_factory = providers.Factory(
+            NormalizeFilterConfigurationSaverProxy,
         )
         self.encrypt_configuration_saver_proxy_factory = providers.Factory(
             EncryptConfigurationSaverProxy,
@@ -211,7 +211,7 @@ class Container(containers.DynamicContainer):
         )
 
         self.state_manager_configuration_saver = providers.Singleton(
-            MutableTransformConfigurationSaverProxy,
+            NormalizeFilterConfigurationSaverProxy,
             configuration_saver=providers.Singleton(
                 EncryptConfigurationSaverProxy,
                 message_encrypter=self.message_encrypter,

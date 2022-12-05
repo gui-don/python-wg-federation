@@ -1,14 +1,16 @@
 from enum import Enum
-from typing import Any
+from ipaddress import IPv6Address, IPv4Address
+from typing import Any, Sized
 
 from wg_federation.data_transformation.saver.can_save_configuration_interface import CanSaveConfigurationInterface
 from wg_federation.utils.utils import Utils
 
 
-class MutableTransformConfigurationSaverProxy(CanSaveConfigurationInterface):
+class NormalizeFilterConfigurationSaverProxy(CanSaveConfigurationInterface):
     """
     CanSaveConfigurationInterface Proxy.
-    Able to transform data with immutable types to mutable.
+    Able to transform data to remove empty values, transform Enums, transform immutable to mutables.
+    Normalize data.
     """
 
     _configuration_saver: CanSaveConfigurationInterface = None
@@ -35,8 +37,15 @@ class MutableTransformConfigurationSaverProxy(CanSaveConfigurationInterface):
         )
 
     def _transform_mutable(self, item: Any) -> Any:
+        if isinstance(item, dict):
+            for key, value in list(item.items()):
+                if value is None or (isinstance(value, Sized) and len(value) == 0):
+                    del item[key]
+
         if isinstance(item, (tuple, set, frozenset,)):
             return list(item)
+        if isinstance(item, (IPv4Address, IPv6Address,)):
+            return str(item)
         if isinstance(item, Enum):
             return item.value
 
