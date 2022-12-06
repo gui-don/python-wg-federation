@@ -37,7 +37,7 @@ class TestEncryptConfigurationSaverProxy:
 
         self._configuration_saver = mock(ConfigurationSaver)
         when(self._configuration_saver).save(...)
-        when(self._configuration_saver).save_try(...)
+        when(self._configuration_saver).try_save(...)
 
         self._subject = EncryptConfigurationSaverProxy(
             configuration_saver=self._configuration_saver,
@@ -57,9 +57,9 @@ class TestEncryptConfigurationSaverProxy:
 
     def test_save_try(self):
         """ it encrypts all secrets of a configuration before saving it """
-        self._subject.save_try({'try': {'test': SecretStr('value')}}, 'yaml')
-        self._subject.save_try({'try': 'notsecret'}, 'yaml', SecretStr)
+        self._subject.try_save({'try': {'test': SecretStr('value')}}, 'yaml')
+        self._subject.try_save({'try': 'notsecret'}, 'yaml', SecretStr)
 
         verify(self._message_encrypter, times=1).encrypt(b'value')
-        verify(self._configuration_saver, times=1).save_try({'try': {'test': {'encrypted': True}}}, 'yaml', None)
-        verify(self._configuration_saver, times=1).save_try({'try': 'notsecret'}, 'yaml', SecretStr)
+        verify(self._configuration_saver, times=1).try_save({'try': {'test': {'encrypted': True}}}, 'yaml', None)
+        verify(self._configuration_saver, times=1).try_save({'try': 'notsecret'}, 'yaml', SecretStr)

@@ -59,14 +59,14 @@ class TestConfigurationSaver:
     def test_save(self):
         """ it can save a configuration without an explicit ConfigurationSaver """
         self._subject.save({'data': 1}, 'yaml')
-        self._subject.save_try({'try': 1}, 'yaml')
+        self._subject.try_save({'try': 1}, 'yaml')
 
         verify(self._configuration_saver_yaml, times=1).save_to({'data': 1}, 'yaml')
         verify(self._configuration_saver_yaml, times=1).save_to({'try': 1}, 'yaml')
         verifyNoMoreInteractions()
 
         self._subject.save({'data': 2}, 'json')
-        self._subject.save_try({'try': 2}, 'json')
+        self._subject.try_save({'try': 2}, 'json')
 
         verify(self._configuration_saver_json, times=1).save_to({'data': 2}, 'json')
         verify(self._configuration_saver_json, times=1).save_to({'try': 2}, 'json')
@@ -75,7 +75,7 @@ class TestConfigurationSaver:
     def test_save2(self):
         """ it can save a configuration with a forced ConfigurationSaver """
         self._subject.save({'data': 1}, 'yaml', JsonFileConfigurationSaver)
-        self._subject.save_try({'data': 1}, 'yaml', JsonFileConfigurationSaver)
+        self._subject.try_save({'data': 1}, 'yaml', JsonFileConfigurationSaver)
 
         verify(self._configuration_saver_yaml, times=0).save_to(...)
         verify(self._configuration_saver_json, times=2).save_to({'data': 1}, 'yaml')
@@ -97,7 +97,7 @@ class TestConfigurationSaver:
     def test_save5(self):
         """ it can save a configuration without an explicit ConfigurationSaver """
         self._subject.save({'data': 2}, 'json')
-        self._subject.save_try({'try': 2}, 'json')
+        self._subject.try_save({'try': 2}, 'json')
 
         verify(self._configuration_saver_json, times=1).save_to({'data': 2}, 'json')
         verify(self._configuration_saver_json, times=1).save_to({'try': 2}, 'json')
@@ -107,7 +107,7 @@ class TestConfigurationSaver:
 
     def test_save_try2(self):
         """ it does not raise any error even if the destination is not supported by any ConfigurationSaver """
-        self._subject.save_try({'data': 1}, 'unknown')
+        self._subject.try_save({'data': 1}, 'unknown')
 
         verify(self._configuration_saver_yaml, times=0).save_to(...)
         verify(self._configuration_saver_json, times=0).save_to(...)

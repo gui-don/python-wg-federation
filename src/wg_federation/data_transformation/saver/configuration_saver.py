@@ -28,7 +28,7 @@ class ConfigurationSaver(CanSaveConfigurationInterface):
         self._configuration_savers = tuple(configuration_savers)
         self._logger = logger
 
-    def save_try(self, data: dict, destination: Any, configuration_saver: type = None) -> None:
+    def try_save(self, data: dict, destination: Any, configuration_saver: type = None) -> None:
         try:
             self.save(data, destination, configuration_saver)
         except DestinationUnsupportedError:

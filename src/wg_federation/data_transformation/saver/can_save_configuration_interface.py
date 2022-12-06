@@ -8,7 +8,7 @@ class CanSaveConfigurationInterface(ABC):
     """
 
     @abstractmethod
-    def save_try(self, data: dict, destination: Any, configuration_saver: type = None) -> None:
+    def try_save(self, data: dict, destination: Any, configuration_saver: type = None) -> None:
         """
         Save a given data to a given destination (path or any handler).
         Do not guarantee that data is written.
