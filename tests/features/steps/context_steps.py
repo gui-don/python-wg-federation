@@ -1,5 +1,6 @@
 import builtins
 import os
+import re
 import shutil
 from pathlib import Path
 
@@ -37,6 +38,27 @@ def mock_system_file(context, path: str, content: str):
 def system_file_exists(context: Context, path: str):
     """ Step impl """
     assert os.path.exists(get_modified_path(path))
+    context.add_cleanup(clean_files)
+
+
+@then('the system file “{path}” should not exist')
+def system_file_not_exists(context: Context, path: str):
+    """ Step impl """
+    assert not os.path.exists(get_modified_path(path))
+
+
+@then('the system file “{path}” should contain “{reg_pattern}”')
+def system_file_contains(context: Context, path: str, reg_pattern: str):
+    """ Step impl """
+    with open(file=get_modified_path(path), mode='r', encoding='UTF-8') as file:
+        assert re.match(reg_pattern, file.read())
+
+
+@then('the system file “{path}” should not contain “{reg_pattern}”')
+def system_file_not_contains(context: Context, path: str, reg_pattern: str):
+    """ Step impl """
+    with open(file=get_modified_path(path), mode='r', encoding='UTF-8') as file:
+        assert not re.match(reg_pattern, file.read())
 
 
 @given('the environment variable "{env_var_name}" contains "{env_var_value}"')
