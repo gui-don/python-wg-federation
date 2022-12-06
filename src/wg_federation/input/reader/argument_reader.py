@@ -53,6 +53,7 @@ class ArgumentReader:
                 option.argument_alias,
                 dest=option.name,
                 action=option.argparse_action.value,
+                default=option.default,
                 help=f'{option.description} '
                      f"Defaults to “{option.default if option.default is not None else ''}”.",
             )

@@ -59,7 +59,7 @@ class RawOptions:
             argparse_action=ArgparseAction.STORE,
             argument_alias='--root-passphrase',
             argument_short='-P',
-            default=None,
+            default='',
             description='Root passphrase used to encrypt and decrypt all secrets managed by this program.',
             name='root_passphrase',
             type=SecretStr,
