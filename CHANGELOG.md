@@ -1,3 +1,12 @@
+0.4.0
+=====
+
+- test: adds bandit SAST tool
+- feat: warns user when they set a `root_passphrase` in configuration file
+- feat: adds `--state-backend` and `--state-digest-backend` argument/configuration options
+- feat: adds cryptography under the hood to sign, verify, encrypt, decrypt state
+- feat: implements a first basic `hq bootstrap` to create a state (in a file a first implementation)
+
 0.3.0
 =====
 
