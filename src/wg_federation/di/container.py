@@ -24,8 +24,8 @@ from wg_federation.crypto.wireguard_key_generator import WireguardKeyGenerator
 from wg_federation.data_transformation.configuration_location_finder import ConfigurationLocationFinder
 from wg_federation.data_transformation.loader.configuration_loader import ConfigurationLoader
 from wg_federation.data_transformation.loader.file.json_file_configuration_loader import JsonFileConfigurationLoader
-from wg_federation.data_transformation.loader.file.signature_file_configuration_reader import \
-    SignatureFileConfigurationLoader
+from wg_federation.data_transformation.loader.file.text_file_configuration_reader import \
+    TextFileConfigurationLoader
 from wg_federation.data_transformation.loader.file.yaml_file_configuration_loader import YamlFileConfigurationLoader
 from wg_federation.data_transformation.loader.proxy.decrypt_configuration_loader_proxy import \
     DecryptConfigurationLoaderProxy
@@ -35,8 +35,8 @@ from wg_federation.data_transformation.locker.configuration_locker import Config
 from wg_federation.data_transformation.locker.file_configuration_locker import FileConfigurationLocker
 from wg_federation.data_transformation.saver.configuration_saver import ConfigurationSaver
 from wg_federation.data_transformation.saver.file.json_file_configuration_saver import JsonFileConfigurationSaver
-from wg_federation.data_transformation.saver.file.signature_file_configuration_saver import \
-    SignatureFileConfigurationSaver
+from wg_federation.data_transformation.saver.file.text_file_configuration_saver import \
+    TextFileConfigurationSaver
 from wg_federation.data_transformation.saver.file.yaml_file_configuration_saver import YamlFileConfigurationSaver
 from wg_federation.data_transformation.saver.proxy.encrypt_configuration_saver_proxy import \
     EncryptConfigurationSaverProxy
@@ -89,27 +89,6 @@ class Container(containers.DynamicContainer):
 
         self.root_logger = providers.Object(_logger)
 
-        # Crypto
-        self.wireguard_key_generator = providers.Singleton(
-            WireguardKeyGenerator,
-            nacl_public_lib=public,
-            cryptodome_random_lib=Random,
-        )
-        self.cryptographic_key_deriver = providers.Singleton(
-            CryptographicKeyDeriver,
-            user_input=self.user_input
-        )
-        self.message_signer = providers.Singleton(
-            MessageSigner,
-            cryptographic_key_deriver=self.cryptographic_key_deriver,
-            cryptodome_poly1305=Poly1305
-        )
-        self.message_encrypter = providers.Singleton(
-            MessageEncrypter,
-            cryptographic_key_deriver=self.cryptographic_key_deriver,
-            cryptodome_aes=AES
-        )
-
         # data transformation
         self.configuration_location_finder = providers.Singleton(
             ConfigurationLocationFinder,
@@ -124,10 +103,11 @@ class Container(containers.DynamicContainer):
             configuration_loaders=providers.List(
                 providers.Singleton(YamlFileConfigurationLoader, os_path_lib=os.path),
                 providers.Singleton(JsonFileConfigurationLoader, os_path_lib=os.path),
-                providers.Singleton(SignatureFileConfigurationLoader, os_path_lib=os.path),
+                providers.Singleton(TextFileConfigurationLoader, os_path_lib=os.path),
             ),
             logger=self.root_logger
         )
+
         self.configuration_locker = providers.Singleton(
             ConfigurationLocker,
             configuration_lockers=providers.List(
@@ -139,6 +119,43 @@ class Container(containers.DynamicContainer):
             ),
             logger=self.root_logger
         )
+
+        self.configuration_saver = providers.Singleton(
+            ConfigurationSaver,
+            configuration_savers=providers.List(
+                providers.Singleton(YamlFileConfigurationSaver, pathlib_lib=pathlib),
+                providers.Singleton(JsonFileConfigurationSaver, pathlib_lib=pathlib),
+                providers.Singleton(TextFileConfigurationSaver, pathlib_lib=pathlib, os_lib=os),
+            ),
+            logger=self.root_logger
+        )
+
+        # Crypto
+        self.wireguard_key_generator = providers.Singleton(
+            WireguardKeyGenerator,
+            nacl_public_lib=public,
+            cryptodome_random_lib=Random,
+        )
+        self.cryptographic_key_deriver = providers.Singleton(
+            CryptographicKeyDeriver,
+            user_input=self.user_input,
+            configuration_location_finder=self.configuration_location_finder,
+            configuration_loader=self.configuration_loader,
+            configuration_saver=self.configuration_saver,
+            cryptodome_random_lib=Random,
+        )
+        self.message_signer = providers.Singleton(
+            MessageSigner,
+            cryptographic_key_deriver=self.cryptographic_key_deriver,
+            cryptodome_poly1305=Poly1305
+        )
+        self.message_encrypter = providers.Singleton(
+            MessageEncrypter,
+            cryptographic_key_deriver=self.cryptographic_key_deriver,
+            cryptodome_aes=AES
+        )
+
+        # data transformation proxies
         self.verify_signature_configuration_loader_proxy_factory = providers.Factory(
             VerifySignatureConfigurationLoaderProxy,
             configuration_location_finder=self.configuration_location_finder,
@@ -149,15 +166,6 @@ class Container(containers.DynamicContainer):
             message_encrypter=self.message_encrypter
         )
 
-        self.configuration_saver = providers.Singleton(
-            ConfigurationSaver,
-            configuration_savers=providers.List(
-                providers.Singleton(YamlFileConfigurationSaver, pathlib_lib=pathlib),
-                providers.Singleton(JsonFileConfigurationSaver, pathlib_lib=pathlib),
-                providers.Singleton(SignatureFileConfigurationSaver, pathlib_lib=pathlib, os_lib=os),
-            ),
-            logger=self.root_logger
-        )
         self.normalize_filter_configuration_saver_proxy_factory = providers.Factory(
             NormalizeFilterConfigurationSaverProxy,
         )
@@ -246,6 +254,7 @@ class Container(containers.DynamicContainer):
                 providers.Singleton(
                     StateHQBootstrapController,
                     state_data_manager=self.state_data_manager,
+                    cryptographic_key_deriver=self.cryptographic_key_deriver,
                 ),
             ),
             logger=self.root_logger

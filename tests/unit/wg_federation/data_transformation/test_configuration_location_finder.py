@@ -35,6 +35,7 @@ class TestConfigurationLocationFinder:
         })
 
         self._pathlib_lib = mock()
+        when(self._pathlib_lib).Path('/home/test', 'testapp', 'salt.txt').thenReturn('path_to_salt')
 
         self._xdg_lib = mock()
         when(self._xdg_lib).xdg_data_home().thenReturn('/home/test')
@@ -106,3 +107,25 @@ class TestConfigurationLocationFinder:
         )
 
         assert not self._subject.state_digest_belongs_to_state()
+
+    def test_salt(self):
+        """ it returns the salt location """
+        assert 'path_to_salt' == self._subject.salt()
+
+    def test_salt2(self):
+        """ it raises an error when the defined configurationBackend is unsupported for salt """
+        self._user_input = mock({
+            'state_backend': ConfigurationBackend.DEFAULT
+        })
+
+        self._subject = ConfigurationLocationFinder(
+            user_input=self._user_input,
+            xdg_lib=self._xdg_lib,
+            pathlib_lib=self._pathlib_lib,
+            application_name=self._application_name,
+        )
+
+        with pytest.raises(ConfigurationBackendUnsupported) as error:
+            self._subject.salt()
+
+        assert 'is not supported for the salt' in str(error)

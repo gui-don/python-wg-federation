@@ -1,8 +1,9 @@
 import builtins
 import os
+import shutil
 from pathlib import Path
 
-from behave import given
+from behave import given, then
 from behave.runner import Context
 from mockito import when, unstub
 
@@ -20,8 +21,8 @@ def mock_system_file(context, path: str, content: str):
 
     # sadly because pathlib is horrendous, it is not mock-able.
     # If possible, always prefer os over pathlib.
-    when(os.path).exists(path).thenReturn(True)
-    when(os.path).isfile(path).thenReturn(True)
+    when(os.path).exists(get_path(path)).thenReturn(True)
+    when(os.path).isfile(get_path(path)).thenReturn(True)
 
     with open(file=get_modified_path(path), mode='a+', encoding='UTF-8') as file:
         file.truncate(0)
@@ -29,6 +30,13 @@ def mock_system_file(context, path: str, content: str):
         file.write(content)
 
     context.add_cleanup(clean_mocks)
+    context.add_cleanup(clean_files)
+
+
+@then('the system file “{path}” should exist')
+def system_file_exists(context: Context, path: str):
+    """ Step impl """
+    assert os.path.exists(get_modified_path(path))
 
 
 @given('the environment variable "{env_var_name}" contains "{env_var_value}"')
@@ -42,6 +50,11 @@ def environment_variable_contains(context: Context, env_var_name: str, env_var_v
 def clean_mocks():
     """ Unstub all mockito mocks """
     unstub()
+
+
+def clean_files():
+    """ Unstub all mockito mocks """
+    shutil.rmtree(TEST_PATH)
 
 
 def setup_default_mock():
@@ -58,11 +71,23 @@ def setup_default_mock():
     when(builtins).open(...).thenCallOriginalImplementation()
 
 
-def get_modified_path(path: str):
+def get_modified_path(path: str) -> str:
     """
     Get a modified form of a path for functional testing.
     :param path:
     :return:
     """
-    original_path = Path(path.replace('~', os.path.expanduser('~')))
-    return Path(TEST_PATH) / original_path.relative_to(original_path.anchor)
+
+    original_path = Path(get_path(path))
+    modified_path = str(Path(TEST_PATH) / original_path.relative_to(original_path.anchor))
+    Path(modified_path).parent.mkdir(parents=True, exist_ok=True)
+    return modified_path
+
+
+def get_path(path: str) -> str:
+    """
+    Returns path with expanded home (~)
+    :param path:
+    :return:
+    """
+    return path.replace('~', os.path.expanduser('~'))

@@ -4,21 +4,21 @@ from io import TextIOWrapper
 import pytest
 from mockito import mock, unstub, when, kwargs, ANY, verify
 
-from wg_federation.data_transformation.loader.file.signature_file_configuration_reader import \
-    SignatureFileConfigurationLoader
+from wg_federation.data_transformation.loader.file.text_file_configuration_reader import \
+    TextFileConfigurationLoader
 
 
 # pylint: disable=duplicate-code
 
-class TestSignatureFileConfigurationLoader:
-    """ Test SignatureFileConfigurationLoader class """
+class TestTextFileConfigurationLoader:
+    """ Test TextFileConfigurationLoader class """
 
     _file = None
     _exist_path = None
     _non_exist_path = None
 
     _os_path_lib = None
-    _subject: SignatureFileConfigurationLoader = None
+    _subject: TextFileConfigurationLoader = None
 
     @pytest.fixture(autouse=True)
     def run_around_tests(self):
@@ -43,11 +43,11 @@ class TestSignatureFileConfigurationLoader:
         when(builtins).open(...).thenCallOriginalImplementation()
         when(builtins).open(file='source.signature', **kwargs).thenReturn(self._file)
 
-        self._subject = SignatureFileConfigurationLoader(os_path_lib=self._os_path_lib)
+        self._subject = TextFileConfigurationLoader(os_path_lib=self._os_path_lib)
 
     def test_init(self):
         """ it can be instantiated """
-        assert isinstance(self._subject, SignatureFileConfigurationLoader)
+        assert isinstance(self._subject, TextFileConfigurationLoader)
 
     def test_supports(self):
         """ it returns whether it supports a source or not """

@@ -1,5 +1,5 @@
 from types import ModuleType
-from typing import Any
+from typing import Any, NoReturn
 
 from wg_federation.data.input.configuration_backend import ConfigurationBackend
 from wg_federation.data.input.user_input import UserInput
@@ -22,17 +22,23 @@ class ConfigurationLocationFinder:
         self._pathlib_lib = pathlib_lib
         self._application_name = application_name
 
+    def salt(self) -> Any:
+        """
+        Return the salt location, according to current context/user inputs.
+        :return:
+        """
+        if ConfigurationBackend.FILE != self._user_input.state_backend:
+            self.__raise_unsupported('salt')
+
+        return self.__get_xdg_home_path('salt.txt')
+
     def state_digest(self) -> Any:
         """
-        Return the state digest source/destination, according to current context/user inputs.
+        Return the state digest location, according to current context/user inputs.
         :return:
         """
         if ConfigurationBackend.FILE == self._user_input.state_digest_backend:
-            return str(self._pathlib_lib.Path(
-                self._xdg_lib.xdg_data_home(),
-                self._application_name,
-                'state.digest'
-            ))
+            return self.__get_xdg_home_path('state.digest')
 
         return self.state()
 
@@ -41,14 +47,10 @@ class ConfigurationLocationFinder:
         Return the state source/destination, according to current context/user inputs.
         :return:
         """
-        if ConfigurationBackend.FILE == self._user_input.state_backend:
-            return str(self._pathlib_lib.Path(
-                self._xdg_lib.xdg_data_home(),
-                self._application_name,
-                'state.json'
-            ))
+        if ConfigurationBackend.FILE != self._user_input.state_backend:
+            self.__raise_unsupported('state')
 
-        raise ConfigurationBackendUnsupported(f'“{self._user_input.state_backend}” is not supported for the state.')
+        return self.__get_xdg_home_path('state.json')
 
     def state_digest_belongs_to_state(self) -> bool:
         """
@@ -56,3 +58,13 @@ class ConfigurationLocationFinder:
         :return: True if the state digest should be within the state, False otherwise
         """
         return ConfigurationBackend.DEFAULT == self._user_input.state_digest_backend
+
+    def __raise_unsupported(self, subject: str) -> NoReturn:
+        raise ConfigurationBackendUnsupported(f'“{self._user_input.state_backend}” is not supported for the {subject}.')
+
+    def __get_xdg_home_path(self, filename: str) -> str:
+        return str(self._pathlib_lib.Path(
+            self._xdg_lib.xdg_data_home(),
+            self._application_name,
+            filename,
+        ))

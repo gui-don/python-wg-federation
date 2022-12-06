@@ -4,13 +4,17 @@ from mockito import unstub, mock, verify, verifyNoUnwantedInteractions
 from wg_federation.controller.bootstrap.state_hq_bootstrap_controller import StateHQBootstrapController
 from wg_federation.controller.controller_interface import ControllerInterface
 from wg_federation.controller.controller_status import Status
+from wg_federation.crypto.cryptographic_key_deriver import CryptographicKeyDeriver
+from wg_federation.data.input.user_input import UserInput
+from wg_federation.state.manager.state_data_manager import StateDataManager
 
 
 class TestStateHQBootstrapController:
     """ Test StateHQBootstrapController class """
 
-    _user_input = None
-    _state_data_manager = None
+    _user_input: UserInput = None
+    _state_data_manager: StateDataManager = None
+    _cryptographic_key_deriver: CryptographicKeyDeriver = None
 
     _subject: StateHQBootstrapController = None
 
@@ -25,9 +29,11 @@ class TestStateHQBootstrapController:
         self._user_input = mock({'arg0': 'hq', 'arg1': 'bootstrap'})
 
         self._state_data_manager = mock()
+        self._cryptographic_key_deriver = mock()
 
         self._subject = StateHQBootstrapController(
             state_data_manager=self._state_data_manager,
+            cryptographic_key_deriver=self._cryptographic_key_deriver,
         )
 
     def test_init(self):
@@ -50,6 +56,7 @@ class TestStateHQBootstrapController:
 
         assert Status.SUCCESS == self._subject.run(self._user_input)
 
+        verify(self._cryptographic_key_deriver, times=1).create_salt()
         verify(self._state_data_manager, times=1).create_hq_state()
 
         verifyNoUnwantedInteractions()

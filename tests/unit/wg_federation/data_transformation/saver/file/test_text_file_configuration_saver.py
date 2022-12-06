@@ -4,22 +4,22 @@ from io import TextIOWrapper
 import pytest
 from mockito import mock, unstub, when, kwargs, ANY, verify
 
-from wg_federation.data_transformation.saver.file.signature_file_configuration_saver import \
-    SignatureFileConfigurationSaver
+from wg_federation.data_transformation.saver.file.text_file_configuration_saver import \
+    TextFileConfigurationSaver
 
 
 # pylint: disable=duplicate-code
 
 
-class TestSignatureFileConfigurationSaver:
-    """ Test SignatureFileConfigurationSaver class """
+class TestTextFileConfigurationSaver:
+    """ Test TextFileConfigurationSaver class """
 
     _file = None
     _non_exist_parent_path = None
 
     _pathlib_lib = None
     _os_lib = None
-    _subject: SignatureFileConfigurationSaver = None
+    _subject: TextFileConfigurationSaver = None
 
     @pytest.fixture(autouse=True)
     def run_around_tests(self):
@@ -55,11 +55,11 @@ class TestSignatureFileConfigurationSaver:
         when(builtins).open(...).thenCallOriginalImplementation()
         when(builtins).open(file='destination.digest', **kwargs).thenReturn(self._file)
 
-        self._subject = SignatureFileConfigurationSaver(pathlib_lib=self._pathlib_lib, os_lib=self._os_lib)
+        self._subject = TextFileConfigurationSaver(pathlib_lib=self._pathlib_lib, os_lib=self._os_lib)
 
     def test_init(self):
         """ it can be instantiated """
-        assert isinstance(self._subject, SignatureFileConfigurationSaver)
+        assert isinstance(self._subject, TextFileConfigurationSaver)
 
     def test_supports(self):
         """ it returns whether it supports a source or not """
