@@ -24,7 +24,7 @@ class EncryptConfigurationSaverProxy(CanSaveConfigurationInterface):
         self._configuration_saver = configuration_saver
         self._message_encrypter = message_encrypter
 
-    def try_save(self, data: dict, destination: Any, configuration_saver: type = None) -> None:
+    def save_try(self, data: dict, destination: Any, configuration_saver: type = None) -> None:
         self._configuration_saver.save_try(
             dict(Utils.recursive_map(self._find_and_encrypt_secrets, data)),
             destination,

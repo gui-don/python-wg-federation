@@ -35,8 +35,8 @@ class SignConfigurationSaverProxy(CanSaveConfigurationInterface):
         self._configuration_saver = configuration_saver
         self._digest_configuration_saver = digest_configuration_saver
 
-    def try_save(self, data: dict, destination: Any, configuration_saver: type = None) -> None:
-        self._configuration_saver.try_save(self._sign(data), destination, configuration_saver)
+    def save_try(self, data: dict, destination: Any, configuration_saver: type = None) -> None:
+        self._configuration_saver.save_try(self._sign(data), destination, configuration_saver)
 
     def save(self, data: dict, destination: Any, configuration_saver: type = None) -> None:
         self._configuration_saver.save(self._sign(data), destination, configuration_saver)

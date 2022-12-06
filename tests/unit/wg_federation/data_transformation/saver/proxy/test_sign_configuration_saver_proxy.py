@@ -55,7 +55,7 @@ class TestSignConfigurationSaverProxy:
         """ it signs content before saving it """
 
         self._subject.save({'data': 'content'}, 'destination_path')
-        self._subject.try_save({'data': 'content_try'}, 'destination_path2', SignConfigurationSaverProxy)
+        self._subject.save_try({'data': 'content_try'}, 'destination_path2', SignConfigurationSaverProxy)
 
         verify(self._configuration_saver, times=1).save(
             {'data': {'data': 'content'}, 'nonce': 'nonce', 'digest': 'mac'},
@@ -63,7 +63,7 @@ class TestSignConfigurationSaverProxy:
             None
         )
 
-        verify(self._configuration_saver, times=1).try_save(
+        verify(self._configuration_saver, times=1).save_try(
             {'data': {'data': 'content_try'}, 'nonce': 'noncetry', 'digest': 'mactry'},
             'destination_path2',
             SignConfigurationSaverProxy
@@ -74,7 +74,7 @@ class TestSignConfigurationSaverProxy:
 
         when(self._configuration_location_finder).state_digest_belongs_to_state().thenReturn(False)
         self._subject.save({'data': 'content'}, 'destination_path')
-        self._subject.try_save({'data': 'content_try'}, 'destination_path2', SignConfigurationSaverProxy)
+        self._subject.save_try({'data': 'content_try'}, 'destination_path2', SignConfigurationSaverProxy)
 
         verify(self._digest_configuration_saver, times=1).save({'digest': 'mac'}, 'digest_location')
         verify(self._digest_configuration_saver, times=1).save({'digest': 'mactry'}, 'digest_location')
@@ -84,7 +84,7 @@ class TestSignConfigurationSaverProxy:
             'destination_path',
             None
         )
-        verify(self._configuration_saver, times=1).try_save(
+        verify(self._configuration_saver, times=1).save_try(
             {'data': {'data': 'content_try'}, 'nonce': 'noncetry'},
             'destination_path2',
             SignConfigurationSaverProxy
