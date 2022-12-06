@@ -10,7 +10,7 @@ class ConfigurationSaverInterface(ABC):
     @abstractmethod
     def save_to(self, data: dict, destination: Any) -> None:
         """
-        Save configuration from to the destination.
+        Save configuration to the destination.
         :param data: data to save
         :param destination: destination for the data to save. Can be a string or an open handler to the destination.
         :return: configuration
