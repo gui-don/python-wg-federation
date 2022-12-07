@@ -1,6 +1,6 @@
 # wg-federation
 
-A Wireguard federation server and client.
+A WireGuard federation server and client.
 
 ## Development
 

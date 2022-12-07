@@ -13,7 +13,7 @@ from wg_federation.exception.developer.data.data_validation_error import DataVal
 
 class WireguardInterface(BaseModel, frozen=True):
     """
-    Data class representing a wireguard interface
+    Data class representing a WireGuard interface
     """
 
     _REGEXP_WIREGUARD_KEY = r'^[0-9A-Za-z+/]{43}[=]$'
