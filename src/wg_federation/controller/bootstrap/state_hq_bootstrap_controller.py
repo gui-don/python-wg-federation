@@ -1,5 +1,5 @@
 from wg_federation.controller.controller_interface import ControllerInterface
-from wg_federation.controller.controller_status import Status
+from wg_federation.data.status import Status
 from wg_federation.crypto.cryptographic_key_deriver import CryptographicKeyDeriver
 from wg_federation.data.input.user_input import UserInput
 from wg_federation.state.manager.state_data_manager import StateDataManager
