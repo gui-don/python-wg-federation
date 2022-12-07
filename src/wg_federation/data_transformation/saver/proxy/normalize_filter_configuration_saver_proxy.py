@@ -9,7 +9,7 @@ from wg_federation.utils.utils import Utils
 class NormalizeFilterConfigurationSaverProxy(CanSaveConfigurationInterface):
     """
     CanSaveConfigurationInterface Proxy.
-    Able to transform data to remove empty values, transform Enums, transform immutable to mutables.
+    Transforms data to remove empty values, transform Enums, transform immutable to mutables.
     Normalize data.
     """
 

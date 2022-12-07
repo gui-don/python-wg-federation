@@ -10,7 +10,7 @@ from wg_federation.exception.developer.data_transformation.invalid_data_error im
 class VerifySignatureConfigurationLoaderProxy(CanLoadConfigurationInterface):
     """
     CanLoadConfigurationInterface Proxy.
-    Able to verify the signature of the loaded configurations.
+    Verifies the signature of the loaded configurations.
     """
 
     _configuration_location_finder: ConfigurationLocationFinder = None
@@ -76,11 +76,11 @@ class VerifySignatureConfigurationLoaderProxy(CanLoadConfigurationInterface):
     def _get_real_data(self, data: dict) -> dict:
         if not data.get('data'):
             self.__raise_invalid_data_error(
-                'Data was not found.'
+                '“data” key not found in the inputted dict.'
             )
         if not isinstance(data.get('data'), dict):
             self.__raise_invalid_data_error(
-                f'Data is expected to be in a dict, but {type(data.get("data"))} was found instead.'
+                f'Data is expected to be in a dict, but “{type(data.get("data"))}” was found instead.'
             )
 
         return data.get('data')

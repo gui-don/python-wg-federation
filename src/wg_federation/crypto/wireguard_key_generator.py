@@ -4,7 +4,7 @@ from types import ModuleType
 
 class WireguardKeyGenerator:
     """
-    Able to generate wireguard public/private keys and PSK.
+    Generates WireGuard public/private keys and PSK.
     """
 
     _nacl_public_lib: ModuleType = None
@@ -35,7 +35,7 @@ class WireguardKeyGenerator:
 
     def generate_psk(self) -> str:
         """
-        Generate a pre-shared key (PSK) for wireguard.
+        Generate a pre-shared key (PSK) for WireGuard.
         :return: base64 encoded pre-shared key
         """
         return self.__convert_to_base64(self._cryptodome_random_lib.get_random_bytes(32))

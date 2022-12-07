@@ -10,7 +10,7 @@ from wg_federation.utils.utils import Utils
 class DecryptConfigurationLoaderProxy(CanLoadConfigurationInterface):
     """
     CanLoadConfigurationInterface Proxy.
-    Able to decrypt encrypted data from the loaded configurations.
+    Decrypts an encrypted data from the loaded configurations.
     """
     _configuration_loader: CanLoadConfigurationInterface = None
     _message_encrypter: MessageEncrypter = None
