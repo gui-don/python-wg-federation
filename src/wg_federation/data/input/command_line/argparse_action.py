@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class ArgparseAction(Enum):
+class ArgparseAction(str, Enum):
     """ Enum of all possible actions for argparse options/arguments """
 
     APPEND_CONST = 'append_const'

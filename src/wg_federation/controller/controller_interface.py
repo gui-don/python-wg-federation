@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from wg_federation.data.status import Status
+from wg_federation.observer.status import Status
 from wg_federation.data.input.user_input import UserInput
 
 
