@@ -1,5 +1,6 @@
 import re
 from collections.abc import MutableMapping, MutableSet, MutableSequence, Sequence
+from enum import Enum
 from io import TextIOWrapper
 from pathlib import Path
 from typing import Any, Union, Callable
@@ -17,6 +18,7 @@ class Utils:
     def classname(instance: object) -> str:
         """
         Display the class name of a given object instance
+        :rtype: object
         :param instance: Instance to get the class from
         :return:
         """
@@ -80,3 +82,12 @@ class Utils:
             mode = 'a+'
 
         return open(file=file, mode=mode, encoding=encoding)
+
+    @staticmethod
+    def enums_to_iterable(values: list[Enum]) -> list[Any]:
+        """
+        Transform a list of Enums to the corresponding list of values
+        :param values:
+        :return:
+        """
+        return list(map(lambda x: x.value, values))

@@ -1,8 +1,21 @@
+from enum import Enum
 from io import TextIOWrapper
 
 from mockito import mock
 
 from wg_federation.utils.utils import Utils
+
+
+class TestStrEnum(str, Enum):
+    """ Test StrEnum """
+    TEST1 = 'test1'
+    TEST2 = 'test2'
+
+
+class TestIntEnum(int, Enum):
+    """ Test IntEnum """
+    TEST1 = 1
+    TEST2 = 2
 
 
 class TestUtils:
@@ -56,3 +69,9 @@ class TestUtils:
             test,
             {'content': {'ok': 'value'}, '2': ['second']}
         )
+
+    def test_enums_to_iterable(self):
+        """ it transforms a list of Enums to an iterable list of strings """
+
+        assert ['test1', 'test2'] == Utils.enums_to_iterable([TestStrEnum.TEST1, TestStrEnum.TEST2])
+        assert [1, 2] == Utils.enums_to_iterable([TestIntEnum.TEST1, TestIntEnum.TEST2])
