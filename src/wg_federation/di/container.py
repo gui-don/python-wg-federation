@@ -43,10 +43,12 @@ from wg_federation.data_transformation.saver.proxy.encrypt_configuration_saver_p
 from wg_federation.data_transformation.saver.proxy.normalize_filter_configuration_saver_proxy import \
     NormalizeFilterConfigurationSaverProxy
 from wg_federation.data_transformation.saver.proxy.sign_configuration_saver_proxy import SignConfigurationSaverProxy
+from wg_federation.event.hq.wireguard_configuration_event_subscriber import WireguardConfigurationEventSubscriber
 from wg_federation.input.manager.input_manager import InputManager
 from wg_federation.input.reader.argument_reader import ArgumentReader
 from wg_federation.input.reader.configuration_file_reader import ConfigurationFileReader
 from wg_federation.input.reader.environment_variable_reader import EnvironmentVariableReader
+from wg_federation.observer.event_dispatcher import EventDispatcher
 from wg_federation.state.manager.state_data_manager import StateDataManager
 
 
@@ -258,4 +260,21 @@ class Container(containers.DynamicContainer):
                 ),
             ),
             logger=self.root_logger
+        )
+
+        # observer
+
+        self.event_dispatcher = providers.Factory(
+            EventDispatcher,
+            logger=self.root_logger,
+        )
+
+        self.hq_event_dispatcher = providers.Singleton(
+            EventDispatcher,
+            logger=self.root_logger,
+            subscribers=providers.List(
+                providers.ThreadSafeSingleton(
+                    WireguardConfigurationEventSubscriber
+                )
+            )
         )

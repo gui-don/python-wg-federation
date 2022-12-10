@@ -86,7 +86,7 @@ class TestVerifySignatureConfigurationLoaderProxy:
 
         with pytest.raises(InvalidDataError) as error:
             self._subject.load('source')
-        assert 'Data was not found' in str(error)
+        assert '“data” key not found in the inputted dict.' in str(error)
 
         verify(self._message_signer, times=0).verify_sign(...)
 
