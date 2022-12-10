@@ -53,15 +53,20 @@ class EventDispatcher:
         for subscriber in dict(sorted(self._subscribers.items())).values():
             subscribed_events: list[Enum] = list(set(events).intersection(subscriber.get_subscribed_events()))
             if len(subscribed_events) > 0:
-                self._logger.debug(
-                    f'Running: “{Utils.classname(subscriber)}” listening to '
-                    f'“{", ".join(Utils.enums_to_iterable(subscribed_events))}” events'
-                )
-                if subscriber.run(data) is not Status.SUCCESS:
+                result = subscriber.run(data)
+                if result not in [Status.SUCCESS, Status.NOT_RUN]:
                     self._logger.warning(
                         f'“{Utils.classname(subscriber)}” failed.'
                     )
-
+                if result is Status.SUCCESS:
+                    self._logger.debug(
+                        f'“{Utils.classname(subscriber)}” was run in response to '
+                        f'“{", ".join(Utils.enums_to_iterable(subscribed_events))}” events'
+                    )
+                if result is Status.NOT_RUN:
+                    self._logger.debug(
+                        f'“{Utils.classname(subscriber)}” was skipped.'
+                    )
                 if subscriber.must_stop_propagation():
                     self._logger.debug(f'Stopping event propagation as per “{Utils.classname(subscriber)}” option.')
                     break

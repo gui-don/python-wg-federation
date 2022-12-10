@@ -30,14 +30,10 @@ class EventSubscriber(ABC):
                 f'Supported data type: “{self.support_data_class().__name__}”.'
             )
 
-        return self._do_run(data)
+        if not self._should_run(data):
+            return Status.NOT_RUN
 
-    def _do_run(self, data: IsDataClass) -> Status:
-        """
-        Run the subscriber
-        :param data:
-        :return:
-        """
+        return self._do_run(data)
 
     @classmethod
     def support_data_class(cls) -> type:
@@ -64,3 +60,20 @@ class EventSubscriber(ABC):
         :return:
         """
         return 500
+
+    def _do_run(self, data: IsDataClass) -> Status:
+        """
+        Run the subscriber
+        :param data:
+        :return:
+        """
+
+    # OK, since it might be used by subclasses.
+    # pylint: disable=unused-argument
+    def _should_run(self, data: IsDataClass) -> bool:
+        """
+        Whether the subscriber should run
+        :param data:
+        :return:
+        """
+        return True

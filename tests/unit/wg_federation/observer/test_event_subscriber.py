@@ -1,7 +1,7 @@
 from enum import Enum
 
 import pytest
-from mockito import unstub
+from mockito import unstub, patch
 from pydantic import BaseModel
 
 from wg_federation.observer.event_subscriber import EventSubscriber
@@ -74,3 +74,9 @@ class TestEventSubscriber:
             self._subject.run('wrong_data')
 
         assert 'responded to an event with unsupported data type' in str(error)
+
+    def test_run3(self):
+        """ it does not run if subscriber is set not to run """
+        # pylint: disable=protected-access
+        patch(DummyEventSubscriber._should_run, lambda x: False)
+        assert Status.NOT_RUN == self._subject.run(DummyData())

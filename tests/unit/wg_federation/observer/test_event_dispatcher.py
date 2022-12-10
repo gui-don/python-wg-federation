@@ -70,7 +70,7 @@ class TestEventDispatcher:
         when(self._subscriber_stop).get_order().thenReturn(10)
         when(self._subscriber_stop).must_stop_propagation().thenReturn(True)
         when(self._subscriber_stop).get_subscribed_events().thenReturn([EnumEvent.EVENT2])
-        when(self._subscriber_stop).run(...).thenReturn(Status.SUCCESS)
+        when(self._subscriber_stop).run(...).thenReturn(Status.NOT_RUN)
 
         self._subject = EventDispatcher(
             logger=self._logger,
