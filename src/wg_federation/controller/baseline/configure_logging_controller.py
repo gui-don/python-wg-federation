@@ -1,10 +1,13 @@
 import logging
-from wg_federation.controller.controller_interface import ControllerInterface
-from wg_federation.observer.status import Status
+from enum import Enum
+
+from wg_federation.controller.controller import Controller
+from wg_federation.controller.controller_events import ControllerEvents
 from wg_federation.data.input.user_input import UserInput
+from wg_federation.observer.status import Status
 
 
-class ConfigureLoggingController(ControllerInterface):
+class ConfigureLoggingController(Controller):
     """
     Configure the application logging
     For example, logging level depending on user inputs
@@ -24,23 +27,25 @@ class ConfigureLoggingController(ControllerInterface):
         self._logger_handler = logger_handler
         self._logger = logger
 
-    def run(self, user_input: UserInput) -> Status:
-        if user_input.quiet:
+    def get_subscribed_events(self) -> list[Enum]:
+        return [ControllerEvents.CONTROLLER_BASELINE]
+
+    def _do_run(self, data: UserInput) -> Status:
+        if data.quiet:
             logging.disable()
             return Status.SUCCESS
 
         # This is a mask (as in POSIX permission mask): the Handler object sets the real logging level.
         self._logger.setLevel(logging.DEBUG)
+        self._logger_handler.setLevel(logging.getLevelName(data.log_level))
 
-        self._logger_handler.setLevel(logging.getLevelName(user_input.log_level))
-
-        if user_input.verbose:
+        if data.verbose:
             self._logger_handler.setLevel(logging.INFO)
 
-        if user_input.debug:
+        if data.debug:
             self._logger_handler.setLevel(logging.DEBUG)
 
         return Status.SUCCESS
 
-    def should_run(self, user_input: UserInput) -> bool:
+    def _should_run(self, data: UserInput) -> bool:
         return True

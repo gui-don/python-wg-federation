@@ -2,6 +2,7 @@
 from unittest.mock import MagicMock
 
 from wg_federation import Main
+from wg_federation.controller.controller_events import ControllerEvents
 
 
 class TestMain:
@@ -29,4 +30,8 @@ class TestMain:
         """ it runs the main application """
         self._subject.main()
         self._input_manager.parse_all.assert_called_once()
-        self._controller_dispatcher.dispatch_all.assert_called_once_with(self._user_input)
+        self._controller_dispatcher.dispatch.assert_called_once_with([
+            ControllerEvents.CONTROLLER_BASELINE,
+            ControllerEvents.CONTROLLER_MAIN,
+            ControllerEvents.CONTROLLER_LATE,
+        ], self._user_input)

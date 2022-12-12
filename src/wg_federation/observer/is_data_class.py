@@ -1,8 +1,8 @@
-from typing import Dict, Protocol
+from pydantic import BaseModel
 
 
-class IsDataClass(Protocol):
+class IsDataClass(BaseModel):
     """
     Represents any kind of data class
     """
-    __dataclass_fields__: Dict
+    # __dataclass_fields__: Dict

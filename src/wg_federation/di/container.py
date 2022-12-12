@@ -16,7 +16,6 @@ from systemd.journal import JournalHandler
 from wg_federation.constants import __version__
 from wg_federation.controller.baseline.configure_logging_controller import ConfigureLoggingController
 from wg_federation.controller.bootstrap.state_hq_bootstrap_controller import StateHQBootstrapController
-from wg_federation.controller.controller_dispatcher import ControllerDispatcher
 from wg_federation.crypto.cryptographic_key_deriver import CryptographicKeyDeriver
 from wg_federation.crypto.message_encrypter import MessageEncrypter
 from wg_federation.crypto.message_signer import MessageSigner
@@ -245,23 +244,6 @@ class Container(containers.DynamicContainer):
             logger=self.root_logger
         )
 
-        # controller
-        self.controller_dispatcher = providers.Singleton(
-            ControllerDispatcher,
-            # careful: controller are FIFO. First registered will be the first to run.
-            controllers=providers.List(
-                providers.Singleton(
-                    ConfigureLoggingController, logger_handler=self.logger_console_handler, logger=self.root_logger
-                ),
-                providers.Singleton(
-                    StateHQBootstrapController,
-                    state_data_manager=self.state_data_manager,
-                    cryptographic_key_deriver=self.cryptographic_key_deriver,
-                ),
-            ),
-            logger=self.root_logger
-        )
-
         # observer
 
         self.event_dispatcher = providers.Factory(
@@ -269,12 +251,28 @@ class Container(containers.DynamicContainer):
             logger=self.root_logger,
         )
 
-        self.hq_event_dispatcher = providers.Singleton(
+        self.hq_event_dispatcher = providers.ThreadSafeSingleton(
             EventDispatcher,
             logger=self.root_logger,
             subscribers=providers.List(
                 providers.ThreadSafeSingleton(
                     WireguardConfigurationEventSubscriber
                 )
+            )
+        )
+
+        # controllers
+        self.controller_dispatcher = providers.ThreadSafeSingleton(
+            EventDispatcher,
+            logger=self.root_logger,
+            subscribers=providers.List(
+                providers.ThreadSafeSingleton(
+                    ConfigureLoggingController, logger_handler=self.logger_console_handler, logger=self.root_logger
+                ),
+                providers.ThreadSafeSingleton(
+                    StateHQBootstrapController,
+                    state_data_manager=self.state_data_manager,
+                    cryptographic_key_deriver=self.cryptographic_key_deriver,
+                ),
             )
         )

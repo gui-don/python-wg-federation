@@ -1,40 +1,50 @@
 """ configure_logging_controller.py test suit """
 import logging
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
+from mockito import unstub, mock, verify, patch
 
 from wg_federation.controller.baseline.configure_logging_controller import ConfigureLoggingController
-from wg_federation.observer.status import Status
+from wg_federation.controller.controller_events import ControllerEvents
 from wg_federation.data.input.log_level import LogLevel
+from wg_federation.data.input.user_input import UserInput
+from wg_federation.observer.status import Status
 
 
 class TestConfigureLoggingController:
     """ Test ConfigureLoggingController class """
 
-    _logger = MagicMock()
-    _logger_handler = MagicMock()
-    _user_input = MagicMock()
-    _user_input_debug = MagicMock()
-    _user_input_quiet = MagicMock()
+    _logger = None
+    _logger_handler = None
+    _user_input: UserInput = None
+    _user_input_debug: UserInput = None
+    _user_input_quiet: UserInput = None
 
     _subject: ConfigureLoggingController = None
 
     @pytest.fixture(autouse=True)
     def run_around_tests(self):
         """ Resets mock between tests """
-        self._logger.reset_mock()
-        self._logger_handler.reset_mock()
+        unstub()
+        self.init()
 
-    def setup_method(self):
+    def init(self):
         """ Constructor """
+
+        self._logger_handler = mock()
+        self._logger = mock()
+
+        self._user_input_quiet = MagicMock(spec=UserInput)
         self._user_input_quiet.quiet = True
 
+        self._user_input = MagicMock(spec=UserInput)
         self._user_input.quiet = False
         self._user_input.log_level = LogLevel.INFO
         self._user_input.verbose = True
         self._user_input.debug = False
 
+        self._user_input_debug = MagicMock(spec=UserInput)
         self._user_input_debug.quiet = False
         self._user_input_debug.log_level = LogLevel.ERROR
         self._user_input_debug.verbose = False
@@ -49,53 +59,60 @@ class TestConfigureLoggingController:
         """ it can be instantiated """
         assert isinstance(self._subject, ConfigureLoggingController)
 
-    def test_should_run(self):
-        """ it checks whether it should run """
-        assert True is self._subject.should_run(self._user_input)
+    def test_get_subscribed_events(self):
+        """ it returns the events it is subscribed to """
+        assert [ControllerEvents.CONTROLLER_BASELINE] == self._subject.get_subscribed_events()
 
     def test_run1(self):
         """ it disables logging if user set the quiet flag """
+        patch(logging.disable, lambda: None)
 
-        with patch.object(logging, 'disable', return_value=None) as logging_disabled:
-            result = self._subject.run(user_input=self._user_input_quiet)
+        result = self._subject.run(self._user_input_quiet)
 
-        logging_disabled.assert_called_once()
-        self._logger.setLevel.assert_not_called()
-        self._logger_handler.setLevel.assert_not_called()
+        verify(self._logger, times=0).setLevel(logging.DEBUG)
+        verify(logging, times=1).disable()
         assert Status.SUCCESS == result
 
     def test_run2(self):
         """ it does not disable logging if user did not set the quiet flag """
+        patch(logging.disable, lambda: None)
 
-        with patch.object(logging, 'disable', return_value=None) as logging_disabled:
-            self._subject.run(user_input=self._user_input)
+        self._subject.run(self._user_input)
 
-        logging_disabled.assert_not_called()
+        verify(logging, times=0).disable()
 
     def test_run3(self):
         """ it sets logger level to INFO when if user set the verbose flag """
 
-        result = self._subject.run(user_input=self._user_input)
+        result = self._subject.run(self._user_input)
 
-        self._logger.setLevel.assert_called_with(logging.DEBUG)
-        self._logger_handler.setLevel.assert_called_with(logging.INFO)
+        verify(self._logger, times=1).setLevel(logging.DEBUG)
+        verify(self._logger_handler, times=2).setLevel(logging.INFO)
         assert Status.SUCCESS == result
 
     def test_run4(self):
         """ it sets logger level to DEBUG when if user set the debug flag """
 
-        result = self._subject.run(user_input=self._user_input_debug)
+        result = self._subject.run(self._user_input_debug)
 
-        self._logger.setLevel.assert_called_with(logging.DEBUG)
-        self._logger_handler.setLevel.assert_called_with(logging.DEBUG)
+        verify(self._logger, times=1).setLevel(logging.DEBUG)
+        verify(self._logger_handler, times=1).setLevel(logging.DEBUG)
+
         assert Status.SUCCESS == result
 
     def test_run5(self):
         """ it sets logger level to the log level that user define, but may be overridden by other flags """
-        with patch.object(logging, 'getLevelName', return_value=logging.ERROR) as logging_get_level:
-            result = self._subject.run(user_input=self._user_input_debug)
+        result = self._subject.run(self._user_input_debug)
 
-        logging_get_level.assert_called_once_with(LogLevel.ERROR)
-        self._logger_handler.setLevel.assert_called_with(logging.DEBUG)
-        self._logger_handler.setLevel.assert_any_call(logging.ERROR)
+        verify(self._logger, times=1).setLevel(logging.DEBUG)
+        verify(self._logger_handler, times=1).setLevel(logging.DEBUG)
+        verify(self._logger_handler, times=1).setLevel(logging.ERROR)
+
         assert Status.SUCCESS == result
+
+    def test_run6(self):
+        """ it does not support running with data objects that are not UserInput """
+        with pytest.raises(RuntimeError) as error:
+            self._subject.run(self._logger)
+
+        assert 'ConfigureLoggingController♦ responded to an event with unsupported data type “Dummy”.' in str(error)
