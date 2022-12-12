@@ -1,7 +1,7 @@
 """
-This package can ultimately be extracted from this program to act as an external library.
+_This package can ultimately be extracted from this program to act as an external library._
 
-This package contains an EventDispatcher class in an event_dispatcher module.
+This package contains an EventDispatcher class within an event_dispatcher module.
 EventDispatcher implements a full-featured observer pattern:
 
 - `EventDispatcher` can register multiple `EventSubscriber` implementations.
@@ -34,32 +34,58 @@ If set, this toggle will prevent any subsequent `EventSubscriber` to run, for an
 
 - Any `EventSubscriber` implementation must advertise what events it listens to.
 When `EventDispatcher` dispatches a list of events, if any events intersect with an `EventSubscriber`, it will run.
+Basic Usages:
+
+```
+class MyEvents(str, Enum):
+    TEST = 'test'
+
+class MyEventSubscriber(EventSubscriber):
+    def get_subscribed_events(self) -> list[Enum]:
+        # All the events this subscriber should react to
+        return [MyEvent.TEST]
+
+    def _do_run(self, data: MyData) -> Status:
+        # Perform anything you want as a reaction to an event
+        # Return a status
+        return Status.SUCCESS
+
+    def _should_run(self, data: MyData) -> bool:
+        # This subscriber will only run if this methods returns True.
+        # If not, Status.NOT_RUN will be returned by this subscriber, if called.
+        return 'specific_value' == data.field
+
+    @classmethod
+    def support_data_class(cls) -> type:
+        # Return the data meta class that will be available in "_do_run"
+        return MyData
+```
 
 Examples:
 
-#### An sandwich EventSubscriber that can run early and late
+#### A sandwich EventSubscriber that can run early and late
 
 ```
 [...]
 
 class Event(Enum):
-    SANDWICH = 'sandwich'
+SANDWICH = 'sandwich'
 
 class SandwichEventSubscriber(EventSubscriber):
-    order: int = 1
+order: int = 1
 
-    def __init__(self, order: int = 1);
-        self.order = order
+def __init__(self, order: int = 1);
+    self.order = order
 
-    def get_subscribed_events(self) -> list[Enum]:
-        return [Event.SANDWICH]
+def get_subscribed_events(self) -> list[Enum]:
+    return [Event.SANDWICH]
 
-    def run(self, data: BaseModel) -> Status:
-        print('Running this sandwich event listener')
-        return Status.SUCCESS
+def run(self, data: BaseModel) -> Status:
+    print('Running this sandwich event listener')
+    return Status.SUCCESS
 
-    def get_order(self) -> int:
-        return self.order
+def get_order(self) -> int:
+    return self.order
 
 early_subscriber = SandwichEventSubscriber()
 late_subscriber = SandwichEventSubscriber(99999)
