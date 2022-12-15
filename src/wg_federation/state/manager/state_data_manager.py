@@ -9,6 +9,8 @@ from wg_federation.data_transformation.configuration_location_finder import Conf
 from wg_federation.data_transformation.loader.can_load_configuration_interface import CanLoadConfigurationInterface
 from wg_federation.data_transformation.locker.configuration_locker import ConfigurationLocker
 from wg_federation.data_transformation.saver.can_save_configuration_interface import CanSaveConfigurationInterface
+from wg_federation.event.hq.hq_event import HQEvent
+from wg_federation.observer.event_dispatcher import EventDispatcher
 from wg_federation.utils.utils import Utils
 
 
@@ -21,6 +23,7 @@ class StateDataManager:
     _configuration_saver: CanSaveConfigurationInterface = None
     _configuration_locker: ConfigurationLocker = None
     _wireguard_key_generator: WireguardKeyGenerator = None
+    _event_dispatcher: EventDispatcher = None
     _logger: Logger = None
 
     # pylint: disable=too-many-arguments
@@ -31,6 +34,7 @@ class StateDataManager:
             configuration_saver: CanSaveConfigurationInterface,
             configuration_locker: ConfigurationLocker,
             wireguard_key_generator: WireguardKeyGenerator,
+            event_dispatcher: EventDispatcher,
             logger: Logger
     ):
         """
@@ -40,6 +44,7 @@ class StateDataManager:
         :param configuration_saver:
         :param configuration_locker:
         :param wireguard_key_generator:
+        :param event_dispatcher:
         :param logger:
         """
         self._configuration_location_finder = configuration_location_finder
@@ -47,6 +52,7 @@ class StateDataManager:
         self._configuration_saver = configuration_saver
         self._configuration_locker = configuration_locker
         self._wireguard_key_generator = wireguard_key_generator
+        self._event_dispatcher = event_dispatcher
         self._logger = logger
 
     def reload(self) -> HQState:
@@ -57,21 +63,39 @@ class StateDataManager:
         with self._configuration_locker.lock_shared(self._configuration_location_finder.state()) as conf_file:
             raw_configuration = self._reload_from_source(conf_file)
 
-            return HQState(
-                federation=Federation.from_dict(raw_configuration.get('federation')),
-                interfaces=WireguardInterface.from_list(raw_configuration.get('interfaces')),
-                forums=WireguardInterface.from_list(raw_configuration.get('forums')),
-                phone_lines=WireguardInterface.from_list(raw_configuration.get('phone_lines')),
-            )
+        return self._event_dispatcher.dispatch([HQEvent.STATE_LOADED], HQState(
+            federation=Federation.from_dict(raw_configuration.get('federation')),
+            interfaces=WireguardInterface.from_list(raw_configuration.get('interfaces')),
+            forums=WireguardInterface.from_list(raw_configuration.get('forums')),
+            phone_lines=WireguardInterface.from_list(raw_configuration.get('phone_lines')),
+        ))
 
-    def create_hq_state(self):
+    # def update_hq_state(self, new_state_data: dict) -> HQState:
+    #     with self._configuration_locker.lock_exclusively(self._configuration_location_finder.state()) as conf_file:
+    #         self._reload_from_source(conf_file),
+    #
+    #         state = HQState(**always_merger.merge(
+    #             self._reload_from_source(conf_file),
+    #             new_state_data
+    #         ))
+    #         self._configuration_saver.save(state.dict(), conf_file)
+    #
+    #     return state
+
+    def create_hq_state(self) -> HQState:
         """
         Create a new HQState and save it.
         This method disregard whether a state already exists. To use with precaution.
         :return:
         """
+        state = self._generate_new_hq_state()
+
         with self._configuration_locker.lock_exclusively(self._configuration_location_finder.state()) as conf_file:
-            self._configuration_saver.save(self._generate_new_hq_state().dict(), conf_file)
+            self._configuration_saver.save(state.dict(), conf_file)
+
+        self._event_dispatcher.dispatch([HQEvent.STATE_CREATED], state)
+
+        return state
 
     def _reload_from_source(self, source: Any = None) -> dict:
         self._logger.debug(
@@ -91,7 +115,7 @@ class StateDataManager:
             forums=(
                 WireguardInterface(
                     name='wgf-forum0',
-                    addresses=('172.30.0.1/22',),
+                    addresses=('172.32.0.1/22',),
                     private_key=forum_key_pairs[0],
                     public_key=forum_key_pairs[1],
                     psk=self._wireguard_key_generator.generate_psk(),
@@ -101,7 +125,7 @@ class StateDataManager:
             phone_lines=(
                 WireguardInterface(
                     name='wgf-phoneline0',
-                    addresses=('172.30.4.1/22',),
+                    addresses=('172.32.4.1/22',),
                     private_key=phone_line_key_pairs[0],
                     public_key=phone_line_key_pairs[1],
                     psk=self._wireguard_key_generator.generate_psk(),

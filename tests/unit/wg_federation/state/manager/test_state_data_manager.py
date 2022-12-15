@@ -1,6 +1,8 @@
 import pytest
 from mockito import mock, unstub, verify, when, ANY
 
+from wg_federation.data.state.hq_state import HQState
+from wg_federation.event.hq.hq_event import HQEvent
 from wg_federation.state.manager.state_data_manager import StateDataManager
 
 
@@ -15,6 +17,7 @@ class TestStateDataManager:
     _configuration_saver = None
     _configuration_locker = None
     _wireguard_key_generator = None
+    _event_dispatcher = None
     _logger = None
 
     _subject: StateDataManager = None
@@ -84,6 +87,9 @@ class TestStateDataManager:
             'q6RUpn6g/iz+c4rQsixD+UMa39n+8NxaVJ70ykYlgkA=',
             'icpKkwUPFcduokh8jTU4iAoLDwCrk9Z+TCAHckmYXH8=',
         )
+
+        self._event_dispatcher = mock()
+
         self._logger = mock()
 
         self._subject = StateDataManager(
@@ -92,6 +98,7 @@ class TestStateDataManager:
             configuration_saver=self._configuration_saver,
             configuration_locker=self._configuration_locker,
             wireguard_key_generator=self._wireguard_key_generator,
+            event_dispatcher=self._event_dispatcher,
             logger=self._logger,
         )
 
@@ -106,6 +113,7 @@ class TestStateDataManager:
         self._subject.create_hq_state()
 
         verify(self._configuration_saver, times=1).save(ANY(dict), self._file)
+        verify(self._event_dispatcher, times=1).dispatch([HQEvent.STATE_CREATED], ANY(HQState))
 
     def test_reload(self):
         """ it reloads the state from default source """
@@ -113,3 +121,4 @@ class TestStateDataManager:
         self._subject.reload()
 
         verify(self._configuration_loader, times=1).load_if_exists(self._file)
+        verify(self._event_dispatcher, times=1).dispatch([HQEvent.STATE_LOADED], ANY(HQState))

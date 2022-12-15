@@ -205,6 +205,23 @@ class Container(containers.DynamicContainer):
             logger=self.root_logger
         )
 
+        # observer
+
+        self.event_dispatcher = providers.Factory(
+            EventDispatcher,
+            logger=self.root_logger,
+        )
+
+        self.hq_event_dispatcher = providers.ThreadSafeSingleton(
+            EventDispatcher,
+            logger=self.root_logger,
+            subscribers=providers.List(
+                providers.ThreadSafeSingleton(
+                    WireguardConfigurationEventSubscriber
+                )
+            )
+        )
+
         # State
 
         self.state_manager_configuration_loader = providers.Singleton(
@@ -241,24 +258,8 @@ class Container(containers.DynamicContainer):
             configuration_saver=self.state_manager_configuration_saver,
             configuration_locker=self.configuration_locker,
             wireguard_key_generator=self.wireguard_key_generator,
+            event_dispatcher=self.hq_event_dispatcher,
             logger=self.root_logger
-        )
-
-        # observer
-
-        self.event_dispatcher = providers.Factory(
-            EventDispatcher,
-            logger=self.root_logger,
-        )
-
-        self.hq_event_dispatcher = providers.ThreadSafeSingleton(
-            EventDispatcher,
-            logger=self.root_logger,
-            subscribers=providers.List(
-                providers.ThreadSafeSingleton(
-                    WireguardConfigurationEventSubscriber
-                )
-            )
         )
 
         # controllers
