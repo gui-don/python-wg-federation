@@ -39,6 +39,7 @@ class TestConfigurationLocationFinder:
 
         self._xdg_lib = mock()
         when(self._xdg_lib).xdg_data_home().thenReturn('/home/test')
+        when(self._xdg_lib).xdg_runtime_dir().thenReturn('/run')
 
         self._subject = ConfigurationLocationFinder(
             user_input=self._user_input,
@@ -129,3 +130,21 @@ class TestConfigurationLocationFinder:
             self._subject.salt()
 
         assert 'is not supported for the salt' in str(error)
+
+    def test_interfaces_directory(self):
+        """ it returns the wg interface directory """
+        when(self._pathlib_lib).Path('/run', 'testapp', 'interfaces').thenReturn('path_to_interface')
+
+        assert 'path_to_interface' == self._subject.interfaces_directory()
+
+    def test_phone_lines_directory(self):
+        """ it returns the wg phone lines directory """
+        when(self._pathlib_lib).Path('/run', 'testapp', 'phone_lines').thenReturn('path_to_phone_lines')
+
+        assert 'path_to_phone_lines' == self._subject.phone_lines_directory()
+
+    def test_forums_directory(self):
+        """ it returns the wg interface directory """
+        when(self._pathlib_lib).Path('/run', 'testapp', 'forums').thenReturn('path_to_forums')
+
+        assert 'path_to_forums' == self._subject.forums_directory()

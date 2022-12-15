@@ -52,6 +52,27 @@ class ConfigurationLocationFinder:
 
         return self.__get_xdg_home_path('state.json')
 
+    def interfaces_directory(self) -> str:
+        """
+        The WireGuard federation interfaces directory
+        :return:
+        """
+        return self.__get_xdg_run_path('interfaces')
+
+    def phone_lines_directory(self) -> str:
+        """
+        The WireGuard phone lines directory
+        :return:
+        """
+        return self.__get_xdg_run_path('phone_lines')
+
+    def forums_directory(self) -> str:
+        """
+        The WireGuard forums directory
+        :return:
+        """
+        return self.__get_xdg_run_path('forums')
+
     def state_digest_belongs_to_state(self) -> bool:
         """
         Whether the state digest should be part of the state
@@ -67,4 +88,11 @@ class ConfigurationLocationFinder:
             self._xdg_lib.xdg_data_home(),
             self._application_name,
             filename,
+        ))
+
+    def __get_xdg_run_path(self, path_suffix: str) -> str:
+        return str(self._pathlib_lib.Path(
+            self._xdg_lib.xdg_runtime_dir(),
+            self._application_name,
+            path_suffix
         ))
