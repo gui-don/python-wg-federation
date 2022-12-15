@@ -73,5 +73,5 @@ class TestUtils:
     def test_enums_to_iterable(self):
         """ it transforms a list of Enums to an iterable list of strings """
 
-        assert ['test1', 'test2'] == Utils.enums_to_iterable([StrTestEnum.TEST1, StrTestEnum.TEST2])
-        assert [1, 2] == Utils.enums_to_iterable([IntTestEnum.TEST1, IntTestEnum.TEST2])
+        assert ['test1', 'test2'] == Utils.enums_to_list([StrTestEnum.TEST1, StrTestEnum.TEST2])
+        assert [1, 2] == Utils.enums_to_list([IntTestEnum.TEST1, IntTestEnum.TEST2])

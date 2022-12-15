@@ -33,32 +33,53 @@ Because of the previous behavior, be careful in situation when you ignore the de
 If set, this toggle will prevent any subsequent `EventSubscriber` to run, for any events.
 
 - Any `EventSubscriber` implementation must advertise what events it listens to.
+  When `EventDispatcher` dispatches a list of events, if any events intersect with an `EventSubscriber` subscribed events,
+    it will run.
+  Expected event data type is a bit peculiar.
+  They should be an Enum set to a specific value. This value should be of type `tuple[str, type, Optional[bool]]`:
+      1. `str` should ne a humanly readable label for the event.
+      2. `type` should be the allowed type of data object for the specific event.
+          No `EventSubscriber` implementation can listen to events requiring *different* data types,
+          otherwise the `EventSubscriber` implementation will be permanently ignored and a warning raised.
+      3. `Optional[bool]`, if set to `True`, will allow the data to be mutated by any `EventSubscriber`.
+          If any dispatched event is immutable (this value is absent or `False`): any data mutation will be ignored.
+          It means all the dispatched events must have this value to `True` for the data mutation to work.
+
+
+- Any `EventSubscriber` implementation can advertise whether it should run.
+By default, any `EventSubscriber` implementation is run, an overridable behavior.
+
 When `EventDispatcher` dispatches a list of events, if any events intersect with an `EventSubscriber`, it will run.
+
 Basic Usages:
 
 ```
 class MyEvents(str, Enum):
-    TEST = 'test'
+    # An event named "test", expecting a mutable MyData type.
+    TEST = tuple('test', MyData, True)
+    # An event named "test2", expecting a immutable MyOtherData type.
+    TEST2 = tuple('test2', MyOtherData)
 
 class MyEventSubscriber(EventSubscriber):
     def get_subscribed_events(self) -> list[Enum]:
         # All the events this subscriber should react to
         return [MyEvent.TEST]
 
-    def _do_run(self, data: MyData) -> Status:
+    def run(self, data: MyData) -> MyData:
         # Perform anything you want as a reaction to an event
-        # Return a status
-        return Status.SUCCESS
+        if MyData.field == 'wrong value':
+            # Avoid this if possible. Prefer to implement `should_run`.
+            raise SubscriberGracefulError('This error will be caught and program will continue.')
+        if MyData.field == 'fatal':
+            raise RuntimeError('This error will end the program immediately.')
 
-    def _should_run(self, data: MyData) -> bool:
-        # This subscriber will only run if this methods returns True.
-        # If not, Status.NOT_RUN will be returned by this subscriber, if called.
-        return 'specific_value' == data.field
-
-    @classmethod
-    def support_data_class(cls) -> type:
-        # Return the data meta class that will be available in "_do_run"
+        # Because the event "MyEvent.TEST" allows MyData to be mutated, we can change its content.
+        MyData.field = 'new value'
         return MyData
+
+    def should_run(self, data: MyData) -> bool:
+        # This subscriber will only run if this method returns True.
+        return 'specific_value' == data.field
 ```
 
 Examples:
@@ -69,7 +90,7 @@ Examples:
 [...]
 
 class Event(Enum):
-SANDWICH = 'sandwich'
+SANDWICH = tuple('sandwich', BaseModel)
 
 class SandwichEventSubscriber(EventSubscriber):
 order: int = 1
@@ -80,9 +101,9 @@ def __init__(self, order: int = 1);
 def get_subscribed_events(self) -> list[Enum]:
     return [Event.SANDWICH]
 
-def run(self, data: BaseModel) -> Status:
+def run(self, data: BaseModel) -> BaseModel:
     print('Running this sandwich event listener')
-    return Status.SUCCESS
+    return BaseModel
 
 def get_order(self) -> int:
     return self.order

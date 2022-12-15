@@ -2,8 +2,6 @@ from abc import ABC
 from enum import Enum
 
 from wg_federation.observer.is_data_class import IsDataClass
-from wg_federation.observer.status import Status
-from wg_federation.utils.utils import Utils
 
 
 class EventSubscriber(ABC):
@@ -13,34 +11,33 @@ class EventSubscriber(ABC):
 
     def get_subscribed_events(self) -> list[Enum]:
         """
-        Returns the list of events that this subscriber listens to
+        Returns the list of events that this subscriber listens to.
+        :return: list of Enums of type Sequence[str, type]
+        """
+        raise NotImplementedError
+
+    # OK, since it might be used by subclasses.
+    # pylint: disable=unused-argument
+    def should_run(self, data: IsDataClass) -> bool:
+        """
+        Whether the subscriber should run.
+        Use this method to set conditions to determine whether the subscriber `run` method needs to be called or not.
+        :param data:
         :return:
         """
+        return True
 
-    def run(self, data: IsDataClass) -> Status:
+    def run(self, data: IsDataClass) -> IsDataClass:
         """
-        Runs the subscriber after checking if data is valid
+        Runs the subscriber.
+        Whether this method is called depends on the local `should_run`.
+        It also depends on various logic in the EventDispatcher, for example, the validity of the data object.
         :param data: Any kind of data expected by your specific implementation of a subscriber.
-        :raise RuntimeError when data is not of the type returned by `support_data_class()`
-        :return:
+        :raise SubscriberGracefulError when this subscriber failed to execute correctly,
+          but you want the program execution to continue gracefully.
+        :return: Same data type passed as argument, unchanged or mutated.
         """
-        if not isinstance(data, self.support_data_class()):
-            raise RuntimeError(
-                f'{Utils.classname(self)} responded to an event with unsupported data type “{type(data).__name__}”.',
-                f'Supported data type: “{self.support_data_class().__name__}”.'
-            )
-
-        if not self._should_run(data):
-            return Status.NOT_RUN
-
-        return self._do_run(data)
-
-    @classmethod
-    def support_data_class(cls) -> type:
-        """
-        Returns what kind of data class this class supports
-        :return:
-        """
+        raise NotImplementedError
 
     @classmethod
     def must_stop_propagation(cls) -> bool:
@@ -51,8 +48,7 @@ class EventSubscriber(ABC):
         """
         return False
 
-    @classmethod
-    def get_order(cls) -> int:
+    def get_order(self) -> int:
         """
         Order of execution for this specific subscriber, compared to other subscribers.
         Lower values will always be executed before high values.
@@ -60,20 +56,3 @@ class EventSubscriber(ABC):
         :return:
         """
         return 500
-
-    def _do_run(self, data: IsDataClass) -> Status:
-        """
-        Run the subscriber
-        :param data:
-        :return:
-        """
-
-    # OK, since it might be used by subclasses.
-    # pylint: disable=unused-argument
-    def _should_run(self, data: IsDataClass) -> bool:
-        """
-        Whether the subscriber should run
-        :param data:
-        :return:
-        """
-        return True

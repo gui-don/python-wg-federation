@@ -84,7 +84,7 @@ class Utils:
         return open(file=file, mode=mode, encoding=encoding)
 
     @staticmethod
-    def enums_to_iterable(values: list[Enum]) -> list[Any]:
+    def enums_to_list(values: list[Enum]) -> list[Any]:
         """
         Transform a list of Enums to the corresponding list of values
         :param values:

@@ -1,13 +1,12 @@
 import logging
 from enum import Enum
 
-from wg_federation.controller.controller import Controller
 from wg_federation.controller.controller_events import ControllerEvents
 from wg_federation.data.input.user_input import UserInput
-from wg_federation.observer.status import Status
+from wg_federation.observer.event_subscriber import EventSubscriber
 
 
-class ConfigureLoggingController(Controller):
+class ConfigureLoggingController(EventSubscriber):
     """
     Configure the application logging
     For example, logging level depending on user inputs
@@ -30,10 +29,10 @@ class ConfigureLoggingController(Controller):
     def get_subscribed_events(self) -> list[Enum]:
         return [ControllerEvents.CONTROLLER_BASELINE]
 
-    def _do_run(self, data: UserInput) -> Status:
+    def run(self, data: UserInput) -> UserInput:
         if data.quiet:
             logging.disable()
-            return Status.SUCCESS
+            return data
 
         # This is a mask (as in POSIX permission mask): the Handler object sets the real logging level.
         self._logger.setLevel(logging.DEBUG)
@@ -45,7 +44,4 @@ class ConfigureLoggingController(Controller):
         if data.debug:
             self._logger_handler.setLevel(logging.DEBUG)
 
-        return Status.SUCCESS
-
-    def _should_run(self, data: UserInput) -> bool:
-        return True
+        return data

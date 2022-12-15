@@ -51,8 +51,8 @@ Feature: command line general features
   @command-line-general
   Scenario Outline: wg-federation shows its debug outputs when debug option is set, because this option has the highest precedence
     When we run program with "<logging_options>"
-    Then the stderr contains "“ConfigureLoggingController♦” was run in response"
-    Then the stderr contains "“StateHQBootstrapController♦” was skipped."
+    Then the stderr contains "ConfigureLoggingController♦ was run in response"
+    Then the stderr contains "StateHQBootstrapController♦ was skipped."
 
     Examples: equivalent options for debug logging
       | logging_options       |
@@ -89,8 +89,8 @@ Feature: command line general features
   Scenario Outline: wg-federation show its debug outputs when debug option is set from configuration files
     Given a system file “<configuration_path>” contains the following content “debug: True”
     When we run program with "--log-level CRITICAL"
-    Then the stderr contains "“ConfigureLoggingController♦” was run in response"
-    Then the stderr contains "“StateHQBootstrapController♦” was skipped."
+    Then the stderr contains "ConfigureLoggingController♦ was run in response"
+    Then the stderr contains "StateHQBootstrapController♦ was skipped."
 
     Examples: system files
       | configuration_path                     |

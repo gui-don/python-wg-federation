@@ -1,12 +1,11 @@
 from enum import Enum
 
 import pytest
-from mockito import unstub, patch
+from mockito import unstub
 from pydantic import BaseModel
 
 from wg_federation.observer.event_subscriber import EventSubscriber
 from wg_federation.observer.is_data_class import IsDataClass
-from wg_federation.observer.status import Status
 
 
 class DummyData(BaseModel):
@@ -14,18 +13,28 @@ class DummyData(BaseModel):
     value: str = 'default'
 
 
+class DummyEvent(Enum):
+    """ Dummy event for tests """
+    TEST = ('test', DummyData, True)
+
+
 class DummyEventSubscriber(EventSubscriber):
     """ Dummy EventSubscriber for tests """
 
+    _order = None
+
+    def __init__(self, order):
+        self._order = order
+
     def get_subscribed_events(self) -> list[Enum]:
-        return [Status.SUCCESS]
+        return [DummyEvent.TEST]
 
-    def _do_run(self, data: IsDataClass) -> Status:
-        return Status.SUCCESS
+    def run(self, data: IsDataClass) -> IsDataClass:
+        data.value = 'modified'
+        return data
 
-    @classmethod
-    def support_data_class(cls) -> type:
-        return DummyData
+    def get_order(self) -> int:
+        return self._order
 
 
 class TestEventSubscriber:
@@ -42,41 +51,45 @@ class TestEventSubscriber:
     def init(self):
         """ Constructor """
 
-        self._subject = DummyEventSubscriber()
+        self._subject = DummyEventSubscriber(500)
 
     def test_init(self):
         """ it can be instantiated """
         assert isinstance(self._subject, EventSubscriber)
 
-    def test_support_data_class(self):
-        """ it returns what kind of data class it supports """
-        assert DummyData == self._subject.support_data_class()
-
     def test_get_subscribed_events(self):
         """ it returns subscribed events """
-        assert [Status.SUCCESS] == self._subject.get_subscribed_events()
+        assert [DummyEvent.TEST] == self._subject.get_subscribed_events()
+
+    def test_get_subscribed_events2(self):
+        """ it raises an error if get_subscribed_events is not implemented """
+        with pytest.raises(NotImplementedError):
+            EventSubscriber().get_subscribed_events()
 
     def test_get_order(self):
-        """ it returns its order of execution """
+        """ it returns its default order of execution """
         assert 500 == self._subject.get_order()
 
+    def test_get_order2(self):
+        """ it returns its order of execution """
+        assert 34 == DummyEventSubscriber(34).get_order()
+
     def test_must_stop_propagation(self):
-        """ it returns whether or not it should stop propagation """
+        """ it returns whether it should stop propagation """
         assert not self._subject.must_stop_propagation()
 
     def test_run(self):
-        """ it runs """
-        assert Status.SUCCESS == self._subject.run(DummyData())
+        """ it runs and can change data object """
+        data = DummyData()
+        assert 'default' == data.value
+        assert data == self._subject.run(data)
+        assert 'modified' == data.value
 
     def test_run2(self):
-        """ it throws an exception if run with the wrong type of data """
-        with pytest.raises(RuntimeError) as error:
-            self._subject.run('wrong_data')
+        """ it raise an error if EventSubscriber does not implement run """
+        with pytest.raises(NotImplementedError):
+            EventSubscriber().run('any')
 
-        assert 'responded to an event with unsupported data type' in str(error)
-
-    def test_run3(self):
-        """ it does not run if subscriber is set not to run """
-        # pylint: disable=protected-access
-        patch(DummyEventSubscriber._should_run, lambda x: False)
-        assert Status.NOT_RUN == self._subject.run(DummyData())
+    def test_should_run(self):
+        """ it does run by default """
+        assert self._subject.should_run(DummyData())

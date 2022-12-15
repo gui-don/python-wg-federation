@@ -9,7 +9,6 @@ from wg_federation.controller.baseline.configure_logging_controller import Confi
 from wg_federation.controller.controller_events import ControllerEvents
 from wg_federation.data.input.log_level import LogLevel
 from wg_federation.data.input.user_input import UserInput
-from wg_federation.observer.status import Status
 
 
 class TestConfigureLoggingController:
@@ -71,7 +70,7 @@ class TestConfigureLoggingController:
 
         verify(self._logger, times=0).setLevel(logging.DEBUG)
         verify(logging, times=1).disable()
-        assert Status.SUCCESS == result
+        assert self._user_input_quiet == result
 
     def test_run2(self):
         """ it does not disable logging if user did not set the quiet flag """
@@ -88,7 +87,7 @@ class TestConfigureLoggingController:
 
         verify(self._logger, times=1).setLevel(logging.DEBUG)
         verify(self._logger_handler, times=2).setLevel(logging.INFO)
-        assert Status.SUCCESS == result
+        assert self._user_input == result
 
     def test_run4(self):
         """ it sets logger level to DEBUG when if user set the debug flag """
@@ -98,7 +97,7 @@ class TestConfigureLoggingController:
         verify(self._logger, times=1).setLevel(logging.DEBUG)
         verify(self._logger_handler, times=1).setLevel(logging.DEBUG)
 
-        assert Status.SUCCESS == result
+        assert self._user_input_debug == result
 
     def test_run5(self):
         """ it sets logger level to the log level that user define, but may be overridden by other flags """
@@ -108,11 +107,4 @@ class TestConfigureLoggingController:
         verify(self._logger_handler, times=1).setLevel(logging.DEBUG)
         verify(self._logger_handler, times=1).setLevel(logging.ERROR)
 
-        assert Status.SUCCESS == result
-
-    def test_run6(self):
-        """ it does not support running with data objects that are not UserInput """
-        with pytest.raises(RuntimeError) as error:
-            self._subject.run(self._logger)
-
-        assert 'ConfigureLoggingController♦ responded to an event with unsupported data type “Dummy”.' in str(error)
+        assert self._user_input_debug == result
