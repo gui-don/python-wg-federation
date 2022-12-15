@@ -33,7 +33,8 @@ class EventDispatcher:
         """
         Adds another subscriber to the set of subscribers handled by this class.
         :param subscriber:
-        :param increment: Do not use this argument directly. Used internally to set the correct order of subscribers.
+        :param increment: Do not use this argument directly. Used internally to determine order for subscribers
+          with the same order value.
         :return:
         """
         if (subscriber.get_order(), increment) in self._subscribers:
