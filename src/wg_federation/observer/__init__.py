@@ -35,21 +35,25 @@ If set, this toggle will prevent any subsequent `EventSubscriber` to run, for an
 - Any `EventSubscriber` implementation must advertise what events it listens to.
   When `EventDispatcher` dispatches a list of events, if any events intersect with an `EventSubscriber` subscribed events,
     it will run.
-  Expected event data type is a bit peculiar.
-  They should be an Enum set to a specific value. This value should be of type `tuple[str, type, Optional[bool]]`:
+  The expected data type for events needs some explanations.
+  They should be an Enum pointing to a specific value of type `tuple[str, type, Optional[bool]]`:
       1. `str` should ne a humanly readable label for the event.
-      2. `type` should be the allowed type of data object for the specific event.
-          No `EventSubscriber` implementation can listen to events requiring *different* data types,
-          otherwise the `EventSubscriber` implementation will be permanently ignored and a warning raised.
+      2. `type` should be the expected data object type for the specific event.
+          Note that no `EventSubscriber` implementation can listen to a list of events requiring *different* data types,
+          otherwise the `EventSubscriber` implementation will be permanently ignored and a warning will be raised.
       3. `Optional[bool]`, if set to `True`, will allow the data to be mutated by any `EventSubscriber`.
-          If any dispatched event is immutable (this value is absent or `False`): any data mutation will be ignored.
-          It means all the dispatched events must have this value to `True` for the data mutation to work.
-
+          Within dispatched events list, if any event is immutable (meaning: if this value is absent or `False`):
+          any data mutation by all `EventSubscribers` will be ignored.
+          It means you should be extra careful that during a single `dispatch`, *all* events are mutable: `True` for
+          the data mutation to work.
 
 - Any `EventSubscriber` implementation can advertise whether it should run.
-By default, any `EventSubscriber` implementation is run, an overridable behavior.
+  All `EventSubscriber` implementations are run by default, if `should_run` is left untouched.
 
-When `EventDispatcher` dispatches a list of events, if any events intersect with an `EventSubscriber`, it will run.
+- When `run`, any `EventSubscriber` implementation can raise a special `SubscriberGracefulError`.
+  Contrary to any other exception, this error will not abort the entire program.
+  Instead, it will be caught by the `EventDispatcher` and a warning will be logged.
+
 
 Basic Usages:
 

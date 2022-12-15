@@ -12,7 +12,7 @@ class EventSubscriber(ABC):
     def get_subscribed_events(self) -> list[Enum]:
         """
         Returns the list of events that this subscriber listens to.
-        :return: list of Enums of type Sequence[str, type]
+        :return: list of Enums of type Sequence[str, type, Optional[bool]]
         """
         raise NotImplementedError
 

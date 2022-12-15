@@ -70,18 +70,6 @@ class StateDataManager:
             phone_lines=WireguardInterface.from_list(raw_configuration.get('phone_lines')),
         ))
 
-    # def update_hq_state(self, new_state_data: dict) -> HQState:
-    #     with self._configuration_locker.lock_exclusively(self._configuration_location_finder.state()) as conf_file:
-    #         self._reload_from_source(conf_file),
-    #
-    #         state = HQState(**always_merger.merge(
-    #             self._reload_from_source(conf_file),
-    #             new_state_data
-    #         ))
-    #         self._configuration_saver.save(state.dict(), conf_file)
-    #
-    #     return state
-
     def create_hq_state(self) -> HQState:
         """
         Create a new HQState and save it.

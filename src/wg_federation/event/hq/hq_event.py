@@ -1,11 +1,12 @@
 from enum import Enum
+from typing import Optional
 
 from wg_federation.data.state.federation import Federation
 from wg_federation.data.state.hq_state import HQState
 from wg_federation.data.state.wireguard_interface import WireguardInterface
 
 
-class HQEvent(tuple[str, type], Enum):
+class HQEvent(tuple[str, type, Optional[bool]], Enum):
     """
     HQ events
     """
