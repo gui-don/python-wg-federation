@@ -68,6 +68,6 @@ twine upload dist/*VERSION_HERE
 
 ```bash
 sphinx-apidoc -o doc/ src/wg_federation # Generate API documentation directly from the code
-pyreverse -o png -d doc/img --colorized --ignore container.py,federation.py,wireguard_interface.py,hq_state.py,controller_events.py,hq_event.py,wireguard_peer.py,constants.py,main.py,status.py,raw_options.py,log_level.py,is_argument_data_class.py,is_data_class.py,interface_status.py,configuration_saver_interface.py,configuration_loader_interface.py,can_save_configuration_interface.py,can_load_configuration_interface.py,user_input.py,command_line_argument.py,configuration_backend.py,argparse_action.py,command_line_option.py src/wg_federation && eog doc/img/classes.png # Generate UML diagram
+pyreverse -o png -d doc/img --colorized --ignore container.py,federation.py,wireguard_interface.py,hq_state.py,controller_events.py,hq_event.py,wireguard_peer.py,constants.py,main.py,status.py,raw_options.py,log_level.py,is_argument_data_class.py,is_data_class.py,interface_status.py,configuration_saver_interface.py,configuration_loader_interface.py,can_save_configuration_interface.py,can_load_configuration_interface.py,user_input.py,command_line_argument.py,configuration_backend.py,argparse_action.py,command_line_option.py src/wg_federation # Generate UML diagram
 make -C doc html # Generate HTML documentation fr²om .rst source code
 ```
