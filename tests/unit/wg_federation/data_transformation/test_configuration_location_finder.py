@@ -144,7 +144,7 @@ class TestConfigurationLocationFinder:
         assert 'path_to_phone_lines' == self._subject.phone_lines_directory()
 
     def test_forums_directory(self):
-        """ it returns the wg interface directory """
+        """ it returns the wg forums directory """
         when(self._pathlib_lib).Path('/run', 'testapp', 'forums').thenReturn('path_to_forums')
 
         assert 'path_to_forums' == self._subject.forums_directory()
