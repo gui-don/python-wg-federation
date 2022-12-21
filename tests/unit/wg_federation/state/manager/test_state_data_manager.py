@@ -1,6 +1,7 @@
 import pytest
-from mockito import mock, unstub, verify, when, ANY
+from mockito import mock, unstub, verify, when, ANY, contains
 
+from wg_federation.data.input.command_line.secret_retreival_method import SecretRetrievalMethod
 from wg_federation.data.state.hq_state import HQState
 from wg_federation.event.hq.hq_event import HQEvent
 from wg_federation.state.manager.state_data_manager import StateDataManager
@@ -11,6 +12,7 @@ class TestStateDataManager:
 
     _file = None
     _lock = None
+    _user_input = None
 
     _configuration_location_finder = None
     _configuration_loader = None
@@ -26,10 +28,15 @@ class TestStateDataManager:
     def run_around_tests(self):
         """ Resets mock between tests """
         unstub()
-        self.setup_method()
+        self.init()
 
-    def setup_method(self):
+    def init(self):
         """ Constructor """
+
+        self._user_input = mock({
+            'private_key_retrieval_method': SecretRetrievalMethod.WG_FEDERATION_COMMAND,
+            'root_passphrase_command': 'example command',
+        })
 
         self._lock = mock()
         # pylint: disable=unnecessary-dunder-call
@@ -46,30 +53,30 @@ class TestStateDataManager:
                             'forum_min_port': 44200,
                             'phone_line_max_port': 44199,
                             'phone_line_min_port': 44100},
-             'forums': [{'addresses': ['172.30.0.1/22'],
+             'forums': [{'address': ['172.30.0.1/22'],
                          'listen_port': 44200,
                          'mtu': None,
                          'name': 'wgf-forum0',
                          'status': 'NEW',
                          'public_key': '2a9+BiAk3oQHOqSwUf2sfyUs9SOkm1TwnkAKk0cbPFg=',
                          'private_key': 'qdYplAbCzmsK938SBfzLdttcloK18+77q1M+TWJpnVk=',
-                         'psk': 'mHZFMxgZ+frxa3CtZewdrH3E5o2RwwNbs49wyaf+EnY='}],
-             'phone_lines': [{'addresses': ['172.30.4.1/22'],
+                         'shared_psk': 'mHZFMxgZ+frxa3CtZewdrH3E5o2RwwNbs49wyaf+EnY='}],
+             'phone_lines': [{'address': ['172.30.4.1/22'],
                               'listen_port': 44100,
                               'mtu': None,
                               'name': 'wgf-phoneline0',
                               'status': 'NEW',
                               'public_key': '785FGWX5b/nvr8a40YwBTz/h34Fu8sJeDSTSMCCW/nw=',
                               'private_key': '0MQX95OV9b05zkAmyzJMvseCm87aXt9vEmTTBqbOwrg=',
-                              'psk': '3No0+mBhyBP8+6z1xrgy7navwT2xZuXWywzn8UgP6Ik='}],
-             'interfaces': [{'addresses': ['172.30.8.1/22'],
+                              'shared_psk': '3No0+mBhyBP8+6z1xrgy7navwT2xZuXWywzn8UgP6Ik='}],
+             'interfaces': [{'address': ['172.30.8.1/22'],
                              'listen_port': 35200,
                              'mtu': None,
                              'name': 'wg-federation0',
                              'status': 'NEW',
                              'public_key': 'tmX9goa9jAABptDQ9PDsb+Xd5++HZRS3nwBDExckWzU=',
                              'private_key': 'P6dlK8fhauCwOkwvyp6SOKP8sftuX8JKQVNbL1O8iS8=',
-                             'psk': 'YiUz3hI9RAr+Mo4CkHMgIG7aNpbSWG76ZXBxjvGAkG8='}]})
+                             'shared_psk': 'YiUz3hI9RAr+Mo4CkHMgIG7aNpbSWG76ZXBxjvGAkG8='}]})
         self._configuration_saver = mock()
 
         self._configuration_locker = mock()
@@ -110,10 +117,38 @@ class TestStateDataManager:
     def test_create_hq_state(self):
         """ it creates and save a new HQState """
 
-        self._subject.create_hq_state()
+        self._subject.create_hq_state(self._user_input)
 
         verify(self._configuration_saver, times=1).save(ANY(dict), self._file)
         verify(self._event_dispatcher, times=1).dispatch([HQEvent.STATE_CREATED], ANY(HQState))
+
+    def test_create_hq_state2(self):
+        """ it raise a warning if the method for private key retrieval is insecure """
+
+        self._user_input = mock({
+            'private_key_retrieval_method': SecretRetrievalMethod.TEST_INSECURE_CLEARTEXT,
+            'root_passphrase_command': 'example command',
+        })
+
+        self._subject.create_hq_state(self._user_input)
+
+        verify(self._configuration_saver, times=1).save(ANY(dict), self._file)
+        verify(self._event_dispatcher, times=1).dispatch([HQEvent.STATE_CREATED], ANY(HQState))
+        verify(self._logger, times=1).warning(contains('The root passphrase retrieval method has been set to'))
+
+    def test_create_hq_state3(self):
+        """ it creates and save a new HQState with WG_FEDERATION_ENV_VAR_OR_FILE method for secret retrieval """
+
+        self._user_input = mock({
+            'private_key_retrieval_method': SecretRetrievalMethod.WG_FEDERATION_ENV_VAR_OR_FILE,
+            'root_passphrase_command': 'example command',
+        })
+
+        self._subject.create_hq_state(self._user_input)
+
+        verify(self._configuration_saver, times=1).save(ANY(dict), self._file)
+        verify(self._event_dispatcher, times=1).dispatch([HQEvent.STATE_CREATED], ANY(HQState))
+        verify(self._logger, times=0).warning(...)
 
     def test_reload(self):
         """ it reloads the state from default source """

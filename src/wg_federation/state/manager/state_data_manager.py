@@ -2,6 +2,7 @@ from logging import Logger
 from typing import Any
 
 from wg_federation.crypto.wireguard_key_generator import WireguardKeyGenerator
+from wg_federation.data.input.command_line.secret_retreival_method import SecretRetrievalMethod
 from wg_federation.data.input.user_input import UserInput
 from wg_federation.data.state.federation import Federation
 from wg_federation.data.state.hq_state import HQState
@@ -95,6 +96,8 @@ class StateDataManager:
         return self._configuration_loader.load_if_exists(source)
 
     def _generate_new_hq_state(self, user_input: UserInput) -> HQState:
+        self.__check_passphrase_retrieval_method(user_input)
+
         forum_key_pairs = self._wireguard_key_generator.generate_key_pairs()
         phone_line_key_pairs = self._wireguard_key_generator.generate_key_pairs()
         interface_key_pairs = self._wireguard_key_generator.generate_key_pairs()
@@ -111,6 +114,13 @@ class StateDataManager:
                     shared_psk=self._wireguard_key_generator.generate_psk(),
                     listen_port=federation.forum_min_port,
                     private_key_retrieval_method=user_input.private_key_retrieval_method,
+                    post_up=self.__add_secret_retrieval_to_post_up(
+                        (),
+                        'forums',
+                        'wgf-forum0',
+                        user_input.private_key_retrieval_method,
+                        user_input.root_passphrase_command
+                    )
                 ),
             ),
             phone_lines=(
@@ -122,6 +132,13 @@ class StateDataManager:
                     shared_psk=self._wireguard_key_generator.generate_psk(),
                     listen_port=federation.phone_line_min_port,
                     private_key_retrieval_method=user_input.private_key_retrieval_method,
+                    post_up=self.__add_secret_retrieval_to_post_up(
+                        (),
+                        'phone_lines',
+                        'wgf-phoneline0',
+                        user_input.private_key_retrieval_method,
+                        user_input.root_passphrase_command
+                    )
                 ),
             ),
             interfaces=(
@@ -132,6 +149,55 @@ class StateDataManager:
                     public_key=interface_key_pairs[1],
                     shared_psk=self._wireguard_key_generator.generate_psk(),
                     private_key_retrieval_method=user_input.private_key_retrieval_method,
+                    post_up=self.__add_secret_retrieval_to_post_up(
+                        (),
+                        'interfaces',
+                        'wg-federation0',
+                        user_input.private_key_retrieval_method,
+                        user_input.root_passphrase_command
+                    ),
                 ),
             ),
         )
+
+    def __check_passphrase_retrieval_method(self, user_input: UserInput) -> None:
+        if self.__should_use_insecure_private_key(user_input.private_key_retrieval_method):
+            self._logger.warning(
+                f'The root passphrase retrieval method has been set to '
+                f'“{SecretRetrievalMethod.TEST_INSECURE_CLEARTEXT.value}”. '
+                f'This is insecure: any user able to read configuration files would be able to get the private keys. '
+                f'This method is left for testing purpose but SHOULD NOT be used in production.'
+            )
+
+    def __add_secret_retrieval_to_post_up(
+            self,
+            post_up: tuple[str, ...],
+            interface_type: str,
+            interface_name: str,
+            private_key_retrieval_method: SecretRetrievalMethod,
+            root_passphrase_command: str,
+    ) -> tuple[str, ...]:
+        if not self.__should_use_insecure_private_key(private_key_retrieval_method):
+            post_up += (f'wg set %i private-key <(wg-federation hq get-private-key '
+                        f'--interface-type {interface_type} '
+                        f'--interface-name {interface_name}'
+                        f'{self.__get_root_passphrase(private_key_retrieval_method, root_passphrase_command)}'
+                        f')',)
+            post_up += (f'wg set %i psk <(wg-federation hq get-psk '
+                        f'--interface-type {interface_type} '
+                        f'--interface-name {interface_name}'
+                        f'{self.__get_root_passphrase(private_key_retrieval_method, root_passphrase_command)}'
+                        f')',)
+
+        return post_up
+
+    def __get_root_passphrase(
+            self, private_key_retrieval_method: SecretRetrievalMethod, root_passphrase_command: str
+    ) -> str:
+        if private_key_retrieval_method is SecretRetrievalMethod.WG_FEDERATION_COMMAND:
+            return f' --root-passphrase-command "{root_passphrase_command}"'
+
+        return ''
+
+    def __should_use_insecure_private_key(self, private_key_retrieval_method: SecretRetrievalMethod) -> bool:
+        return private_key_retrieval_method is SecretRetrievalMethod.TEST_INSECURE_CLEARTEXT
