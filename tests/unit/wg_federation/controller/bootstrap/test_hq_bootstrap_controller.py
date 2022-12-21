@@ -56,7 +56,7 @@ class TestStateHQBootstrapController:
         assert self._user_input == self._subject.run(self._user_input)
 
         verify(self._cryptographic_key_deriver, times=1).create_salt()
-        verify(self._state_data_manager, times=1).create_hq_state()
+        verify(self._state_data_manager, times=1).create_hq_state(self._user_input)
 
         verifyNoUnwantedInteractions()
 

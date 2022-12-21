@@ -38,5 +38,5 @@ class StateHQBootstrapController(EventSubscriber):
     def run(self, data: UserInput) -> UserInput:
         self._cryptographic_key_deriver.create_salt()
 
-        self._state_data_manager.create_hq_state()
+        self._state_data_manager.create_hq_state(data)
         return data

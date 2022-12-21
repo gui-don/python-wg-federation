@@ -2,6 +2,7 @@ from logging import Logger
 from typing import Any
 
 from wg_federation.crypto.wireguard_key_generator import WireguardKeyGenerator
+from wg_federation.data.input.user_input import UserInput
 from wg_federation.data.state.federation import Federation
 from wg_federation.data.state.hq_state import HQState
 from wg_federation.data.state.wireguard_interface import WireguardInterface
@@ -70,13 +71,14 @@ class StateDataManager:
             phone_lines=WireguardInterface.from_list(raw_configuration.get('phone_lines')),
         ))
 
-    def create_hq_state(self) -> HQState:
+    def create_hq_state(self, user_input: UserInput) -> HQState:
         """
         Create a new HQState and save it.
         This method disregard whether a state already exists. To use with precaution.
+        :param: user_input
         :return:
         """
-        state = self._generate_new_hq_state()
+        state = self._generate_new_hq_state(user_input)
 
         with self._configuration_locker.lock_exclusively(self._configuration_location_finder.state()) as conf_file:
             self._configuration_saver.save(state.dict(), conf_file)
@@ -92,7 +94,7 @@ class StateDataManager:
 
         return self._configuration_loader.load_if_exists(source)
 
-    def _generate_new_hq_state(self) -> HQState:
+    def _generate_new_hq_state(self, user_input: UserInput) -> HQState:
         forum_key_pairs = self._wireguard_key_generator.generate_key_pairs()
         phone_line_key_pairs = self._wireguard_key_generator.generate_key_pairs()
         interface_key_pairs = self._wireguard_key_generator.generate_key_pairs()
@@ -103,30 +105,33 @@ class StateDataManager:
             forums=(
                 WireguardInterface(
                     name='wgf-forum0',
-                    addresses=('172.32.0.1/22',),
+                    address=('172.32.0.1/22',),
                     private_key=forum_key_pairs[0],
                     public_key=forum_key_pairs[1],
-                    psk=self._wireguard_key_generator.generate_psk(),
+                    shared_psk=self._wireguard_key_generator.generate_psk(),
                     listen_port=federation.forum_min_port,
+                    private_key_retrieval_method=user_input.private_key_retrieval_method,
                 ),
             ),
             phone_lines=(
                 WireguardInterface(
                     name='wgf-phoneline0',
-                    addresses=('172.32.4.1/22',),
+                    address=('172.32.4.1/22',),
                     private_key=phone_line_key_pairs[0],
                     public_key=phone_line_key_pairs[1],
-                    psk=self._wireguard_key_generator.generate_psk(),
+                    shared_psk=self._wireguard_key_generator.generate_psk(),
                     listen_port=federation.phone_line_min_port,
+                    private_key_retrieval_method=user_input.private_key_retrieval_method,
                 ),
             ),
             interfaces=(
                 WireguardInterface(
                     name='wg-federation0',
-                    addresses=('172.30.8.1/22',),
+                    address=('172.30.8.1/22',),
                     private_key=interface_key_pairs[0],
                     public_key=interface_key_pairs[1],
-                    psk=self._wireguard_key_generator.generate_psk(),
+                    shared_psk=self._wireguard_key_generator.generate_psk(),
+                    private_key_retrieval_method=user_input.private_key_retrieval_method,
                 ),
             ),
         )

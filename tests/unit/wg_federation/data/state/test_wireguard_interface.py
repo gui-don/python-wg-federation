@@ -15,11 +15,11 @@ class TestWireguardInterface:
             name='a_name',
             private_key='9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
             public_key='1OAiqIBY7Xx7OxjWVBXzPFKDfLNY1SOnTYyBJDaAaxs=',
-            psk='xoSmoykbONQY6XfMYMHpcp/ta3x+FPCUOc4/SQfEQ1E=',
+            shared_psk='xoSmoykbONQY6XfMYMHpcp/ta3x+FPCUOc4/SQfEQ1E=',
             listen_port=35233,
             mtu=68,
             dns=('1.1.1.1',),
-            addresses=('10.10.100.1/24',),
+            address=('10.10.100.1/24',),
         )
 
     def test_init(self):
@@ -30,12 +30,12 @@ class TestWireguardInterface:
         """ it returns its data """
         assert 'a_name' == self._subject.name
         assert '1OAiqIBY7Xx7OxjWVBXzPFKDfLNY1SOnTYyBJDaAaxs=' == self._subject.public_key
-        assert 'xoSmoykbONQY6XfMYMHpcp/ta3x+FPCUOc4/SQfEQ1E=' == self._subject.psk.get_secret_value()
+        assert 'xoSmoykbONQY6XfMYMHpcp/ta3x+FPCUOc4/SQfEQ1E=' == self._subject.shared_psk.get_secret_value()
         assert not '9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4YRE=' == self._subject.private_key
         assert 35233 == self._subject.listen_port
         assert 68 == self._subject.mtu
         assert '1.1.1.1' == str(self._subject.dns[0])
-        assert '10.10.100.1/24' == str(self._subject.addresses[0])
+        assert '10.10.100.1/24' == str(self._subject.address[0])
         assert 'NEW' == self._subject.status
 
     def test_addresses(self):
@@ -44,8 +44,8 @@ class TestWireguardInterface:
             WireguardInterface(
                 public_key='1OAiqIBY7Xx7OxjWVBXzPFKDfLNY1SOnTYyBJDaAaxs=',
                 private_key='9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
-                psk='v3513CYaiFXqcPoqRgj28GT4tCTcnSO/ywUQM/e1104=',
-                addresses=('fails',),
+                shared_psk='v3513CYaiFXqcPoqRgj28GT4tCTcnSO/ywUQM/e1104=',
+                address=('fails',),
             )
 
     def test_dns(self):
@@ -116,7 +116,7 @@ class TestWireguardInterface:
             WireguardInterface(
                 private_key='Oh4sAyz3cjJtAAa8thXqZIuLJiy4NFVHSpOfrOM9kn4=',
                 public_key='1OAiqIBY7Xx7OxjWVBXzPFKDfLNY1SOnTYyBJDaAaxs=',
-                psk='Oh4sAyz3cjJtAAa8thXqZIuLJiy4NFVHSpOfrOM9kn4=',
+                shared_psk='Oh4sAyz3cjJtAAa8thXqZIuLJiy4NFVHSpOfrOM9kn4=',
             )
         assert 'private key, public key and psk must be different from each others' in str(error)
 
@@ -143,7 +143,7 @@ class TestWireguardInterface:
         ]:
             with pytest.raises(ValueError):
                 WireguardInterface(
-                    psk=wrong_psk,
+                    shared_psk=wrong_psk,
                     private_key='9kYW/Kej96/L4Ae2lK5X46gJMfrplRAY4WbK0w4iYRE=',
                     public_key='1OAiqIBY7Xx7OxjWVBXzPFKDfLNY1SOnTYyBJDaAaxs=',
                 )
@@ -168,5 +168,16 @@ class TestWireguardInterface:
             'public_key': '1OAiqIBY7Xx7OxjWVBXzPFKDfLNY1SOnTYyBJDaAaxs=',
             'psk': 'xoSmoykbONQY6XfMYMHpcp/ta3x+FPCUOc4/SQfEQ1E=',
             'listen_port': 35233,
-            'addresses': ('10.10.100.1/24',),
+            'address': ('10.10.100.1/24',),
         }]), tuple)
+
+    def test_into_wireguard_ini(self):
+        """ it gives a view of itself as wireguard ini-ready dict  """
+        assert {
+            'Interface': {
+                'Address': '10.10.100.1/24',
+                'ListenPort': 35233,
+                'MTU': 68,
+                'DNS': '1.1.1.1'
+            }
+        } == self._subject.into_wireguard_ini()

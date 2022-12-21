@@ -53,7 +53,7 @@ class HQState(BaseModel, frozen=True):
                     f'The wireguard interface “{wireguard_interface.name}” has the same name of another interface.'
                 )
 
-            for address in wireguard_interface.addresses:
+            for address in wireguard_interface.address:
                 for other_address in interface_addresses:
                     if IPNetwork(str(address)).overlaps(other_address):
                         raise ValueError(

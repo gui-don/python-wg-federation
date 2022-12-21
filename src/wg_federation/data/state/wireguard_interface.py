@@ -3,6 +3,7 @@ from typing import Any
 
 from pydantic import BaseModel, IPvAnyAddress, conint, constr, IPvAnyInterface, SecretStr, validator
 
+from wg_federation.data.input.command_line.secret_retreival_method import SecretRetrievalMethod
 from wg_federation.data.state.interface_status import InterfaceStatus
 from wg_federation.exception.developer.data.data_validation_error import DataValidationError
 
@@ -19,16 +20,18 @@ class WireguardInterface(BaseModel, frozen=True):
     _REGEXP_WIREGUARD_KEY = r'^[0-9A-Za-z+/]{43}[=]$'
     _REGEXP_WIREGUARD_INTERFACE_NAME = r'^[a-zA-Z0-9_=+-]{1,15}$'
 
-    addresses: tuple[IPvAnyInterface] = ('10.10.100.1/24',)
-    dns: tuple[IPvAnyAddress] = ()
+    address: tuple[IPvAnyInterface, ...] = ('10.10.100.1/24',)
     listen_port: conint(le=65535) = 35200
+    public_key: constr(regex=_REGEXP_WIREGUARD_KEY)
+    private_key: SecretStr = None
     mtu: conint(ge=68, le=65535) = None
+    dns: tuple[IPvAnyAddress, ...] = ()
+    post_up: tuple[str, ...] = ()
+
     name: constr(regex=_REGEXP_WIREGUARD_INTERFACE_NAME) = 'wg-federation0'
     status: InterfaceStatus = InterfaceStatus.NEW
-
-    public_key: constr(regex=_REGEXP_WIREGUARD_KEY)
-    private_key: SecretStr
-    psk: SecretStr = None
+    private_key_retrieval_method: SecretRetrievalMethod = None
+    shared_psk: SecretStr = None
 
     # pylint: disable=no-self-argument
     @validator('private_key')
@@ -42,8 +45,8 @@ class WireguardInterface(BaseModel, frozen=True):
         return cls._check_wireguard_key(value, values, 'private_key')
 
     # pylint: disable=no-self-argument
-    @validator('psk')
-    def check_psk(cls, value: SecretStr, values: dict) -> SecretStr:
+    @validator('shared_psk')
+    def check_shared_psk(cls, value: SecretStr, values: dict) -> SecretStr:
         """
         Validate psk.
         Also validate psk, public_key and private_key relation together.
@@ -79,6 +82,30 @@ class WireguardInterface(BaseModel, frozen=True):
         :return: tuple of WireguardInterface
         """
         return tuple(map(cls.from_dict, configurations))
+
+    def into_wireguard_ini(self) -> dict:
+        """
+        Transform the current object into a dict specifically made for WireGuard configuration files
+        :return:
+        """
+
+        # While this is manual and inconvenient, unfruitful research was done:
+        # - Use pydentic aliases for keys: buggy, mess with IDE static analysis
+        # - Using configparse: wireguard needs duplicated section, not handled by configparser
+        # - Using toml: wireguard configuration is not toml compliant
+        return {
+            'Interface': self.copy(
+                include={},
+                update={
+                    'Address': ', '.join(str(address) for address in self.address),
+                    'ListenPort': self.listen_port,
+                    # pylint: disable=line-too-long
+                    'PrivateKey': self.private_key.get_secret_value() if self.private_key and self.private_key_retrieval_method == SecretRetrievalMethod.TEST_INSECURE_CLEARTEXT else None,
+                    'MTU': self.mtu,
+                    'DNS': ', '.join(str(dns) for dns in self.dns) if len(self.dns) > 0 else None,
+                    'PostUp': '; '.join(command for command in self.post_up) if len(self.post_up) > 0 else None,
+                }).dict(exclude_none=True, )
+        }
 
     @classmethod
     def _check_wireguard_key(cls, value: SecretStr, values: dict, kind: str) -> SecretStr:

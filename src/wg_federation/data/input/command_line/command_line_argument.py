@@ -8,5 +8,5 @@ class CommandLineArgument(BaseModel):
 
     command: str = None
     description: str = None
-    subcommands: list['CommandLineArgument'] = None
-    options: list[CommandLineOption] = None
+    subcommands: list['CommandLineArgument'] = []
+    options: list[CommandLineOption] = []

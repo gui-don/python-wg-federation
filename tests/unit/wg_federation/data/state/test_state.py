@@ -17,20 +17,20 @@ class TestState:
             interfaces=(WireguardInterface(
                 public_key='9BMRLFuETS7c2PSgR1UqP3TxFwEaNHaGgGCdF1HoHXI=',
                 private_key='FU2N9kCSHDPOucnBgB0qRECPN0aw+I5H0rHrcyH8F3o=',
-                psk='mwn0Dfc4IwYlq/jDL08f9VTCM+mQbV2tJlRdIDAy5CA=',
+                shared_psk='mwn0Dfc4IwYlq/jDL08f9VTCM+mQbV2tJlRdIDAy5CA=',
             ),),
             forums=(WireguardInterface(
                 name='forum0',
                 private_key='GIITfONf5p+7fX5yGY5U7PWV3Uc+SEfYMGUY9F4/BUc=',
                 public_key='qufw3QuU9lMWBTDLmgWpsk1fQsRTG4UZwyPYgUi9l34=',
-                addresses=(('10.10.10.1/24',)),
+                address=(('10.10.10.1/24',)),
                 listen_port=44200,
             ),),
             phone_lines=(WireguardInterface(
                 name='phone_lines0',
                 private_key='mozYFDybwVjHvy94hWP8Zyff3080xIygsNqDHB0MjkY=',
                 public_key='nLt1mnBG6VyThOASx7b8XFSuldf6R9g4+QYfM1V+8gk=',
-                addresses=(('10.10.200.1/24',)),
+                address=(('10.10.200.1/24',)),
                 listen_port=44100,
             ),)
         )
@@ -62,14 +62,14 @@ class TestState:
                     name='forum0',
                     private_key='GIITfONf5p+7fX5yGY5U7PWV3Uc+SEfYMGUY9F4/BUc=',
                     public_key='qufw3QuU9lMWBTDLmgWpsk1fQsRTG4UZwyPYgUi9l34=',
-                    addresses=(('10.10.10.1/24',)),
+                    address=(('10.10.10.1/24',)),
                     listen_port=44200,
                 ),),
                 phone_lines=(WireguardInterface(
                     name='phone_lines0',
                     private_key='mozYFDybwVjHvy94hWP8Zyff3080xIygsNqDHB0MjkY=',
                     public_key='nLt1mnBG6VyThOASx7b8XFSuldf6R9g4+QYfM1V+8gk=',
-                    addresses=(('10.10.200.1/24',)),
+                    address=(('10.10.200.1/24',)),
                     listen_port=44100,
                 ),)
             )
@@ -83,21 +83,21 @@ class TestState:
                 interfaces=(WireguardInterface(
                     private_key='bRdbrR9E1nKXa2g7qkTVSty9GXZ6Vvj9p2TDpEEGLFE=',
                     public_key='MDuAwX+2NvIiYuagR1k5LnM1K3jCp0BB7uZZJB1tPmM=',
-                    addresses=('192.168.0.0/16',)
+                    address=('192.168.0.0/16',)
 
                 ),),
                 forums=(WireguardInterface(
                     name='forum0',
                     private_key='GIITfONf5p+7fX5yGY5U7PWV3Uc+SEfYMGUY9F4/BUc=',
                     public_key='qufw3QuU9lMWBTDLmgWpsk1fQsRTG4UZwyPYgUi9l34=',
-                    addresses=('192.168.50.0/24',),
+                    address=('192.168.50.0/24',),
                     listen_port=44200,
                 ),),
                 phone_lines=(WireguardInterface(
                     name='phone_lines0',
                     private_key='mozYFDybwVjHvy94hWP8Zyff3080xIygsNqDHB0MjkY=',
                     public_key='nLt1mnBG6VyThOASx7b8XFSuldf6R9g4+QYfM1V+8gk=',
-                    addresses=(('10.10.200.1/24',)),
+                    address=(('10.10.200.1/24',)),
                     listen_port=44100,
                 ),)
             )
@@ -111,21 +111,21 @@ class TestState:
                 interfaces=(WireguardInterface(
                     private_key='Ee862wOc4Fv9ttqUOYCLsTVUQm0kbwdGyq0v8e3cGhs=',
                     public_key='W7ExEOJEEcLFcsf/Y2B4nOViCiT8bK4XGPYy/uSAf0g=',
-                    addresses=('192.168.50.0/24',),
+                    address=('192.168.50.0/24',),
                     listen_port=44100
                 ),),
                 phone_lines=(WireguardInterface(
                     name='phone_lines0',
                     private_key='mozYFDybwVjHvy94hWP8Zyff3080xIygsNqDHB0MjkY=',
                     public_key='nLt1mnBG6VyThOASx7b8XFSuldf6R9g4+QYfM1V+8gk=',
-                    addresses=(('10.10.200.1/24',)),
+                    address=(('10.10.200.1/24',)),
                     listen_port=44100,
                 ),),
                 forums=(WireguardInterface(
                     name='forum0',
                     private_key='GIITfONf5p+7fX5yGY5U7PWV3Uc+SEfYMGUY9F4/BUc=',
                     public_key='qufw3QuU9lMWBTDLmgWpsk1fQsRTG4UZwyPYgUi9l34=',
-                    addresses=(('10.10.10.1/24',)),
+                    address=(('10.10.10.1/24',)),
                     listen_port=44200,
                 ),),
             )
@@ -139,21 +139,21 @@ class TestState:
                 interfaces=(WireguardInterface(
                     public_key='9BMRLFuETS7c2PSgR1UqP3TxFwEaNHaGgGCdF1HoHXI=',
                     private_key='FU2N9kCSHDPOucnBgB0qRECPN0aw+I5H0rHrcyH8F3o=',
-                    psk='mwn0Dfc4IwYlq/jDL08f9VTCM+mQbV2tJlRdIDAy5CA=',
+                    shared_psk='mwn0Dfc4IwYlq/jDL08f9VTCM+mQbV2tJlRdIDAy5CA=',
                     listen_port=44201,
                 ),),
                 forums=(WireguardInterface(
                     name='forum0',
                     private_key='GIITfONf5p+7fX5yGY5U7PWV3Uc+SEfYMGUY9F4/BUc=',
                     public_key='qufw3QuU9lMWBTDLmgWpsk1fQsRTG4UZwyPYgUi9l34=',
-                    addresses=(('10.10.10.1/24',)),
+                    address=(('10.10.10.1/24',)),
                     listen_port=44200,
                 ),),
                 phone_lines=(WireguardInterface(
                     name='phone_lines0',
                     private_key='mozYFDybwVjHvy94hWP8Zyff3080xIygsNqDHB0MjkY=',
                     public_key='nLt1mnBG6VyThOASx7b8XFSuldf6R9g4+QYfM1V+8gk=',
-                    addresses=(('10.10.200.1/24',)),
+                    address=(('10.10.200.1/24',)),
                     listen_port=44100,
                 ),)
             )
@@ -168,21 +168,21 @@ class TestState:
                 interfaces=(WireguardInterface(
                     public_key='9BMRLFuETS7c2PSgR1UqP3TxFwEaNHaGgGCdF1HoHXI=',
                     private_key='FU2N9kCSHDPOucnBgB0qRECPN0aw+I5H0rHrcyH8F3o=',
-                    psk='mwn0Dfc4IwYlq/jDL08f9VTCM+mQbV2tJlRdIDAy5CA=',
+                    shared_psk='mwn0Dfc4IwYlq/jDL08f9VTCM+mQbV2tJlRdIDAy5CA=',
                     listen_port=44101
                 ),),
                 forums=(WireguardInterface(
                     name='forum0',
                     private_key='GIITfONf5p+7fX5yGY5U7PWV3Uc+SEfYMGUY9F4/BUc=',
                     public_key='qufw3QuU9lMWBTDLmgWpsk1fQsRTG4UZwyPYgUi9l34=',
-                    addresses=(('10.10.10.1/24',)),
+                    address=(('10.10.10.1/24',)),
                     listen_port=44200,
                 ),),
                 phone_lines=(WireguardInterface(
                     name='phone_lines0',
                     private_key='mozYFDybwVjHvy94hWP8Zyff3080xIygsNqDHB0MjkY=',
                     public_key='nLt1mnBG6VyThOASx7b8XFSuldf6R9g4+QYfM1V+8gk=',
-                    addresses=(('10.10.200.1/24',)),
+                    address=(('10.10.200.1/24',)),
                     listen_port=44100,
                 ),)
             )
@@ -197,20 +197,20 @@ class TestState:
                 interfaces=(WireguardInterface(
                     public_key='9BMRLFuETS7c2PSgR1UqP3TxFwEaNHaGgGCdF1HoHXI=',
                     private_key='FU2N9kCSHDPOucnBgB0qRECPN0aw+I5H0rHrcyH8F3o=',
-                    psk='mwn0Dfc4IwYlq/jDL08f9VTCM+mQbV2tJlRdIDAy5CA=',
+                    shared_psk='mwn0Dfc4IwYlq/jDL08f9VTCM+mQbV2tJlRdIDAy5CA=',
                 ),),
                 forums=(WireguardInterface(
                     name='forum0',
                     private_key='GIITfONf5p+7fX5yGY5U7PWV3Uc+SEfYMGUY9F4/BUc=',
                     public_key='qufw3QuU9lMWBTDLmgWpsk1fQsRTG4UZwyPYgUi9l34=',
-                    addresses=(('10.10.10.1/24',)),
+                    address=(('10.10.10.1/24',)),
                     listen_port=5000,
                 ),),
                 phone_lines=(WireguardInterface(
                     name='phone_lines0',
                     private_key='mozYFDybwVjHvy94hWP8Zyff3080xIygsNqDHB0MjkY=',
                     public_key='nLt1mnBG6VyThOASx7b8XFSuldf6R9g4+QYfM1V+8gk=',
-                    addresses=(('10.10.200.1/24',)),
+                    address=(('10.10.200.1/24',)),
                     listen_port=44100,
                 ),)
             )
@@ -225,20 +225,20 @@ class TestState:
                 interfaces=(WireguardInterface(
                     public_key='9BMRLFuETS7c2PSgR1UqP3TxFwEaNHaGgGCdF1HoHXI=',
                     private_key='FU2N9kCSHDPOucnBgB0qRECPN0aw+I5H0rHrcyH8F3o=',
-                    psk='mwn0Dfc4IwYlq/jDL08f9VTCM+mQbV2tJlRdIDAy5CA=',
+                    shared_psk='mwn0Dfc4IwYlq/jDL08f9VTCM+mQbV2tJlRdIDAy5CA=',
                 ),),
                 forums=(WireguardInterface(
                     name='forum0',
                     private_key='GIITfONf5p+7fX5yGY5U7PWV3Uc+SEfYMGUY9F4/BUc=',
                     public_key='qufw3QuU9lMWBTDLmgWpsk1fQsRTG4UZwyPYgUi9l34=',
-                    addresses=(('10.10.10.1/24',)),
+                    address=(('10.10.10.1/24',)),
                     listen_port=44200,
                 ),),
                 phone_lines=(WireguardInterface(
                     name='phone_lines0',
                     private_key='mozYFDybwVjHvy94hWP8Zyff3080xIygsNqDHB0MjkY=',
                     public_key='nLt1mnBG6VyThOASx7b8XFSuldf6R9g4+QYfM1V+8gk=',
-                    addresses=(('10.10.200.1/24',)),
+                    address=(('10.10.200.1/24',)),
                     listen_port=5000,
                 ),)
             )
