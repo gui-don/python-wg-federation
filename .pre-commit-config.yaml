@@ -47,4 +47,4 @@ repos:
     hooks:
       - id: bandit
         files: 'src'
-        args: ['-q']
+        args: ['-q', '-s', 'B404,B603']

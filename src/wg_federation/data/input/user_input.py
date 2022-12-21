@@ -8,6 +8,7 @@ class UserInput(BaseModel):
     """
     Data class containing all user inputs
     """
+    # general
     verbose: bool = None
     debug: bool = None
     quiet: bool = None
@@ -15,7 +16,9 @@ class UserInput(BaseModel):
     root_passphrase: SecretStr = None
     state_backend: ConfigurationBackend = None
     state_digest_backend: ConfigurationBackend = None
+    root_passphrase_command: str = None
 
+    # arguments
     arg0: str = None
     arg1: str = None
     arg2: str = None

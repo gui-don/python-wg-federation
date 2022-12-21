@@ -29,7 +29,7 @@ class RawOptions:
             argparse_action=ArgparseAction.STORE,
             argument_alias='--log-level',
             argument_short='-l',
-            default='INFO',
+            default=LogLevel.INFO.value,
             description=f'Maximum kind of messages to log. Can be “{"”, “".join([e.value for e in LogLevel])}”.',
             name='log_level',
             type=str,
@@ -59,17 +59,29 @@ class RawOptions:
             argparse_action=ArgparseAction.STORE,
             argument_alias='--root-passphrase',
             argument_short='-P',
-            default='',
+            default=None,
             description='Root passphrase used to encrypt and decrypt all secrets managed by this program.',
             name='root_passphrase',
             type=SecretStr,
+        ),
+
+        'root_passphrase_command': CommandLineOption(
+            argparse_action=ArgparseAction.STORE,
+            argument_alias='--root-passphrase-command',
+            argument_short='--Pcmd',
+            default=None,
+            description='Process command to call to get the root passphrase. '
+                        'If the root passphrase is retrieved through any other means, this will be ignored. '
+                        'CAREFUL: this command is unprotected. It MUST NOT contain any secrets.',
+            name='root_passphrase_command',
+            type=str,
         ),
 
         'state_backend': CommandLineOption(
             argparse_action=ArgparseAction.STORE,
             argument_alias='--state-backend',
             argument_short='--sb',
-            default=ConfigurationBackend.FILE,
+            default=ConfigurationBackend.FILE.value,
             description=f'What backend to use for the state. '
                         f'Can be “{"”, “".join([e.value for e in ConfigurationBackend])}”.',
             name='state_backend',
@@ -80,7 +92,7 @@ class RawOptions:
             argparse_action=ArgparseAction.STORE,
             argument_alias='--state-digest-backend',
             argument_short='--sdb',
-            default=ConfigurationBackend.FILE,
+            default=ConfigurationBackend.FILE.value,
             description=f'What backend to use for the digest state. '
                         f'If “DEFAULT” is used, digest will be merged with state_backend.'
                         f'Can be “{"”, “".join([e.value for e in ConfigurationBackend])}”.',
@@ -120,7 +132,6 @@ class RawOptions:
         Returns all possible options names
         :return:
         """
-
         return list(cls.options.keys())
 
     @classmethod

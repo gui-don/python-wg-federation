@@ -11,7 +11,8 @@ class TestUserInput:
         self._subject = UserInput(
             verbose=True,
             debug=True,
-            arg0='test'
+            arg0='test',
+            root_passphrase='very_secret',
         )
 
     def test_init(self):

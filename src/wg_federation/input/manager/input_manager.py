@@ -1,5 +1,6 @@
 import logging
 import os
+import subprocess
 from argparse import Namespace
 from typing import Union
 
@@ -62,12 +63,38 @@ class InputManager:
         user_input = UserInput(
             **dict((option_name, self._get_first_defined_user_input_value(
                 option_name, arguments, environment_variables, configuration
-            )) for option_name in RawOptions.get_all_options_names() + RawOptions.get_all_argument_keys())
+            )) for option_name in self.__get_all_user_input_names())
         )
+
+        user_input = self._process_root_passphrase_command(user_input)
 
         self._warn_if_secrets_are_in_configuration(user_input, configuration)
 
         self._logger.debug(f'{Utils.classname(self)}: Final processed user inputs:{os.linesep}\t{user_input}')
+
+        return user_input
+
+    def _process_root_passphrase_command(self, user_input: UserInput) -> UserInput:
+        if user_input.root_passphrase_command:
+            if user_input.root_passphrase:
+                self._logger.warning(
+                    'A root-passphrase-command was set but the root passphrase was retrieved through other means.'
+                )
+                return user_input
+
+            command_result = subprocess.run(
+                user_input.root_passphrase_command.split(' '),
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                check=True
+            )
+            if command_result.returncode != 0:
+                raise ChildProcessError(
+                    f'The command to get the root passphrase '
+                    f'({user_input.root_passphrase_command}) returned a non-zero status.'
+                )
+
+            user_input.root_passphrase = SecretStr(command_result.stdout.strip().decode('UTF-8'))
 
         return user_input
 
@@ -77,7 +104,7 @@ class InputManager:
                 self._logger.warning(
                     f'The secret “{attribute}” was loaded from a configuration file. '
                     f'This secret might be readable by whomever access the disk or the configuration file. '
-                    f'Consider using an environment variable or command line argument to pass the secret.'
+                    f'Consider using an environment variable, command line argument (`-h` for other options).'
                 )
 
     @classmethod
@@ -98,3 +125,11 @@ class InputManager:
             configuration.get(option_name) or \
             (RawOptions.options.get(option_name).default
              if RawOptions.options.get(option_name) is not None else None)
+
+    @classmethod
+    def __get_all_user_input_names(cls):
+        return (
+            RawOptions.get_all_options_names() +
+            RawOptions.get_all_argument_options_names(RawOptions.arguments) +
+            RawOptions.get_all_argument_keys()
+        )
