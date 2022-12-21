@@ -1,5 +1,7 @@
 """ argument_reader.py test suit """
-from unittest.mock import MagicMock
+
+import pytest
+from mockito import unstub, contains, when, mock, verify
 
 from wg_federation.input.reader.argument_reader import ArgumentReader
 
@@ -9,15 +11,30 @@ class TestArgumentReader:
 
     _subject: ArgumentReader = None
     _program_version = '1.1.1'
-    _argument_parser = MagicMock()
-    _sub_argument_parser_action = MagicMock()
-    _sub_argument_parser = MagicMock()
+    _argument_parser = None
+    _sub_argument_parser_action = None
+    _sub_argument_parser = None
 
-    def setup_method(self):
+    @pytest.fixture(autouse=True)
+    def run_around_tests(self):
+        """ Resets mock between tests """
+        unstub()
+        self.init()
+
+    def init(self):
         """ Constructor """
-        self._sub_argument_parser_action.add_parser = MagicMock(return_value=self._sub_argument_parser)
-        self._argument_parser.add_subparsers = MagicMock(return_value=self._sub_argument_parser_action)
-        self._argument_parser.parse_args = MagicMock(return_value='parse_result')
+
+        self._sub_argument_parser = mock()
+
+        self._sub_argument_parser_action = mock()
+        when(self._sub_argument_parser_action).add_parser(...).thenReturn(self._sub_argument_parser)
+        when(self._sub_argument_parser).add_subparsers(...).thenReturn(self._sub_argument_parser_action)
+
+        self._argument_parser = mock()
+        when(self._argument_parser).add_subparsers(
+            required=False, dest=contains('arg')
+        ).thenReturn(self._sub_argument_parser_action)
+        when(self._argument_parser).parse_args().thenReturn('parse_result')
 
         self._subject = ArgumentReader(
             argument_parser=self._argument_parser,
@@ -33,17 +50,15 @@ class TestArgumentReader:
         result = self._subject.parse_all()
 
         # pylint: disable=duplicate-code
-        self._argument_parser.add_argument.assert_any_call(
+        verify(self._argument_parser, times=9).add_argument(...)
+        verify(self._argument_parser, times=1).add_argument(
             '-V',
             '--version',
             action='version',
             version=self._program_version,
             help='Shows the version number and exit.'
         )
-        self._argument_parser.add_argument.was_called()
-        self._argument_parser.add_subparsers.assert_called()
-        self._argument_parser.add_parser.assert_not_called()
-        self._sub_argument_parser_action.add_parser.assert_called()
-        self._sub_argument_parser.add_argument.assert_called()
+        verify(self._sub_argument_parser, times=46).add_argument(...)
+        verify(self._argument_parser, times=1).parse_args()
 
         assert 'parse_result' == result
