@@ -26,11 +26,14 @@ class TestRawOptions:
                                 CommandLineArgument()
                             ]
                         ),
-
                     ],
                 )
             ]
         )
+        assert 0 == RawOptions.get_argument_depth([])
+        assert 1 == RawOptions.get_argument_depth([
+            CommandLineArgument()
+        ])
 
     def test_get_all_argument_keys(self):
         """ it returns all possible arguments keys """
@@ -41,3 +44,7 @@ class TestRawOptions:
         """ it checks whether an option has a given default or not """
         assert RawOptions.option_has_default('quiet', False)
         assert not RawOptions.option_has_default('quiet', True)
+
+    def test_get_all_argument_options_names(self):
+        """ it returns all arguments specific option names """
+        assert ['private_key_retrieval_method'] == RawOptions.get_all_argument_options_names(RawOptions.arguments)

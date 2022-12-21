@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from typing import Union
 
 from pydantic import SecretStr
@@ -5,6 +6,7 @@ from pydantic import SecretStr
 from wg_federation.data.input.command_line.argparse_action import ArgparseAction
 from wg_federation.data.input.command_line.command_line_argument import CommandLineArgument
 from wg_federation.data.input.command_line.command_line_option import CommandLineOption
+from wg_federation.data.input.command_line.secret_retreival_method import SecretRetrievalMethod
 from wg_federation.data.input.configuration_backend import ConfigurationBackend
 from wg_federation.data.input.log_level import LogLevel
 
@@ -113,6 +115,21 @@ class RawOptions:
                 CommandLineArgument(
                     command='bootstrap',
                     description='Bootstrap the HeadQuarter.',
+                    options=[
+                        CommandLineOption(
+                            argparse_action=ArgparseAction.STORE,
+                            argument_alias='--private-key-retrieval-method',
+                            argument_short='--PKrm',
+                            default=SecretRetrievalMethod.WG_FEDERATION_COMMAND.value,
+                            description='What method to use to retrieve the WireGuard private keys for wg-quick. '
+                                        f'Possible values: “{"”, “".join([e.value for e in SecretRetrievalMethod])}”. '
+                                        f'“{SecretRetrievalMethod.WG_FEDERATION_COMMAND.value}” expects '
+                                        f'--root-passphrase-command to be set.'
+                                        f'“{SecretRetrievalMethod.TEST_INSECURE_CLEARTEXT.value}” is discouraged.',
+                            name='private_key_retrieval_method',
+                            type=str,
+                        ),
+                    ],
                 ),
                 CommandLineArgument(
                     command='add-interface',
@@ -127,6 +144,27 @@ class RawOptions:
     ]
 
     @classmethod
+    def get_all_argument_options_names(
+            cls, arguments: list[CommandLineArgument], options: list[str] = None
+    ) -> list[str]:
+        """
+        Gets all option names for a given list of CommandLineArgument.
+        :param arguments:
+        :param options: Used internally for recursive function, ignore this.
+        :return:
+        """
+        if options is None:
+            options = []
+
+        for argument in arguments:
+            for option in argument.options:
+                options.append(option.name)
+            if argument.subcommands:
+                cls.get_all_argument_options_names(argument.subcommands, options)
+
+        return options
+
+    @classmethod
     def get_all_options_names(cls) -> list[str]:
         """
         Returns all possible options names
@@ -135,7 +173,7 @@ class RawOptions:
         return list(cls.options.keys())
 
     @classmethod
-    def get_argument_depth(cls, _arguments: list[CommandLineArgument] = None, _depth_level: int = 1) -> int:
+    def get_argument_depth(cls, _arguments: list[CommandLineArgument] = None, _depth_level: int = 0) -> int:
         """
         Returns the maximum number of arguments that may be set
         :param _arguments: List of arguments
@@ -146,7 +184,7 @@ class RawOptions:
             _arguments = cls.arguments
 
         for arguments in _arguments:
-            if isinstance(arguments.subcommands, list):
+            if isinstance(arguments.subcommands, Sequence):
                 return cls.get_argument_depth(arguments.subcommands, _depth_level + 1)
 
         return _depth_level
