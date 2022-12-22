@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 from mockito import unstub, mock, verify, verifyNoUnwantedInteractions
 
-from wg_federation.controller.bootstrap.state_hq_bootstrap_controller import StateHQBootstrapController
+from wg_federation.controller.bootstrap.hq_bootstrap_controller import HQBootstrapController
 from wg_federation.controller.controller_events import ControllerEvents
 from wg_federation.crypto.cryptographic_key_deriver import CryptographicKeyDeriver
 from wg_federation.data.input.user_input import UserInput
@@ -11,14 +11,14 @@ from wg_federation.observer.event_subscriber import EventSubscriber
 from wg_federation.state.manager.state_data_manager import StateDataManager
 
 
-class TestStateHQBootstrapController:
-    """ Test StateHQBootstrapController class """
+class TestHQBootstrapController:
+    """ Test HQBootstrapController class """
 
     _user_input: UserInput = None
     _state_data_manager: StateDataManager = None
     _cryptographic_key_deriver: CryptographicKeyDeriver = None
 
-    _subject: StateHQBootstrapController = None
+    _subject: HQBootstrapController = None
 
     @pytest.fixture(autouse=True)
     def run_around_tests(self):
@@ -36,14 +36,14 @@ class TestStateHQBootstrapController:
         self._state_data_manager = mock()
         self._cryptographic_key_deriver = mock()
 
-        self._subject = StateHQBootstrapController(
+        self._subject = HQBootstrapController(
             state_data_manager=self._state_data_manager,
             cryptographic_key_deriver=self._cryptographic_key_deriver,
         )
 
     def test_init(self):
         """ it can be instantiated """
-        assert isinstance(self._subject, StateHQBootstrapController)
+        assert isinstance(self._subject, HQBootstrapController)
         assert isinstance(self._subject, EventSubscriber)
 
     def test_get_subscribed_events(self):

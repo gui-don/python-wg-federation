@@ -2,7 +2,7 @@ Feature: HQ bootstrap
 
   @hq-bootstrap
   Scenario: hq bootstrap runs when `hq bootstrap` are the arguments, make sure no secrets are in the state
-    When we run program with "hq bootstrap -P root-pass"
+    When we run program with "hq bootstrap -P root-pass --private-key-retrieval-method WG_FEDERATION_ENV_VAR_OR_FILE"
     Then the system file “~/.local/share/wg-federation/state.digest” should exist
     Then the system file “~/.local/share/wg-federation/state.json” should exist
     Then the system file “~/.local/share/wg-federation/salt.txt” should exist
@@ -21,9 +21,15 @@ Feature: HQ bootstrap
 
   @hq-bootstrap
   Scenario: hq bootstrap creates puts the digest within the state file when specified
-    When we run program with "hq bootstrap -P root-pass --state-digest-backend=DEFAULT"
+    When we run program with "hq bootstrap -P root-pass --state-digest-backend=DEFAULT --private-key-retrieval-method WG_FEDERATION_ENV_VAR_OR_FILE"
     Then the system file “~/.local/share/wg-federation/state.digest” should not exist
     Then the system file “~/.local/share/wg-federation/state.json” should exist
     Then the system file “~/.local/share/wg-federation/salt.txt” should exist
     Then the system file “~/.local/share/wg-federation/state.json” should contain “^{"data": {"federation":”
     Then the system file “~/.local/share/wg-federation/state.json” should contain “.+"digest": "[a-f0-9]+"}$”
+
+#  @hq-bootstrap
+#  Scenario: hq bootstrap shows a warning if the 'private-key-retrieval-method' is set to cleartext
+
+#  @hq-bootstrap
+#  Scenario: hq bootstrap can fetch the root passphrase from a subcommand
