@@ -31,4 +31,16 @@ class TestCommandLineOption:
         assert 'a_default' == self._subject.default
         assert 'a_description' == self._subject.description
         assert 'a_name' == self._subject.name
-        assert str is self._subject.type
+
+    def test_from_dict(self):
+        """ it creates itself from a dict """
+        result = CommandLineOption.from_dict('this_is_a_name', {
+            'argparse_action': 'append_const',
+            'default': 'test',
+        })
+
+        assert isinstance(result, CommandLineOption)
+        assert 'this_is_a_name' == result.name
+        assert '--this-is-a-name' == result.argument_alias
+        assert 'test' == result.default
+        assert 'append_const' == result.argparse_action

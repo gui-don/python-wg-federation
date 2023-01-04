@@ -1,4 +1,4 @@
-from typing import Type, Any
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -14,4 +14,20 @@ class CommandLineOption(BaseModel):
     default: Any = None
     description: str = None
     name: str
-    type: Type = None
+
+    @staticmethod
+    def from_dict(name: str, source: dict[str, Any]) -> 'CommandLineOption':
+        """
+        Creates a new CommandLineOption from a dict source
+        :param name:
+        :param source:
+        :return:
+        """
+        return CommandLineOption(
+            argparse_action=source.get('argparse_action'),
+            argument_alias=f'--{name.replace("_", "-")}',
+            argument_short=source.get('argument_short'),
+            default=source.get('default'),
+            description=source.get('description'),
+            name=name,
+        )
