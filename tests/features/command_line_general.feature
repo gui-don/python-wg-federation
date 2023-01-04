@@ -55,11 +55,11 @@ Feature: command line general features
     Then the stderr contains "HQBootstrapController♦ was skipped."
 
     Examples: equivalent options for debug logging
-      | logging_options       |
-      | -vv                   |
-      | -vv --log-level ERROR |
-      | -vv -v                |
-      | --log-level DEBUG     |
+      | logging_options        |
+      | --vv                   |
+      | --vv --log-level ERROR |
+      | --vv -v                |
+      | --log-level DEBUG      |
 
   @command-line-general
   Scenario Outline: wg-federation do not info debug outputs by default
