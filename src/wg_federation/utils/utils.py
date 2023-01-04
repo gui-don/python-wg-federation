@@ -3,9 +3,10 @@ from collections.abc import MutableMapping, MutableSet, MutableSequence, Sequenc
 from enum import Enum
 from io import TextIOWrapper
 from pathlib import Path
-from typing import Any, Union, Callable
+from typing import Any, Union, Callable, Optional
 
 from typing.io import IO
+from pydantic import BaseModel
 
 
 class Utils:
@@ -91,3 +92,26 @@ class Utils:
         :return:
         """
         return list(map(lambda x: x.value, values))
+
+    @staticmethod
+    def extract_attributes(model: BaseModel, only_meta: tuple[str, Any] = None) -> dict[str, type]:
+        """
+        Extract attributes from pydentic class or object.
+        :param model:
+        :param only_meta: Only extract attributes containing given metadata, {'metadata_name': metadata_value}
+        :return: dict with attribute names as keys, types as values
+        """
+
+        def filter_function(attributes) -> Optional[dict]:
+            if not only_meta:
+                return attributes
+
+            if not attributes[1].get(only_meta[0]):
+                return None
+
+            if attributes[1].get(only_meta[0]) == only_meta[1]:
+                return attributes
+
+            return None
+
+        return dict(filter(filter_function, model.schema().get('properties').items()))

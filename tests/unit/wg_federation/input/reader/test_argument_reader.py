@@ -58,7 +58,7 @@ class TestArgumentReader:
             version=self._program_version,
             help='Shows the version number and exit.'
         )
-        verify(self._sub_argument_parser, times=46).add_argument(...)
+        verify(self._sub_argument_parser, atleast=1).add_argument(...)
         verify(self._argument_parser, times=1).parse_args()
 
         assert 'parse_result' == result

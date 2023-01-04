@@ -94,7 +94,9 @@ class InputManager:
                     f'({user_input.root_passphrase_command}) returned a non-zero status.'
                 )
 
-            user_input.root_passphrase = SecretStr(command_result.stdout.strip().decode('UTF-8'))
+            user_input.root_passphrase = SecretStr(
+                command_result.stdout.strip(os.linesep.encode('UTF-8')).decode('UTF-8')
+            )
 
         return user_input
 
@@ -119,12 +121,11 @@ class InputManager:
         :param configuration: Configuration defined files in the system
         :return: option value or None when the option is not found or undefined
         """
-
+        # type: ignore
         return getattr(arguments, option_name, None) or \
             environment_variables.get(option_name) or \
             configuration.get(option_name) or \
-            (RawOptions.options.get(option_name).default
-             if RawOptions.options.get(option_name) is not None else None)
+            Utils.extract_attributes(UserInput).get(option_name).get('default')  # type: ignore
 
     @classmethod
     def __get_all_user_input_names(cls):

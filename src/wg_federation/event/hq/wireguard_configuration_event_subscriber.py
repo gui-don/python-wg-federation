@@ -9,7 +9,7 @@ class WireguardConfigurationEventSubscriber(EventSubscriber):
     """ Creates/Updates WireGuard interfaces """
 
     def get_subscribed_events(self) -> list[Enum]:
-        return [HQEvent.STATE_CREATED, HQEvent.STATE_UPDATED, HQEvent.STATE_BEFORE_UPDATE]
+        return [HQEvent.STATE_CREATED, HQEvent.STATE_UPDATED]
 
     def run(self, data: IsDataClass) -> IsDataClass:
         return data

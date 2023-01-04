@@ -3,6 +3,7 @@ from io import TextIOWrapper
 
 from mockito import mock
 
+from wg_federation.data.state.federation import Federation
 from wg_federation.utils.utils import Utils
 
 
@@ -75,3 +76,17 @@ class TestUtils:
 
         assert ['test1', 'test2'] == Utils.enums_to_list([StrTestEnum.TEST1, StrTestEnum.TEST2])
         assert [1, 2] == Utils.enums_to_list([IntTestEnum.TEST1, IntTestEnum.TEST2])
+
+    def test_extract_attributes(self):
+        """ it extracts attributes from an annotated model """
+        assert {
+            'title': 'Forum Max Port', 'default': 44299, 'minimum': 1010, 'maximum': 65535, 'type': 'integer'
+        } == Utils.extract_attributes(Federation).get('forum_max_port')
+
+        assert {
+            'forum_min_port': {
+                'title': 'Forum Min Port', 'default': 44200, 'minimum': 1000, 'maximum': 65525, 'type': 'integer'
+            }
+        } == Utils.extract_attributes(Federation, ('default', 44200))
+
+        assert not Utils.extract_attributes(Federation, ('not_existing', 44200))

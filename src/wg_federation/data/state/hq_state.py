@@ -1,7 +1,8 @@
 from typing import Callable
 
 from ipaddr import IPNetwork
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, Field
+from typing_extensions import Annotated
 
 from wg_federation.data.state.federation import Federation
 from wg_federation.data.state.wireguard_interface import WireguardInterface
@@ -9,7 +10,7 @@ from wg_federation.exception.developer.data.data_validation_error import DataVal
 
 
 # mypy: ignore-errors
-# https://github.com/pydantic/pydantic/issues/156
+# https://github.com/pydantic/pydaOntic/issues/156
 
 
 class HQState(BaseModel, frozen=True):
@@ -18,16 +19,43 @@ class HQState(BaseModel, frozen=True):
     Important: https://pydantic-docs.helpmanual.io/usage/models/#field-ordering
     """
 
-    federation: Federation
-    forums: tuple[WireguardInterface, ...]
-    phone_lines: tuple[WireguardInterface, ...]
-    interfaces: tuple[WireguardInterface, ...]
+    federation: Annotated[Federation, Field(
+        ...,
+        alias='federation',
+        title='Federation',
+        description='Federation data',
+        true_type=Federation
+    )]
+
+    forums: Annotated[tuple[WireguardInterface, ...], Field(
+        ...,
+        alias='forums',
+        title='Forums',
+        description='WireGuard interfaces for untrusted communication between HQ and candidates',
+        true_type=tuple[WireguardInterface, ...],
+    )]
+
+    phone_lines: Annotated[tuple[WireguardInterface, ...], Field(
+        ...,
+        alias='phone_lines',
+        title='Phone Lines',
+        description='WireGuard interfaces for trusted communication between HQ and members',
+        true_type=tuple[WireguardInterface, ...],
+    )]
+
+    interfaces: Annotated[tuple[WireguardInterface, ...], Field(
+        ...,
+        alias='interfaces',
+        title='Interfaces',
+        description='WireGuard interfaces: Federation VPNs',
+        true_type=tuple[WireguardInterface, ...],
+    )]
 
     # pylint: disable=no-self-argument
 
     @validator('interfaces')
     def wireguard_interface_are_valid(
-            cls, value: tuple[WireguardInterface], values: dict
+            cls, value: tuple[WireguardInterface, ...], values: dict
     ) -> tuple[str, WireguardInterface]:
         """
         Validate interfaces.
@@ -40,7 +68,7 @@ class HQState(BaseModel, frozen=True):
 
     @classmethod
     def _check_wireguard_connection(
-            cls, value: tuple[WireguardInterface], values: dict
+            cls, value: tuple[WireguardInterface, ...], values: dict
     ) -> tuple[str, WireguardInterface]:
 
         interface_names = []

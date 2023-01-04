@@ -30,7 +30,6 @@ class TestWireguardConfigurationEventSubscriber:
     def test_get_subscribed_events(self):
         """ it returns subscribed events """
         assert HQEvent.STATE_CREATED in self._subject.get_subscribed_events()
-        assert HQEvent.STATE_BEFORE_UPDATE in self._subject.get_subscribed_events()
         assert HQEvent.STATE_UPDATED in self._subject.get_subscribed_events()
 
     def test_get_order(self):

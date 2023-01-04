@@ -40,11 +40,10 @@ class TestRawOptions:
         assert 'arg0' in RawOptions.get_all_argument_keys()
         assert 'arg1' in RawOptions.get_all_argument_keys()
 
-    def test_option_has_default(self):
-        """ it checks whether an option has a given default or not """
-        assert RawOptions.option_has_default('quiet', False)
-        assert not RawOptions.option_has_default('quiet', True)
-
     def test_get_all_argument_options_names(self):
         """ it returns all arguments specific option names """
-        assert ['private_key_retrieval_method'] == RawOptions.get_all_argument_options_names(RawOptions.arguments)
+        assert [
+            'private_key_retrieval_method',
+            'interface_type',
+            'interface_name'
+        ] == RawOptions.get_all_argument_options_names(RawOptions.arguments)

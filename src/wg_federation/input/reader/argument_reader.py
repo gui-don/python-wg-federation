@@ -1,3 +1,4 @@
+import os
 from argparse import ArgumentParser, Namespace, ArgumentDefaultsHelpFormatter, RawTextHelpFormatter
 from typing import Iterable
 
@@ -5,6 +6,10 @@ from wg_federation.data.input.command_line.command_line_argument import CommandL
 from wg_federation.data.input.command_line.command_line_option import CommandLineOption
 from wg_federation.data.input.raw_options import RawOptions
 from wg_federation.input.reader.environment_variable_reader import EnvironmentVariableReader
+
+
+class Formatter(RawTextHelpFormatter, ArgumentDefaultsHelpFormatter):
+    """ Argparse formatter combining linesep and defaults """
 
 
 class ArgumentReader:
@@ -39,17 +44,15 @@ class ArgumentReader:
   1. Configuration file
   2. Environment variables
   3. Command line options
-
-  {self._argument_parser.epilog if self._argument_parser.epilog is not None else ''}
-
+  {(os.linesep + str(self._argument_parser.epilog) + os.linesep) if self._argument_parser.epilog is not None else ''}
 environment variables:
-  {(chr(10) + "  ").join(
-            f"{EnvironmentVariableReader.get_real_env_var_name(name):30} {option.description}"
-            for name, option in RawOptions.options.items()
+  {(os.linesep + "  ").join(
+            f"{EnvironmentVariableReader.get_real_env_var_name(option.name):30} {option.description}"
+            for option in RawOptions.options
         )}
 """
 
-        self._argument_parser.formatter_class = RawTextHelpFormatter
+        self._argument_parser.formatter_class = Formatter
         self._setup_general_options(self._argument_parser)
 
         self._setup_sub_parser(self._argument_parser, RawOptions.arguments)
@@ -80,8 +83,9 @@ environment variables:
         :param _parser:
         :return:
         """
-        for option in RawOptions.options.values():
+        for option in RawOptions.options:
             self.__add_argument(_parser, option)
+
         _parser.add_argument(
             '-V',
             '--version',
