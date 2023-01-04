@@ -183,11 +183,6 @@ class StateDataManager:
                         f'--interface-name {interface_name}'
                         f'{self.__get_root_passphrase(private_key_retrieval_method, root_passphrase_command)}'
                         f')',)
-            post_up += (f'wg set %i psk <(wg-federation hq get-psk '
-                        f'--interface-type {interface_type} '
-                        f'--interface-name {interface_name}'
-                        f'{self.__get_root_passphrase(private_key_retrieval_method, root_passphrase_command)}'
-                        f')',)
 
         return post_up
 
