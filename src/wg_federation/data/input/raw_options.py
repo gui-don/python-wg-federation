@@ -102,13 +102,16 @@ class RawOptions:
         return list(map(lambda x: x.name, cls.options))
 
     @classmethod
-    def get_argument_depth(cls, _arguments: list[CommandLineArgument] = None, _depth_level: int = 0) -> int:
+    def get_argument_depth(cls, _arguments: list[CommandLineArgument] = None, _depth_level: int = None) -> int:
         """
         Returns the maximum number of arguments that may be set
         :param _arguments: List of arguments
         :param _depth_level: Starting depth level
         :return:
         """
+        if not _depth_level:
+            _depth_level = 0
+
         if _arguments is None:
             _arguments = cls.arguments
 

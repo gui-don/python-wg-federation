@@ -115,7 +115,7 @@ class TestStateDataManager:
         assert isinstance(self._subject, StateDataManager)
 
     def test_create_hq_state(self):
-        """ it creates and save a new HQState """
+        """ it creates and saves a new HQState """
 
         self._subject.create_hq_state(self._user_input)
 
@@ -137,7 +137,7 @@ class TestStateDataManager:
         verify(self._logger, times=1).warning(contains('The root passphrase retrieval method has been set to'))
 
     def test_create_hq_state3(self):
-        """ it creates and save a new HQState with WG_FEDERATION_ENV_VAR_OR_FILE method for secret retrieval """
+        """ it creates and saves a new HQState with WG_FEDERATION_ENV_VAR_OR_FILE method for secret retrieval """
 
         self._user_input = mock({
             'private_key_retrieval_method': SecretRetrievalMethod.WG_FEDERATION_ENV_VAR_OR_FILE,

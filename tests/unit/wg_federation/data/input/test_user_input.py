@@ -31,7 +31,7 @@ class TestUserInput:
         assert 'very_secret' == self._subject.root_passphrase.get_secret_value()
 
     def test_check_private_key_retrieval_method(self):
-        """ it raise an error if the private key retrieval method is command but no command is passed """
+        """ it raises an error if the private key retrieval method is command but no command is passed """
         with pytest.raises(ValidationError) as error:
             UserInput(private_key_retrieval_method=SecretRetrievalMethod.WG_FEDERATION_COMMAND)
 

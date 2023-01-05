@@ -86,7 +86,7 @@ class TestEventSubscriber:
         assert 'modified' == data.value
 
     def test_run2(self):
-        """ it raise an error if EventSubscriber does not implement run """
+        """ it raises an error if EventSubscriber does not implement run """
         with pytest.raises(NotImplementedError):
             EventSubscriber().run('any')
 
