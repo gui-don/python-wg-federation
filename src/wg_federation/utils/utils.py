@@ -73,14 +73,14 @@ class Utils:
         Opens a files.
         This method simplifies mocking of the builtins.open
         :param file:
-        :param mode: Among normal "open" modes, adds a 'a++' that acts like 'a+' but also creates parent path.
+        :param mode: Among normal modes, adds a 'a++' or 'w++' that acts like a+|w++ but also creates parent path
         :param encoding:
         :return:
         """
-        if 'a++' == mode:
-            # pathlib is badly made and thus untestable
+        if mode in ['a++', 'w++']:
+            # pathlib is badly made and thus this line is untestable
             Path(file).parents[0].mkdir(parents=True, exist_ok=True)
-            mode = 'a+'
+            mode = mode[:-1]
 
         return open(file=file, mode=mode, encoding=encoding)
 

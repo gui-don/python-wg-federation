@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from pathlib import Path
 
 from mockito import patch
 
@@ -29,7 +30,7 @@ def mock_open(file: str, mode: str, encoding: str):
     """
     modified_path = get_modified_path(file)
 
-    return open(file=modified_path, mode=mode, encoding=encoding)
+    return open(file=modified_path, mode=__prepare_open_mode(modified_path, mode), encoding=encoding)
 
 
 @contextmanager
@@ -41,5 +42,15 @@ def mock_lock(location: str, mode: str, flags):
     :param flags:
     :return:
     """
-    with open(file=get_modified_path(location), mode=mode, encoding='UTF-8') as file:
+    modified_path = get_modified_path(location)
+
+    with open(file=modified_path, mode=__prepare_open_mode(modified_path, mode), encoding='UTF-8') as file:
         yield file
+
+
+def __prepare_open_mode(location: str, mode: str) -> str:
+    if mode in ['a++', 'w++']:
+        Path(location).parents[0].mkdir(parents=True, exist_ok=True)
+        return mode[:-1]
+
+    return mode
