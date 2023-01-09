@@ -78,7 +78,8 @@ class InputManager:
         if user_input.root_passphrase_command:
             if user_input.root_passphrase:
                 self._logger.warning(
-                    'A root-passphrase-command was set but the root passphrase was retrieved through other means.'
+                    'A root-passphrase-command was set but the root passphrase was retrieved through other means. '
+                    'Ignoring the root passphrase command.'
                 )
                 return user_input
 

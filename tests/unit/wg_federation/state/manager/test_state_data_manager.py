@@ -123,7 +123,7 @@ class TestStateDataManager:
         verify(self._event_dispatcher, times=1).dispatch([HQEvent.STATE_CREATED], ANY(HQState))
 
     def test_create_hq_state2(self):
-        """ it raise a warning if the method for private key retrieval is insecure """
+        """ it raises a warning if the method for private key retrieval is insecure """
 
         self._user_input = mock({
             'private_key_retrieval_method': SecretRetrievalMethod.TEST_INSECURE_CLEARTEXT,
