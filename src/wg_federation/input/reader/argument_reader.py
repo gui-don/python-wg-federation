@@ -1,6 +1,6 @@
 import os
 from argparse import ArgumentParser, Namespace, ArgumentDefaultsHelpFormatter, RawTextHelpFormatter
-from typing import Iterable
+from collections.abc import Sequence
 
 from wg_federation.data.input.command_line.command_line_argument import CommandLineArgument
 from wg_federation.data.input.command_line.command_line_option import CommandLineOption
@@ -60,7 +60,7 @@ environment variables:
         return self._argument_parser.parse_args()
 
     def _setup_sub_parser(
-            self, _parent_argument_parser: ArgumentParser, _arguments: list[CommandLineArgument], depth: int = 0
+            self, _parent_argument_parser: ArgumentParser, _arguments: Sequence[CommandLineArgument], depth: int = 0
     ) -> None:
         subparser_action = _parent_argument_parser.add_subparsers(required=False, dest='arg' + str(depth))
 
@@ -71,10 +71,10 @@ environment variables:
                 formatter_class=ArgumentDefaultsHelpFormatter
             )
             self._setup_general_options(parser)
-            if (isinstance(argument.options, Iterable)) and len(argument.options) != 0:
+            if (isinstance(argument.options, Sequence)) and len(argument.options) != 0:
                 for option in argument.options:
                     self.__add_argument(parser, option)
-            if isinstance(argument.subcommands, list) and len(argument.subcommands) != 0:
+            if isinstance(argument.subcommands, Sequence) and len(argument.subcommands) != 0:
                 self._setup_sub_parser(parser, argument.subcommands, depth + 1)
 
     def _setup_general_options(self, _parser: ArgumentParser) -> None:

@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from typing import MutableSequence
 
 from wg_federation.data.input.command_line.command_line_argument import CommandLineArgument
 from wg_federation.data.input.command_line.command_line_option import CommandLineOption
@@ -55,8 +56,8 @@ class RawOptions:
 
     @classmethod
     def get_all_argument_options_names(
-            cls, arguments: list[CommandLineArgument], options: list[str] = None
-    ) -> list[str]:
+            cls, arguments: Sequence[CommandLineArgument], options: MutableSequence[str] = None
+    ) -> Sequence[str]:
         """
         Gets all option names for a given list of CommandLineArgument.
         :param arguments:
@@ -67,8 +68,9 @@ class RawOptions:
             options = []
 
         for argument in arguments:
-            for option in argument.options:
-                options.append(option.name)
+            if isinstance(argument.options, MutableSequence):
+                for option in argument.options:
+                    options.append(option.name)
             if argument.subcommands:
                 cls.get_all_argument_options_names(argument.subcommands, options)
 
@@ -83,21 +85,21 @@ class RawOptions:
         return list(map(lambda x: x.name, cls.options))
 
     @classmethod
-    def get_argument_depth(cls, _arguments: list[CommandLineArgument] = None, _depth_level: int = None) -> int:
+    def get_argument_depth(cls, _arguments: Sequence[CommandLineArgument] = None, _depth_level: int = None) -> int:
         """
         Returns the maximum number of arguments that may be set
-        :param _arguments: List of arguments
-        :param _depth_level: Starting depth level
+        :param _arguments:
+        :param _depth_level: Starting depth level. Used internally for recursive function: user must ignore this.
         :return:
         """
         if not _depth_level:
-            _depth_level = 0
+            _depth_level = 1
 
         if _arguments is None:
             _arguments = cls.arguments
 
         for arguments in _arguments:
-            if isinstance(arguments.subcommands, Sequence):
+            if isinstance(arguments.subcommands, Sequence) and len(arguments.subcommands) != 0:
                 return cls.get_argument_depth(arguments.subcommands, _depth_level + 1)
 
         return _depth_level

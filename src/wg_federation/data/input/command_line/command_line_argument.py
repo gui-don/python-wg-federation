@@ -1,3 +1,5 @@
+from typing import Optional, MutableSequence
+
 from pydantic import BaseModel
 
 from wg_federation.data.input.command_line.command_line_option import CommandLineOption
@@ -8,5 +10,5 @@ class CommandLineArgument(BaseModel):
 
     command: str = None
     description: str = None
-    subcommands: list['CommandLineArgument'] = []
-    options: list[CommandLineOption] = []
+    subcommands: Optional[MutableSequence['CommandLineArgument']] = None
+    options: Optional[MutableSequence[CommandLineOption]] = None
