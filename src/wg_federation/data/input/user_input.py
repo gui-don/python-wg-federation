@@ -5,6 +5,7 @@ from wg_federation.data.input.command_line.argparse_action import ArgparseAction
 from wg_federation.data.input.command_line.secret_retreival_method import SecretRetrievalMethod
 from wg_federation.data.input.configuration_backend import ConfigurationBackend
 from wg_federation.data.input.log_level import LogLevel
+from wg_federation.data.state.interface_kind import InterfaceKind
 from wg_federation.exception.developer.data.data_validation_error import DataValidationError
 
 
@@ -127,8 +128,26 @@ class UserInput(BaseModel):
     )] = SecretRetrievalMethod.WG_FEDERATION_ENV_VAR_OR_FILE
 
     # [hq] get-private-key
-    interface_name: str = None
-    interface_type: Annotated[str, Field(regex=r'(interface|phone_line|forum)s')] = None
+    interface_name: Annotated[str, Field(
+        title='WireGuard Interface Name',
+        description='Name of the WireGuard interface to retrieve the private key from.',
+        type=str,
+        true_type=str,
+        argparse_action=ArgparseAction.STORE,
+        argument_short='-i',
+        category='get-private-key',
+    )] = None
+
+    interface_kind: Annotated[InterfaceKind, Field(
+        title='WireGuard Interface Kind',
+        description='Kind of the WireGuard interface to retrieve the private key from.',
+        type=InterfaceKind,
+        allowed=f'“{"”, “".join([e.value for e in InterfaceKind])}”',
+        true_type=InterfaceKind,
+        argparse_action=ArgparseAction.STORE,
+        argument_short='-k',
+        category='get-private-key',
+    )] = None
 
     # pylint: disable=no-self-argument
     @validator('private_key_retrieval_method')

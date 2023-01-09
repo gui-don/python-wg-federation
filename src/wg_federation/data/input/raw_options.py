@@ -1,11 +1,8 @@
 from collections.abc import Sequence
 
-from wg_federation.data.input.command_line.argparse_action import ArgparseAction
 from wg_federation.data.input.command_line.command_line_argument import CommandLineArgument
 from wg_federation.data.input.command_line.command_line_option import CommandLineOption
 from wg_federation.data.input.user_input import UserInput
-from wg_federation.data.state.hq_state import HQState
-from wg_federation.data.state.wireguard_interface import WireguardInterface
 from wg_federation.utils.utils import Utils
 
 
@@ -39,26 +36,10 @@ class RawOptions:
                 CommandLineArgument(
                     command='get-private-key',
                     description='Fetch the private key of a given interface.',
-                    options=[
-                        CommandLineOption(
-                            argparse_action=ArgparseAction.STORE,
-                            argument_alias='--interface-type',
-                            argument_short='-t',
-                            default=None,
-                            description='The type of interface to retrieve the private key from. '
-                            # pylint: disable=line-too-long
-                                        f'Choices: “{"”, “".join(Utils.extract_attributes(HQState, ("true_type", tuple[WireguardInterface, ...])).keys())}”.',
-                            name='interface_type',
-                        ),
-                        CommandLineOption(
-                            argparse_action=ArgparseAction.STORE,
-                            argument_alias='--interface-name',
-                            argument_short='-i',
-                            default=None,
-                            description='The name of the interface to retrieve the private key from.',
-                            name='interface_name',
-                        ),
-                    ],
+                    options=list(
+                        CommandLineOption.from_dict(option_name, option) for option_name, option in  # type: ignore
+                        Utils.extract_attributes(UserInput, ('category', 'get-private-key')).items()
+                    )
                 ),
                 CommandLineArgument(
                     command='add-interface',
