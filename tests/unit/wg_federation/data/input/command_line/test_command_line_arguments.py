@@ -47,5 +47,9 @@ class TestCommandLineArgument:
         """ it returns its data """
         assert 'a_command' == self._subject.command
         assert 'a_description' == self._subject.description
+        # `subcommands` and `options` are subscriptable.
+        # self._subject is an object defined above, with real subcommands and options, not an abstract class.
+        # pylint: disable=unsubscriptable-object
         assert self._command_line_argument == self._subject.subcommands[0]
+        # pylint: disable=unsubscriptable-object
         assert self._command_line_option == self._subject.options[0]
