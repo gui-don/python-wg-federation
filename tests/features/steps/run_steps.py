@@ -1,3 +1,4 @@
+import logging
 import re
 import sys
 
@@ -24,7 +25,10 @@ def run_program(context: Context, argv: str = ''):
 
     sys.argv = [item for sublist in list_argv for item in sublist]
 
+    # pylint: disable=broad-except
     try:
         Main(Container()).main()
-    except SystemExit:
+    except SystemExit:  # Expected exit of the program
         pass
+    except Exception as error:  # Silencing any other exception, log them: so they can be tested
+        logging.error(str(error))

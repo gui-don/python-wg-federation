@@ -54,3 +54,8 @@ Feature: HQ bootstrap
   Scenario: hq bootstrap displays a warning if root passphrase and root subcommands are both used together
     When we run program with "hq bootstrap -P root-pass --Pcmd "/usr/bin/echo dangerous do not do echo secrets like that" --private-key-retrieval-method WG_FEDERATION_COMMAND"
     Then the stderr contains "A root-passphrase-command was set but the root passphrase was retrieved through other means."
+
+  @hq-bootstrap
+  Scenario: hq bootstrap fails when the private key retrieval method is WG_FEDERATION_COMMAND but no command is provided
+    When we run program with "hq bootstrap -P root-pass --private-key-retrieval-method WG_FEDERATION_COMMAND"
+    Then the stderr contains "The method to retrieve WireGuard interface’s private keys was set to “WG_FEDERATION_COMMAND” \(the default value for this setting\), but you did not provide a command to get the root passphrase dynamically. Please set --root-passphrase-command or choose another method."
