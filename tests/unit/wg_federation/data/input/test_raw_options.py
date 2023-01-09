@@ -44,6 +44,6 @@ class TestRawOptions:
         """ it returns all arguments specific option names """
         assert [
             'private_key_retrieval_method',
-            'interface_type',
-            'interface_name'
+            'interface_name',
+            'interface_kind',
         ] == RawOptions.get_all_argument_options_names(RawOptions.arguments)

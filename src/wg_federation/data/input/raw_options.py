@@ -98,6 +98,9 @@ class RawOptions:
         if _arguments is None:
             _arguments = cls.arguments
 
+        if not _arguments:
+            return 0
+
         for arguments in _arguments:
             if isinstance(arguments.subcommands, Sequence) and len(arguments.subcommands) != 0:
                 return cls.get_argument_depth(arguments.subcommands, _depth_level + 1)
