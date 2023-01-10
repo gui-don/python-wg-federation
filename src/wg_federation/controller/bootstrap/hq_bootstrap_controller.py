@@ -7,7 +7,7 @@ from wg_federation.observer.event_subscriber import EventSubscriber
 from wg_federation.state.manager.state_data_manager import StateDataManager
 
 
-class HQBootstrapController(EventSubscriber):
+class HQBootstrapController(EventSubscriber[UserInput]):
     """
     Bootstrap HQ server.
     """

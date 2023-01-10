@@ -18,7 +18,7 @@ class DummyEvent(Enum):
     TEST = ('test', DummyData, True)
 
 
-class DummyEventSubscriber(EventSubscriber):
+class DummyEventSubscriber(EventSubscriber[IsDataClass]):
     """ Dummy EventSubscriber for tests """
 
     _order = None

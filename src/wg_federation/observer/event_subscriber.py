@@ -1,10 +1,13 @@
 from abc import ABC
 from enum import Enum
+from typing import TypeVar, Generic
 
 from wg_federation.observer.is_data_class import IsDataClass
 
+_IsDataClassT = TypeVar('_IsDataClassT', bound=IsDataClass)
 
-class EventSubscriber(ABC):
+
+class EventSubscriber(ABC, Generic[_IsDataClassT]):
     """
     Abstract class for any kind of EventSubscriber any kind of events, previously registered.
     """
@@ -18,7 +21,7 @@ class EventSubscriber(ABC):
 
     # OK, since it might be used by subclasses.
     # pylint: disable=unused-argument
-    def should_run(self, data: IsDataClass) -> bool:
+    def should_run(self, data: _IsDataClassT) -> bool:
         """
         Whether the subscriber should run.
         Use this method to set conditions to determine whether the subscriber `run` method needs to be called or not.
@@ -27,7 +30,7 @@ class EventSubscriber(ABC):
         """
         return True
 
-    def run(self, data: IsDataClass) -> IsDataClass:
+    def run(self, data: _IsDataClassT) -> _IsDataClassT:
         """
         Runs the subscriber.
         Whether this method is called depends on the local `should_run`.

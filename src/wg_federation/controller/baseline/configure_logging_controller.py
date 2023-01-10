@@ -6,7 +6,7 @@ from wg_federation.data.input.user_input import UserInput
 from wg_federation.observer.event_subscriber import EventSubscriber
 
 
-class ConfigureLoggingController(EventSubscriber):
+class ConfigureLoggingController(EventSubscriber[UserInput]):
     """
     Configure the application logging
     For example, logging level depending on user inputs
