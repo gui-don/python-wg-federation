@@ -78,6 +78,6 @@ enable_recursive_aliases = true
 [tool.bandit]
 exclude_dirs = ["tests", "doc", "build", "dist", "venv", "setup.py"]
 skips = [
-    'B404', # import subprocess
-    'B603', # using subprocess without shell=True (safe)
+    'B404', # import subprocess. Importing this lib is obviously not a security threat.
+    'B603', # using subprocess without shell=True is considered safe. We need it. This silences a notice.
 ]
