@@ -10,15 +10,9 @@ from Cryptodome import Random
 from Cryptodome.Cipher import AES
 from Cryptodome.Hash import Poly1305
 from dependency_injector import containers, providers
-try:
-    from systemd.journal import JournalHandler
-except ImportError:
-    _has_systemd = False  # pylint: disable-msg=C0103
-else:
-    _has_systemd = True  # pylint: disable-msg=C0103
 
-from wg_federation.constants import __version__
 from wg_federation.controller.api.hq_get_private_key_controller import HQGetPrivateKeyController
+from wg_federation.constants import __version__, HAS_SYSTEMD
 from wg_federation.controller.baseline.configure_logging_controller import ConfigureLoggingController
 from wg_federation.controller.bootstrap.hq_bootstrap_controller import HQBootstrapController
 from wg_federation.crypto.cryptographic_key_deriver import CryptographicKeyDeriver
@@ -55,6 +49,8 @@ from wg_federation.input.reader.environment_variable_reader import EnvironmentVa
 from wg_federation.observer.event_dispatcher import EventDispatcher
 from wg_federation.state.manager.state_data_manager import StateDataManager
 
+if HAS_SYSTEMD:
+    from systemd.journal import JournalHandler
 
 # Because it's how the DI lib works
 # pylint: disable=too-many-instance-attributes
@@ -79,7 +75,7 @@ class Container(containers.DynamicContainer):
         # logging
         _logger = logging.getLogger('root')
         _logger_console_handler = logging.StreamHandler()
-        if _has_systemd:
+        if HAS_SYSTEMD:
             _logger_syslog_handler = JournalHandler()
 
         if early_debug:
@@ -89,11 +85,11 @@ class Container(containers.DynamicContainer):
             _logger_console_handler.setLevel(logging.DEBUG)
 
         _logger.addHandler(_logger_console_handler)
-        if _has_systemd:
+        if HAS_SYSTEMD:
             _logger.addHandler(_logger_syslog_handler)
 
         self.logger_console_handler = providers.Object(_logger_console_handler)
-        if _has_systemd:
+        if HAS_SYSTEMD:
             self.logger_syslog_handler = providers.Object(_logger_syslog_handler)
 
         self.root_logger = providers.Object(_logger)

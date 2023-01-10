@@ -2,9 +2,11 @@
     Defines all constants for wg-federation
 """
 import os
+import importlib
 
 CHANGELOG_FILENAME = 'CHANGELOG.md'
 VERSION_FILENAME = '__version__.txt'
+HAS_SYSTEMD = False
 __version__ = 'UNDEFINED'
 
 pwd = os.path.dirname(os.path.realpath(__file__))
@@ -24,3 +26,6 @@ try:
     __version__ = read_version(os.path.join(pwd, '../../', CHANGELOG_FILENAME))
 except FileNotFoundError:
     __version__ = read_version(os.path.join(pwd, VERSION_FILENAME))
+
+
+HAS_SYSTEMD = importlib.util.find_spec('systemd') is not None
