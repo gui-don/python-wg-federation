@@ -6,6 +6,7 @@ from wg_federation.data.input.command_line.secret_retreival_method import Secret
 from wg_federation.data.input.user_input import UserInput
 from wg_federation.data.state.federation import Federation
 from wg_federation.data.state.hq_state import HQState
+from wg_federation.data.state.interface_kind import InterfaceKind
 from wg_federation.data.state.wireguard_interface import WireguardInterface
 from wg_federation.data_transformation.configuration_location_finder import ConfigurationLocationFinder
 from wg_federation.data_transformation.loader.can_load_configuration_interface import CanLoadConfigurationInterface
@@ -114,6 +115,7 @@ class StateDataManager:
                     shared_psk=self._wireguard_key_generator.generate_psk(),
                     listen_port=federation.forum_min_port,
                     private_key_retrieval_method=user_input.private_key_retrieval_method,
+                    kind=InterfaceKind.FORUM,
                     post_up=self.__add_secret_retrieval_to_post_up(
                         (),
                         'forums',
@@ -132,6 +134,7 @@ class StateDataManager:
                     shared_psk=self._wireguard_key_generator.generate_psk(),
                     listen_port=federation.phone_line_min_port,
                     private_key_retrieval_method=user_input.private_key_retrieval_method,
+                    kind=InterfaceKind.PHONE_LINE,
                     post_up=self.__add_secret_retrieval_to_post_up(
                         (),
                         'phone_lines',
@@ -149,6 +152,7 @@ class StateDataManager:
                     public_key=interface_key_pairs[1],
                     shared_psk=self._wireguard_key_generator.generate_psk(),
                     private_key_retrieval_method=user_input.private_key_retrieval_method,
+                    kind=InterfaceKind.INTERFACE,
                     post_up=self.__add_secret_retrieval_to_post_up(
                         (),
                         'interfaces',

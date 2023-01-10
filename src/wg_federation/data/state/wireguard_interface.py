@@ -4,6 +4,7 @@ from typing import Any
 from pydantic import BaseModel, IPvAnyAddress, conint, constr, IPvAnyInterface, SecretStr, validator
 
 from wg_federation.data.input.command_line.secret_retreival_method import SecretRetrievalMethod
+from wg_federation.data.state.interface_kind import InterfaceKind
 from wg_federation.data.state.interface_status import InterfaceStatus
 from wg_federation.exception.developer.data.data_validation_error import DataValidationError
 
@@ -30,6 +31,7 @@ class WireguardInterface(BaseModel, frozen=True):
 
     name: constr(regex=_REGEXP_WIREGUARD_INTERFACE_NAME) = 'wg-federation0'
     status: InterfaceStatus = InterfaceStatus.NEW
+    kind: InterfaceKind = None
     private_key_retrieval_method: SecretRetrievalMethod = None
     shared_psk: SecretStr = None
 

@@ -217,7 +217,10 @@ class Container(containers.DynamicContainer):
             logger=self.root_logger,
             subscribers=providers.List(
                 providers.ThreadSafeSingleton(
-                    WireguardConfigurationEventSubscriber
+                    WireguardConfigurationEventSubscriber,
+                    os_lib=os,
+                    configuration_location_finder=self.configuration_location_finder,
+                    configuration_locker=self.configuration_locker,
                 )
             )
         )
