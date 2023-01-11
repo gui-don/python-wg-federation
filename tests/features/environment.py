@@ -1,9 +1,10 @@
+import os
 from contextlib import contextmanager
 from pathlib import Path
 
 from mockito import patch
 
-from steps.context_steps import setup_default_mock, clean_mocks, get_modified_path
+from steps.context_steps import setup_default_mock, clean_mocks, get_modified_path, clean_files, TEST_PATH
 from wg_federation.data_transformation.locker.file_configuration_locker import FileConfigurationLocker
 from wg_federation.utils.utils import Utils
 
@@ -17,7 +18,14 @@ def before_scenario(context, scenario):
     # pylint: disable=protected-access
     patch(FileConfigurationLocker._do_lock, mock_lock)
 
+
+# pylint: disable=unused-argument
+def after_scenario(context, scenario):
+    """ Runs after each scenario """
     context.add_cleanup(clean_mocks)
+
+    if os.path.exists(TEST_PATH):
+        context.add_cleanup(clean_files)
 
 
 def mock_open(file: str, mode: str, encoding: str):
