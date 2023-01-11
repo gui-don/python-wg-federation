@@ -1,10 +1,11 @@
-from typing import Callable
+from typing import Callable, Optional
 
 from ipaddr import IPNetwork
 from pydantic import BaseModel, validator, Field
 from typing_extensions import Annotated
 
 from wg_federation.data.state.federation import Federation
+from wg_federation.data.state.interface_kind import InterfaceKind
 from wg_federation.data.state.wireguard_interface import WireguardInterface
 from wg_federation.exception.developer.data.data_validation_error import DataValidationError
 
@@ -135,3 +136,27 @@ class HQState(BaseModel, frozen=True):
                     f'“{wireguard_interface.listen_port}” is invalid.'
                     f'Make sure the port is in the allowed range and not the same as another interface.'
                 )
+
+    def find_interface_by_name(self, kind: InterfaceKind, name: str) -> Optional[WireguardInterface]:
+        """
+        Search and return an interface by its name
+        :param kind: Kind of interface to find
+        :param name: Name of the interface to find
+        :return:
+        """
+        for interface in self.find_interfaces_by_kind(kind):
+            if interface.name == name:
+                return interface
+
+        return None
+
+    def find_interfaces_by_kind(self, kind: InterfaceKind) -> tuple:
+        """
+        Return interfaces by their kind.
+        :param kind:
+        :return: tuple[WireguardInterface] or empty tuple if the kind is not found
+        """
+        if hasattr(self, kind):
+            return getattr(self, kind)
+
+        return ()

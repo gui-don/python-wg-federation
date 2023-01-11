@@ -2,6 +2,7 @@ import pytest
 
 from wg_federation.data.state.federation import Federation
 from wg_federation.data.state.hq_state import HQState
+from wg_federation.data.state.interface_kind import InterfaceKind
 from wg_federation.data.state.wireguard_interface import WireguardInterface
 
 
@@ -18,6 +19,7 @@ class TestState:
                 public_key='9BMRLFuETS7c2PSgR1UqP3TxFwEaNHaGgGCdF1HoHXI=',
                 private_key='FU2N9kCSHDPOucnBgB0qRECPN0aw+I5H0rHrcyH8F3o=',
                 shared_psk='mwn0Dfc4IwYlq/jDL08f9VTCM+mQbV2tJlRdIDAy5CA=',
+                kind=InterfaceKind.INTERFACE,
             ),),
             forums=(WireguardInterface(
                 name='forum0',
@@ -25,6 +27,7 @@ class TestState:
                 public_key='qufw3QuU9lMWBTDLmgWpsk1fQsRTG4UZwyPYgUi9l34=',
                 address=(('10.10.10.1/24',)),
                 listen_port=44200,
+                kind=InterfaceKind.FORUM,
             ),),
             phone_lines=(WireguardInterface(
                 name='phone_lines0',
@@ -32,6 +35,7 @@ class TestState:
                 public_key='nLt1mnBG6VyThOASx7b8XFSuldf6R9g4+QYfM1V+8gk=',
                 address=(('10.10.200.1/24',)),
                 listen_port=44100,
+                kind=InterfaceKind.PHONE_LINE,
             ),)
         )
 
@@ -112,7 +116,8 @@ class TestState:
                     private_key='Ee862wOc4Fv9ttqUOYCLsTVUQm0kbwdGyq0v8e3cGhs=',
                     public_key='W7ExEOJEEcLFcsf/Y2B4nOViCiT8bK4XGPYy/uSAf0g=',
                     address=('192.168.50.0/24',),
-                    listen_port=44100
+                    listen_port=44100,
+                    kind=InterfaceKind.INTERFACE,
                 ),),
                 phone_lines=(WireguardInterface(
                     name='phone_lines0',
@@ -120,6 +125,7 @@ class TestState:
                     public_key='nLt1mnBG6VyThOASx7b8XFSuldf6R9g4+QYfM1V+8gk=',
                     address=(('10.10.200.1/24',)),
                     listen_port=44100,
+                    kind=InterfaceKind.PHONE_LINE,
                 ),),
                 forums=(WireguardInterface(
                     name='forum0',
@@ -127,6 +133,7 @@ class TestState:
                     public_key='qufw3QuU9lMWBTDLmgWpsk1fQsRTG4UZwyPYgUi9l34=',
                     address=(('10.10.10.1/24',)),
                     listen_port=44200,
+                    kind=InterfaceKind.FORUM,
                 ),),
             )
         assert 'has the same listen_port' in str(error.value)
@@ -141,6 +148,7 @@ class TestState:
                     private_key='FU2N9kCSHDPOucnBgB0qRECPN0aw+I5H0rHrcyH8F3o=',
                     shared_psk='mwn0Dfc4IwYlq/jDL08f9VTCM+mQbV2tJlRdIDAy5CA=',
                     listen_port=44201,
+                    kind=InterfaceKind.INTERFACE,
                 ),),
                 forums=(WireguardInterface(
                     name='forum0',
@@ -148,6 +156,7 @@ class TestState:
                     public_key='qufw3QuU9lMWBTDLmgWpsk1fQsRTG4UZwyPYgUi9l34=',
                     address=(('10.10.10.1/24',)),
                     listen_port=44200,
+                    kind=InterfaceKind.FORUM,
                 ),),
                 phone_lines=(WireguardInterface(
                     name='phone_lines0',
@@ -155,6 +164,7 @@ class TestState:
                     public_key='nLt1mnBG6VyThOASx7b8XFSuldf6R9g4+QYfM1V+8gk=',
                     address=(('10.10.200.1/24',)),
                     listen_port=44100,
+                    kind=InterfaceKind.PHONE_LINE,
                 ),)
             )
 
@@ -169,7 +179,8 @@ class TestState:
                     public_key='9BMRLFuETS7c2PSgR1UqP3TxFwEaNHaGgGCdF1HoHXI=',
                     private_key='FU2N9kCSHDPOucnBgB0qRECPN0aw+I5H0rHrcyH8F3o=',
                     shared_psk='mwn0Dfc4IwYlq/jDL08f9VTCM+mQbV2tJlRdIDAy5CA=',
-                    listen_port=44101
+                    listen_port=44101,
+                    kind=InterfaceKind.INTERFACE,
                 ),),
                 forums=(WireguardInterface(
                     name='forum0',
@@ -177,6 +188,7 @@ class TestState:
                     public_key='qufw3QuU9lMWBTDLmgWpsk1fQsRTG4UZwyPYgUi9l34=',
                     address=(('10.10.10.1/24',)),
                     listen_port=44200,
+                    kind=InterfaceKind.FORUM,
                 ),),
                 phone_lines=(WireguardInterface(
                     name='phone_lines0',
@@ -184,6 +196,7 @@ class TestState:
                     public_key='nLt1mnBG6VyThOASx7b8XFSuldf6R9g4+QYfM1V+8gk=',
                     address=(('10.10.200.1/24',)),
                     listen_port=44100,
+                    kind=InterfaceKind.PHONE_LINE,
                 ),)
             )
 
@@ -198,6 +211,7 @@ class TestState:
                     public_key='9BMRLFuETS7c2PSgR1UqP3TxFwEaNHaGgGCdF1HoHXI=',
                     private_key='FU2N9kCSHDPOucnBgB0qRECPN0aw+I5H0rHrcyH8F3o=',
                     shared_psk='mwn0Dfc4IwYlq/jDL08f9VTCM+mQbV2tJlRdIDAy5CA=',
+                    kind=InterfaceKind.INTERFACE,
                 ),),
                 forums=(WireguardInterface(
                     name='forum0',
@@ -205,6 +219,7 @@ class TestState:
                     public_key='qufw3QuU9lMWBTDLmgWpsk1fQsRTG4UZwyPYgUi9l34=',
                     address=(('10.10.10.1/24',)),
                     listen_port=5000,
+                    kind=InterfaceKind.FORUM,
                 ),),
                 phone_lines=(WireguardInterface(
                     name='phone_lines0',
@@ -212,6 +227,7 @@ class TestState:
                     public_key='nLt1mnBG6VyThOASx7b8XFSuldf6R9g4+QYfM1V+8gk=',
                     address=(('10.10.200.1/24',)),
                     listen_port=44100,
+                    kind=InterfaceKind.PHONE_LINE,
                 ),)
             )
 
@@ -244,3 +260,16 @@ class TestState:
             )
 
         assert 'Make sure the port is in the allowed range and not the same' in str(error.value)
+
+    def test_find_interfaces_by_kind(self):
+        """ it returns interfaces based on a given kind """
+        assert () == self._subject.find_interfaces_by_kind('does not exists')
+        assert InterfaceKind.INTERFACE == self._subject.find_interfaces_by_kind(InterfaceKind.INTERFACE)[0].kind
+        assert InterfaceKind.PHONE_LINE == self._subject.find_interfaces_by_kind(InterfaceKind.PHONE_LINE)[0].kind
+        assert InterfaceKind.FORUM == self._subject.find_interfaces_by_kind(InterfaceKind.FORUM)[0].kind
+
+    def test_find_interfaces_by_name(self):
+        """ it returns interfaces based on a given name and kind """
+        assert not self._subject.find_interface_by_name('does not exists', 'nope')
+        assert InterfaceKind.FORUM == self._subject.find_interface_by_name(InterfaceKind.FORUM, 'forum0').kind
+        assert not self._subject.find_interface_by_name(InterfaceKind.FORUM, 'does not exist')
