@@ -2,7 +2,7 @@
     Defines all constants for wg-federation
 """
 import os
-import importlib
+import importlib.util
 
 CHANGELOG_FILENAME = 'CHANGELOG.md'
 VERSION_FILENAME = '__version__.txt'
