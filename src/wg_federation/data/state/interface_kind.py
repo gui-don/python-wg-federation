@@ -5,6 +5,6 @@ class InterfaceKind(str, Enum):
     """
     Enum of possible WireGuard interfaces kind
     """
-    INTERFACE = 'INTERFACE'  # Federation interface
-    PHONE_LINE = 'PHONE_LINE'  # For HQ/Member meta communications
-    FORUM = 'FORUM'  # For HQ/Candidate meta communications
+    INTERFACE = 'interfaces'  # Federation interface
+    PHONE_LINE = 'phone_lines'  # For HQ/Member meta communications
+    FORUM = 'forums'  # For HQ/Candidate meta communications
