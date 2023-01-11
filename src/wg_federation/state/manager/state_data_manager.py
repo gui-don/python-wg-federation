@@ -77,18 +77,6 @@ class StateDataManager:
         except FileNotFoundError as err:
             raise StateNotBootstrapped('Unable to load the state: it was not bootstrapped. Run `hq boostrap`.') from err
 
-    # def update_hq_state(self, new_state_data: dict) -> HQState:
-    #     with self._configuration_locker.lock_exclusively(self._configuration_location_finder.state()) as conf_file:
-    #         self._reload_from_source(conf_file),
-    #
-    #         state = HQState(**always_merger.merge(
-    #             self._reload_from_source(conf_file),
-    #             new_state_data
-    #         ))
-    #         self._configuration_saver.save(state.dict(), conf_file)
-    #
-    #     return state
-
     def create_hq_state(self, user_input: UserInput) -> HQState:
         """
         Create a new HQState and save it.
