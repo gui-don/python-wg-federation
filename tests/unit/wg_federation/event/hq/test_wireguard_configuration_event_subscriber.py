@@ -3,10 +3,8 @@ from types import ModuleType
 import pytest
 from mockito import unstub, mock, when, ANY, verify, patch
 
-from wg_federation.data.state.federation import Federation
+from unit.wg_federation import hq_state
 from wg_federation.data.state.hq_state import HQState
-from wg_federation.data.state.interface_kind import InterfaceKind
-from wg_federation.data.state.wireguard_interface import WireguardInterface
 from wg_federation.data_transformation.configuration_location_finder import ConfigurationLocationFinder
 from wg_federation.data_transformation.locker.configuration_locker import ConfigurationLocker
 from wg_federation.event.hq.hq_event import HQEvent
@@ -36,39 +34,7 @@ class TestWireguardConfigurationEventSubscriber:
 
     def init(self):
         """ Constructor """
-        self._hq_state = HQState(
-            federation=Federation(name='test'),
-            forums=(
-                WireguardInterface(
-                    name='wgf-forum0',
-                    address=('172.32.0.1/22',),
-                    listen_port=44200,
-                    public_key='2a9+BiAk3oQHOqSwUf2sfyUs9SOkm1TwnkAKk0cbPFg=',
-                    private_key='qdYplAbCzmsK938SBfzLdttcloK18+77q1M+TWJpnVk=',
-                    kind=InterfaceKind.FORUM,
-                ),
-            ),
-            phone_lines=(
-                WireguardInterface(
-                    name='wgf-phoneline0',
-                    address=('172.32.4.1/22',),
-                    listen_port=44100,
-                    public_key='785FGWX5b/nvr8a40YwBTz/h34Fu8sJeDSTSMCCW/nw=',
-                    private_key='0MQX95OV9b05zkAmyzJMvseCm87aXt9vEmTTBqbOwrg=',
-                    kind=InterfaceKind.PHONE_LINE,
-                ),
-            ),
-            interfaces=(
-                WireguardInterface(
-                    name='wg-federation0',
-                    address=('172.30.8.1/22',),
-                    listen_port=44000,
-                    private_key='tmX9goa9jAABptDQ9PDsb+Xd5++HZRS3nwBDExckWzU=',
-                    public_key='P6dlK8fhauCwOkwvyp6SOKP8sftuX8JKQVNbL1O8iS8=',
-                    kind=InterfaceKind.INTERFACE,
-                ),
-            ),
-        )
+        self._hq_state = hq_state()
 
         self._file = mock()
 
