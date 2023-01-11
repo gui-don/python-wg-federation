@@ -20,11 +20,6 @@ def mock_system_file(context, path: str, content: str):
     Step impl
     """
 
-    # sadly because pathlib is horrendous, it is not mock-able.
-    # If possible, always prefer os over pathlib.
-    when(os.path).exists(get_path(path)).thenReturn(True)
-    when(os.path).isfile(get_path(path)).thenReturn(True)
-
     with open(file=get_modified_path(path), mode='a+', encoding='UTF-8') as file:
         file.truncate(0)
         file.seek(0)
@@ -37,14 +32,14 @@ def mock_system_file(context, path: str, content: str):
 @then('the system file “{path}” should exist')
 def system_file_exists(context: Context, path: str):
     """ Step impl """
-    assert os.path.exists(get_modified_path(path))
+    assert os.path.exists(path)
     context.add_cleanup(clean_files)
 
 
 @then('the system file “{path}” should not exist')
 def system_file_not_exists(context: Context, path: str):
     """ Step impl """
-    assert not os.path.exists(get_modified_path(path))
+    assert not os.path.exists(path)
 
 
 @then('the system file “{path}” should contain “{reg_pattern}”')
@@ -75,7 +70,7 @@ def clean_mocks():
 
 
 def clean_files():
-    """ Unstub all mockito mocks """
+    """ Remove all tests files within the test scope """
     shutil.rmtree(TEST_PATH)
 
 
@@ -99,6 +94,8 @@ def get_modified_path(path: str) -> str:
     :param path:
     :return:
     """
+    if path.startswith(TEST_PATH):
+        return path
 
     original_path = Path(get_path(path))
     modified_path = str(Path(TEST_PATH) / original_path.relative_to(original_path.anchor))

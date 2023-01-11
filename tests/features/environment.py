@@ -14,6 +14,10 @@ def before_scenario(context, scenario):
     """ Runs before each scenario """
     setup_default_mock()
 
+    patch(os.path.exists, mock_path_exists)
+    patch(os.path.isfile, mock_is_file)
+    patch(os.path.isdir, mock_is_dir)
+
     patch(Utils.open, mock_open)
     # pylint: disable=protected-access
     patch(FileConfigurationLocker._do_lock, mock_lock)
@@ -26,6 +30,21 @@ def after_scenario(context, scenario):
 
     if os.path.exists(TEST_PATH):
         context.add_cleanup(clean_files)
+
+
+def mock_path_exists(path: str) -> bool:
+    """ Mock the os.path.exist function to use test path """
+    return Path(get_modified_path(path)).exists()
+
+
+def mock_is_file(path: str) -> bool:
+    """ Mock the os.path.is_file function to use test path """
+    return Path(get_modified_path(path)).is_file()
+
+
+def mock_is_dir(path: str) -> bool:
+    """ Mock the os.path.is_dir function to use test path """
+    return Path(get_modified_path(path)).is_dir()
 
 
 def mock_open(file: str, mode: str, encoding: str):
