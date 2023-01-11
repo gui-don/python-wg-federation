@@ -4,6 +4,7 @@ from mockito import mock, unstub, verify, when, ANY, contains
 from wg_federation.data.input.command_line.secret_retreival_method import SecretRetrievalMethod
 from wg_federation.data.state.hq_state import HQState
 from wg_federation.event.hq.hq_event import HQEvent
+from wg_federation.exception.user.data.state_signature_cannot_be_verified import StateNotBootstrapped
 from wg_federation.state.manager.state_data_manager import StateDataManager
 
 
@@ -157,3 +158,12 @@ class TestStateDataManager:
 
         verify(self._configuration_loader, times=1).load_if_exists(self._file)
         verify(self._event_dispatcher, times=1).dispatch([HQEvent.STATE_LOADED], ANY(HQState))
+
+    def test_reload2(self):
+        """ it raises an error when trying to reload a state that was not bootstrapped """
+        when(self._configuration_locker).lock_shared('state').thenRaise(FileNotFoundError)
+
+        with pytest.raises(StateNotBootstrapped) as error:
+            self._subject.reload()
+
+        assert 'Unable to load the state: it was not bootstrapped. Run `hq boostrap`.' in str(error.value)

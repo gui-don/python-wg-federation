@@ -13,6 +13,7 @@ from wg_federation.data_transformation.loader.can_load_configuration_interface i
 from wg_federation.data_transformation.locker.configuration_locker import ConfigurationLocker
 from wg_federation.data_transformation.saver.can_save_configuration_interface import CanSaveConfigurationInterface
 from wg_federation.event.hq.hq_event import HQEvent
+from wg_federation.exception.user.data.state_signature_cannot_be_verified import StateNotBootstrapped
 from wg_federation.observer.event_dispatcher import EventDispatcher
 from wg_federation.utils.utils import Utils
 
@@ -63,15 +64,30 @@ class StateDataManager:
         Loads a HQState from the source of truth.
         :return:
         """
-        with self._configuration_locker.lock_shared(self._configuration_location_finder.state()) as conf_file:
-            raw_configuration = self._reload_from_source(conf_file)
+        try:
+            with self._configuration_locker.lock_shared(self._configuration_location_finder.state()) as conf_file:
+                raw_configuration = self._reload_from_source(conf_file)
 
-        return self._event_dispatcher.dispatch([HQEvent.STATE_LOADED], HQState(
-            federation=Federation.from_dict(raw_configuration.get('federation')),
-            interfaces=WireguardInterface.from_list(raw_configuration.get('interfaces')),
-            forums=WireguardInterface.from_list(raw_configuration.get('forums')),
-            phone_lines=WireguardInterface.from_list(raw_configuration.get('phone_lines')),
-        ))
+            return self._event_dispatcher.dispatch([HQEvent.STATE_LOADED], HQState(
+                federation=Federation.from_dict(raw_configuration.get('federation')),
+                interfaces=WireguardInterface.from_list(raw_configuration.get('interfaces')),
+                forums=WireguardInterface.from_list(raw_configuration.get('forums')),
+                phone_lines=WireguardInterface.from_list(raw_configuration.get('phone_lines')),
+            ))
+        except FileNotFoundError as err:
+            raise StateNotBootstrapped('Unable to load the state: it was not bootstrapped. Run `hq boostrap`.') from err
+
+    # def update_hq_state(self, new_state_data: dict) -> HQState:
+    #     with self._configuration_locker.lock_exclusively(self._configuration_location_finder.state()) as conf_file:
+    #         self._reload_from_source(conf_file),
+    #
+    #         state = HQState(**always_merger.merge(
+    #             self._reload_from_source(conf_file),
+    #             new_state_data
+    #         ))
+    #         self._configuration_saver.save(state.dict(), conf_file)
+    #
+    #     return state
 
     def create_hq_state(self, user_input: UserInput) -> HQState:
         """
