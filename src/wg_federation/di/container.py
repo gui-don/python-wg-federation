@@ -10,6 +10,7 @@ from Cryptodome import Random
 from Cryptodome.Cipher import AES
 from Cryptodome.Hash import Poly1305
 from dependency_injector import containers, providers
+from nacl import public
 
 from wg_federation.controller.api.hq_get_private_key_controller import HQGetPrivateKeyController
 from wg_federation.constants import __version__, HAS_SYSTEMD
