@@ -14,6 +14,7 @@ from nacl import public
 from systemd.journal import JournalHandler
 
 from wg_federation.constants import __version__
+from wg_federation.controller.api.hq_get_private_key_controller import HQGetPrivateKeyController
 from wg_federation.controller.baseline.configure_logging_controller import ConfigureLoggingController
 from wg_federation.controller.bootstrap.hq_bootstrap_controller import HQBootstrapController
 from wg_federation.crypto.cryptographic_key_deriver import CryptographicKeyDeriver
@@ -272,6 +273,10 @@ class Container(containers.DynamicContainer):
             subscribers=providers.List(
                 providers.ThreadSafeSingleton(
                     ConfigureLoggingController, logger_handler=self.logger_console_handler, logger=self.root_logger
+                ),
+                providers.ThreadSafeSingleton(
+                    HQGetPrivateKeyController,
+                    state_data_manager=self.state_data_manager,
                 ),
                 providers.ThreadSafeSingleton(
                     HQBootstrapController,
