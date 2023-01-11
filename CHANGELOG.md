@@ -1,3 +1,12 @@
+0.5.0
+=====
+
+- feat: adds an underlying Observer system to manage events
+- feat: allows to pass a command line to retrieve root passphrase as an alternative to existing methods
+- feat: `hq bootstrap` now creates WireGuard interfaces config files for the Federation and HQ/Member/Candidate communications
+- feat: implements `hq get-private-key` to dynamically retrieve the privateKey of a given WireGuard interface
+- refactor: changes underlying Controller system to use Observer
+
 0.4.0
 =====
 
