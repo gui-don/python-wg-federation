@@ -14,7 +14,7 @@ from wg_federation.observer.event_subscriber import EventSubscriber
 from wg_federation.utils.utils import Utils
 
 
-class WireguardConfigurationEventSubscriber(EventSubscriber[HQState]):
+class WireguardInterfaceConfigurationEventSubscribe(EventSubscriber[HQState]):
     """ Creates/Updates WireGuard interfaces """
 
     _os_lib: ModuleType = None

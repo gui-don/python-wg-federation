@@ -8,7 +8,7 @@ from wg_federation.data.state.hq_state import HQState
 from wg_federation.data_transformation.configuration_location_finder import ConfigurationLocationFinder
 from wg_federation.data_transformation.locker.configuration_locker import ConfigurationLocker
 from wg_federation.event.hq.hq_event import HQEvent
-from wg_federation.event.hq.wireguard_configuration_event_subscriber import WireguardConfigurationEventSubscriber
+from wg_federation.event.hq.wireguard_interface_configuration_event_subscriber import WireguardInterfaceConfigurationEventSubscribe
 from wg_federation.observer.event_subscriber import EventSubscriber
 from wg_federation.utils.utils import Utils
 
@@ -24,7 +24,7 @@ class TestWireguardConfigurationEventSubscriber:
     _os_lib: ModuleType = None
     _configuration_location_finder: ConfigurationLocationFinder = None
     _configuration_locker: ConfigurationLocker = None
-    _subject: WireguardConfigurationEventSubscriber = None
+    _subject: WireguardInterfaceConfigurationEventSubscribe = None
 
     @pytest.fixture(autouse=True)
     def run_around_tests(self):
@@ -58,7 +58,7 @@ class TestWireguardConfigurationEventSubscriber:
 
         self._os_lib = mock({'path': self._os_path})
 
-        self._subject = WireguardConfigurationEventSubscriber(
+        self._subject = WireguardInterfaceConfigurationEventSubscribe(
             os_lib=self._os_lib,
             configuration_location_finder=self._configuration_location_finder,
             configuration_locker=self._configuration_locker,
@@ -67,7 +67,7 @@ class TestWireguardConfigurationEventSubscriber:
     def test_init(self):
         """ it can be instantiated """
         assert isinstance(self._subject, EventSubscriber)
-        assert isinstance(self._subject, WireguardConfigurationEventSubscriber)
+        assert isinstance(self._subject, WireguardInterfaceConfigurationEventSubscribe)
 
     def test_get_subscribed_events(self):
         """ it returns subscribed events """

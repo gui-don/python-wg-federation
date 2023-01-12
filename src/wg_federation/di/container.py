@@ -43,7 +43,7 @@ from wg_federation.data_transformation.saver.proxy.encrypt_configuration_saver_p
 from wg_federation.data_transformation.saver.proxy.normalize_filter_configuration_saver_proxy import \
     NormalizeFilterConfigurationSaverProxy
 from wg_federation.data_transformation.saver.proxy.sign_configuration_saver_proxy import SignConfigurationSaverProxy
-from wg_federation.event.hq.wireguard_configuration_event_subscriber import WireguardConfigurationEventSubscriber
+from wg_federation.event.hq.wireguard_interface_configuration_event_subscriber import WireguardInterfaceConfigurationEventSubscribe
 from wg_federation.input.manager.input_manager import InputManager
 from wg_federation.input.reader.argument_reader import ArgumentReader
 from wg_federation.input.reader.configuration_file_reader import ConfigurationFileReader
@@ -218,7 +218,7 @@ class Container(containers.DynamicContainer):
             logger=self.root_logger,
             subscribers=providers.List(
                 providers.ThreadSafeSingleton(
-                    WireguardConfigurationEventSubscriber,
+                    WireguardInterfaceConfigurationEventSubscribe,
                     os_lib=os,
                     configuration_location_finder=self.configuration_location_finder,
                     configuration_locker=self.configuration_locker,

@@ -79,12 +79,12 @@ class TestHQGetPrivateKeyController:
         assert capfd.readouterr()[0] == ''
         verifyNoUnwantedInteractions()
 
-    def test_should_run(self):
+    def test_should_run1(self):
         """ it does run if the arguments are 'hq get-private-key' """
 
         assert self._subject.should_run(self._user_input)
 
-    def test_should_run1(self):
+    def test_should_run2(self):
         """ it does not run if the arguments are not 'hq get-private-key' """
 
         self._user_input.arg1 = 'bootstrap'
