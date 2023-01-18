@@ -1,11 +1,15 @@
+0.7.0
+=======
+- feat: handle WireGuard Peers in configurations
+- fix: create Wireguard configurations full paths before trying to lock files
+
 0.6.0
 =====
 
 - feat: makes `systemd-python` an optional library
 - tech: add `ci` environment dependency environment
-- tests: fix issue with absolute `echo` binary path
 
-0.5.0
+0.5.1
 =====
 
 - feat: adds an underlying Observer system to manage events
