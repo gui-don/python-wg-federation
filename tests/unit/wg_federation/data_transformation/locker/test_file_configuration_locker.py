@@ -15,11 +15,11 @@ class TestFileConfigurationLocker:
     _file = None
     _lock = None
     _file_locker = None
-    _parent_path = None
-    _parent_path_not_exist = None
     _path_mock = None
     _path_mock_not_exist = None
     _path_lib = None
+    _os_path = None
+    _os_lib = None
 
     _subject: FileConfigurationLocker = None
 
@@ -41,24 +41,25 @@ class TestFileConfigurationLocker:
 
         self._file_locker = mock({'LockFlags': LockFlags})
 
-        self._parent_path = mock()
-        when(self._parent_path).is_dir().thenReturn(True)
-
-        self._parent_path_not_exist = mock()
-        when(self._parent_path_not_exist).is_dir().thenReturn(False)
-
-        self._path_mock = mock({'parent': self._parent_path})
-        self._path_mock_not_exist = mock({'parent': self._parent_path_not_exist})
+        self._path_mock = mock({'parent': 'default_location'})
+        self._path_mock_not_exist = mock({'parent': 'not_exist'})
 
         self._path_lib = mock()
         when(self._path_lib).Path(...).thenReturn(self._path_mock_not_exist)
         when(self._path_lib).Path('default_location').thenReturn(self._path_mock)
 
+        self._os_path = mock()
+        when(self._os_path).isdir(...).thenReturn(False)
+        when(self._os_path).isdir('default_location').thenReturn(True)
+
+        self._os_lib = mock({'path': self._os_path})
+
         when(self._file_locker).Lock(...).thenReturn(self._lock)
 
         self._subject = FileConfigurationLocker(
             file_locker=self._file_locker,
-            path_lib=self._path_lib
+            path_lib=self._path_lib,
+            os_lib=self._os_lib,
         )
 
     def test_init(self):
@@ -70,8 +71,8 @@ class TestFileConfigurationLocker:
     def test_is_default_for(self):
         """ it says if it’s the default for a given location """
 
-        assert self._subject.is_default_for('default_location')
         assert not self._subject.is_default_for('other_location')
+        assert self._subject.is_default_for('default_location')
 
     def test_obtain_shared_lock(self):
         """ it can obtain a shared lock """

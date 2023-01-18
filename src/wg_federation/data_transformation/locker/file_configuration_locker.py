@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os.path
 from contextlib import contextmanager, _GeneratorContextManager
 from types import ModuleType
 
@@ -16,10 +15,12 @@ class FileConfigurationLocker(ConfigurationLockerInterface):
 
     _file_locker: ModuleType = None
     _path_lib: ModuleType = None
+    _os_lib: ModuleType = None
 
-    def __init__(self, file_locker: ModuleType, path_lib: ModuleType) -> None:
+    def __init__(self, file_locker: ModuleType, path_lib: ModuleType, os_lib: ModuleType) -> None:
         self._file_locker = file_locker
         self._path_lib = path_lib
+        self._os_lib = os_lib
 
     def obtain_exclusive_lock(self, location: str) -> _GeneratorContextManager:
         return self._do_lock(
@@ -36,7 +37,7 @@ class FileConfigurationLocker(ConfigurationLockerInterface):
         )
 
     def is_default_for(self, location: str) -> bool:
-        return os.path.isdir(str(self._path_lib.Path(location).parent))
+        return self._os_lib.path.isdir(str(self._path_lib.Path(location).parent))
 
     @contextmanager
     def _do_lock(self, location: str, mode: str, flags: portalocker.LockFlags):

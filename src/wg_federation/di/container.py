@@ -121,6 +121,7 @@ class Container(containers.DynamicContainer):
                     FileConfigurationLocker,
                     file_locker=portalocker,
                     path_lib=pathlib,
+                    os_lib=os,
                 ),
             ),
             logger=self.root_logger
