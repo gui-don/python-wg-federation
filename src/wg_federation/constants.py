@@ -4,6 +4,7 @@
 import os
 import importlib.util
 
+REGEXP_WIREGUARD_KEY = r'^[0-9A-Za-z+/]{43}[=]$'
 CHANGELOG_FILENAME = 'CHANGELOG.md'
 VERSION_FILENAME = '__version__.txt'
 HAS_SYSTEMD = False

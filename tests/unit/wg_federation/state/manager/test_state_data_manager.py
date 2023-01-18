@@ -1,6 +1,7 @@
 import pytest
 from mockito import mock, unstub, verify, when, ANY, contains
 
+from unit.wg_federation import hq_state
 from wg_federation.data.input.command_line.secret_retreival_method import SecretRetrievalMethod
 from wg_federation.data.state.hq_state import HQState
 from wg_federation.event.hq.hq_event import HQEvent
@@ -48,36 +49,8 @@ class TestStateDataManager:
         when(self._configuration_location_finder).state().thenReturn('state')
 
         self._configuration_loader = mock()
-        when(self._configuration_loader).load_if_exists(self._file).thenReturn(
-            {'federation': {'name': 'wg-federation0',
-                            'forum_max_port': 44299,
-                            'forum_min_port': 44200,
-                            'phone_line_max_port': 44199,
-                            'phone_line_min_port': 44100},
-             'forums': [{'address': ['172.30.0.1/22'],
-                         'listen_port': 44200,
-                         'mtu': None,
-                         'name': 'wgf-forum0',
-                         'status': 'NEW',
-                         'public_key': '2a9+BiAk3oQHOqSwUf2sfyUs9SOkm1TwnkAKk0cbPFg=',
-                         'private_key': 'qdYplAbCzmsK938SBfzLdttcloK18+77q1M+TWJpnVk=',
-                         'shared_psk': 'mHZFMxgZ+frxa3CtZewdrH3E5o2RwwNbs49wyaf+EnY='}],
-             'phone_lines': [{'address': ['172.30.4.1/22'],
-                              'listen_port': 44100,
-                              'mtu': None,
-                              'name': 'wgf-phoneline0',
-                              'status': 'NEW',
-                              'public_key': '785FGWX5b/nvr8a40YwBTz/h34Fu8sJeDSTSMCCW/nw=',
-                              'private_key': '0MQX95OV9b05zkAmyzJMvseCm87aXt9vEmTTBqbOwrg=',
-                              'shared_psk': '3No0+mBhyBP8+6z1xrgy7navwT2xZuXWywzn8UgP6Ik='}],
-             'interfaces': [{'address': ['172.30.8.1/22'],
-                             'listen_port': 35200,
-                             'mtu': None,
-                             'name': 'wg-federation0',
-                             'status': 'NEW',
-                             'public_key': 'tmX9goa9jAABptDQ9PDsb+Xd5++HZRS3nwBDExckWzU=',
-                             'private_key': 'P6dlK8fhauCwOkwvyp6SOKP8sftuX8JKQVNbL1O8iS8=',
-                             'shared_psk': 'YiUz3hI9RAr+Mo4CkHMgIG7aNpbSWG76ZXBxjvGAkG8='}]})
+
+        when(self._configuration_loader).load_if_exists(self._file).thenReturn(hq_state().dict(exclude_defaults=True))
         self._configuration_saver = mock()
 
         self._configuration_locker = mock()

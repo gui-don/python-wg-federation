@@ -28,7 +28,6 @@ class TestHQGetPrivateKeyController:
         unstub()
         self.init()
 
-    @pytest.mark.usefixtures('clean_hq_state')
     def init(self):
         """ Constructor """
         self._hq_state = hq_state()

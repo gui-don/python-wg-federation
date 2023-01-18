@@ -1,4 +1,4 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, Union
 
 from ipaddr import IPNetwork
 from pydantic import BaseModel, validator, Field
@@ -6,7 +6,7 @@ from typing_extensions import Annotated
 
 from wg_federation.data.state.federation import Federation
 from wg_federation.data.state.interface_kind import InterfaceKind
-from wg_federation.data.state.wireguard_interface import WireguardInterface
+from wg_federation.data.state.wireguard_configuration import WireguardConfiguration
 from wg_federation.exception.developer.data.data_validation_error import DataValidationError
 
 
@@ -28,36 +28,36 @@ class HQState(BaseModel, frozen=True):
         true_type=Federation
     )]
 
-    forums: Annotated[tuple[WireguardInterface, ...], Field(
+    forums: Annotated[tuple[WireguardConfiguration, ...], Field(
         ...,
         alias='forums',
         title='Forums',
         description='WireGuard interfaces for untrusted communication between HQ and candidates',
-        true_type=tuple[WireguardInterface, ...],
+        true_type=tuple[WireguardConfiguration, ...],
     )]
 
-    phone_lines: Annotated[tuple[WireguardInterface, ...], Field(
+    phone_lines: Annotated[tuple[WireguardConfiguration, ...], Field(
         ...,
         alias='phone_lines',
         title='Phone Lines',
         description='WireGuard interfaces for trusted communication between HQ and members',
-        true_type=tuple[WireguardInterface, ...],
+        true_type=tuple[WireguardConfiguration, ...],
     )]
 
-    interfaces: Annotated[tuple[WireguardInterface, ...], Field(
+    interfaces: Annotated[tuple[WireguardConfiguration, ...], Field(
         ...,
         alias='interfaces',
         title='Interfaces',
         description='WireGuard interfaces: Federation VPNs',
-        true_type=tuple[WireguardInterface, ...],
+        true_type=tuple[WireguardConfiguration, ...],
     )]
 
     # pylint: disable=no-self-argument
 
     @validator('interfaces')
     def wireguard_interface_are_valid(
-            cls, value: tuple[WireguardInterface, ...], values: dict
-    ) -> tuple[str, WireguardInterface]:
+            cls, value: tuple[WireguardConfiguration, ...], values: dict
+    ) -> tuple[str, WireguardConfiguration]:
         """
         Validate interfaces.
         Also checks forums and phone_lines.
@@ -69,37 +69,38 @@ class HQState(BaseModel, frozen=True):
 
     @classmethod
     def _check_wireguard_connection(
-            cls, value: tuple[WireguardInterface, ...], values: dict
-    ) -> tuple[str, WireguardInterface]:
+            cls, value: tuple[WireguardConfiguration, ...], values: dict
+    ) -> tuple[str, WireguardConfiguration]:
 
         interface_names = []
         interface_addresses = []
         interface_listen_ports = []
 
-        for wireguard_interface in (value + values.get('forums') + values.get('phone_lines')):
-            if wireguard_interface.name in interface_names:
+        for wireguard_configuration in (value + values.get('forums') + values.get('phone_lines')):
+            if wireguard_configuration.name in interface_names:
                 raise ValueError(
-                    f'The wireguard interface “{wireguard_interface.name}” has the same name of another interface.'
+                    f'The wireguard interface “{wireguard_configuration.name}” '
+                    f'*has the same name of another interface.'
                 )
 
-            for address in wireguard_interface.address:
+            for address in wireguard_configuration.interface.address:
                 for other_address in interface_addresses:
                     if IPNetwork(str(address)).overlaps(other_address):
                         raise ValueError(
-                            f'The wireguard interface address “{wireguard_interface.name}”'
+                            f'The wireguard interface address “{wireguard_configuration.name}”'
                             f' has an address “{address}” that overlaps with another address: “{other_address}”.'
                         )
 
                 interface_addresses.append(IPNetwork(str(address)))
 
-            if wireguard_interface.listen_port in interface_listen_ports:
+            if wireguard_configuration.interface.listen_port in interface_listen_ports:
                 raise ValueError(
-                    f'The wireguard interface “{wireguard_interface.name}” has the same listen_port'
-                    f' “{wireguard_interface.listen_port}” as another interface.'
+                    f'The wireguard interface “{wireguard_configuration.name}” has the same listen_port'
+                    f' “{wireguard_configuration.interface.listen_port}” as another interface.'
                 )
 
-            interface_names.append(wireguard_interface.name)
-            interface_listen_ports.append(wireguard_interface.listen_port)
+            interface_names.append(wireguard_configuration.name)
+            interface_listen_ports.append(wireguard_configuration.interface.listen_port)
 
         cls._check_listen_port(
             value,
@@ -125,19 +126,19 @@ class HQState(BaseModel, frozen=True):
     @classmethod
     def _check_listen_port(
             cls,
-            interfaces: tuple[WireguardInterface, ...],
+            configurations: tuple[WireguardConfiguration, ...],
             interface_type: str,
             callback: Callable
     ) -> None:
-        for wireguard_interface in interfaces:
-            if callback(wireguard_interface.listen_port):
+        for wireguard_configuration in configurations:
+            if callback(wireguard_configuration.interface.listen_port):
                 raise DataValidationError(
-                    f'The wireguard {interface_type} “{wireguard_interface.name}”’s listen_port '
-                    f'“{wireguard_interface.listen_port}” is invalid.'
+                    f'The wireguard {interface_type} “{wireguard_configuration.name}”’s listen_port '
+                    f'“{wireguard_configuration.interface.listen_port}” is invalid.'
                     f'Make sure the port is in the allowed range and not the same as another interface.'
                 )
 
-    def find_interface_by_name(self, kind: InterfaceKind, name: str) -> Optional[WireguardInterface]:
+    def find_interface_by_name(self, kind: InterfaceKind, name: str) -> Optional[WireguardConfiguration]:
         """
         Search and return an interface by its name
         :param kind: Kind of interface to find
@@ -150,7 +151,7 @@ class HQState(BaseModel, frozen=True):
 
         return None
 
-    def find_interfaces_by_kind(self, kind: InterfaceKind) -> tuple:
+    def find_interfaces_by_kind(self, kind: InterfaceKind) -> Union[tuple[WireguardConfiguration], tuple]:
         """
         Return interfaces by their kind.
         :param kind:

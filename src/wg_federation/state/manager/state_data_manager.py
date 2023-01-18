@@ -7,6 +7,7 @@ from wg_federation.data.input.user_input import UserInput
 from wg_federation.data.state.federation import Federation
 from wg_federation.data.state.hq_state import HQState
 from wg_federation.data.state.interface_kind import InterfaceKind
+from wg_federation.data.state.wireguard_configuration import WireguardConfiguration
 from wg_federation.data.state.wireguard_interface import WireguardInterface
 from wg_federation.data_transformation.configuration_location_finder import ConfigurationLocationFinder
 from wg_federation.data_transformation.loader.can_load_configuration_interface import CanLoadConfigurationInterface
@@ -70,9 +71,9 @@ class StateDataManager:
 
             return self._event_dispatcher.dispatch([HQEvent.STATE_LOADED], HQState(
                 federation=Federation.from_dict(raw_configuration.get('federation')),
-                interfaces=WireguardInterface.from_list(raw_configuration.get('interfaces')),
-                forums=WireguardInterface.from_list(raw_configuration.get('forums')),
-                phone_lines=WireguardInterface.from_list(raw_configuration.get('phone_lines')),
+                interfaces=WireguardConfiguration.from_list(raw_configuration.get('interfaces')),
+                forums=WireguardConfiguration.from_list(raw_configuration.get('forums')),
+                phone_lines=WireguardConfiguration.from_list(raw_configuration.get('phone_lines')),
             ))
         except FileNotFoundError as err:
             raise StateNotBootstrapped('Unable to load the state: it was not bootstrapped. Run `hq boostrap`.') from err
@@ -111,58 +112,64 @@ class StateDataManager:
         return HQState(
             federation=federation,
             forums=(
-                WireguardInterface(
+                WireguardConfiguration(
+                    interface=WireguardInterface(
+                        address=('172.32.0.1/22',),
+                        private_key=forum_key_pairs[0],
+                        public_key=forum_key_pairs[1],
+                        listen_port=federation.forum_min_port,
+                        private_key_retrieval_method=user_input.private_key_retrieval_method,
+                        post_up=self.__add_secret_retrieval_to_post_up(
+                            (),
+                            'forums',
+                            'wgf-forum0',
+                            user_input.private_key_retrieval_method,
+                            user_input.root_passphrase_command
+                        )
+                    ),
                     name='wgf-forum0',
-                    address=('172.32.0.1/22',),
-                    private_key=forum_key_pairs[0],
-                    public_key=forum_key_pairs[1],
-                    shared_psk=self._wireguard_key_generator.generate_psk(),
-                    listen_port=federation.forum_min_port,
-                    private_key_retrieval_method=user_input.private_key_retrieval_method,
                     kind=InterfaceKind.FORUM,
-                    post_up=self.__add_secret_retrieval_to_post_up(
-                        (),
-                        'forums',
-                        'wgf-forum0',
-                        user_input.private_key_retrieval_method,
-                        user_input.root_passphrase_command
-                    )
+                    shared_psk=self._wireguard_key_generator.generate_psk(),
                 ),
             ),
             phone_lines=(
-                WireguardInterface(
+                WireguardConfiguration(
+                    interface=WireguardInterface(
+                        address=('172.32.4.1/22',),
+                        private_key=phone_line_key_pairs[0],
+                        public_key=phone_line_key_pairs[1],
+                        listen_port=federation.phone_line_min_port,
+                        private_key_retrieval_method=user_input.private_key_retrieval_method,
+                        post_up=self.__add_secret_retrieval_to_post_up(
+                            (),
+                            'phone_lines',
+                            'wgf-phoneline0',
+                            user_input.private_key_retrieval_method,
+                            user_input.root_passphrase_command
+                        )
+                    ),
                     name='wgf-phoneline0',
-                    address=('172.32.4.1/22',),
-                    private_key=phone_line_key_pairs[0],
-                    public_key=phone_line_key_pairs[1],
-                    shared_psk=self._wireguard_key_generator.generate_psk(),
-                    listen_port=federation.phone_line_min_port,
-                    private_key_retrieval_method=user_input.private_key_retrieval_method,
                     kind=InterfaceKind.PHONE_LINE,
-                    post_up=self.__add_secret_retrieval_to_post_up(
-                        (),
-                        'phone_lines',
-                        'wgf-phoneline0',
-                        user_input.private_key_retrieval_method,
-                        user_input.root_passphrase_command
-                    )
+                    shared_psk=self._wireguard_key_generator.generate_psk(),
                 ),
             ),
             interfaces=(
-                WireguardInterface(
-                    name='wg-federation0',
-                    address=('172.30.8.1/22',),
-                    private_key=interface_key_pairs[0],
-                    public_key=interface_key_pairs[1],
-                    shared_psk=self._wireguard_key_generator.generate_psk(),
-                    private_key_retrieval_method=user_input.private_key_retrieval_method,
-                    kind=InterfaceKind.INTERFACE,
-                    post_up=self.__add_secret_retrieval_to_post_up(
-                        (),
-                        'interfaces',
-                        'wg-federation0',
-                        user_input.private_key_retrieval_method,
-                        user_input.root_passphrase_command
+                WireguardConfiguration(
+                    interface=WireguardInterface(
+                        address=('172.30.8.1/22',),
+                        private_key=interface_key_pairs[0],
+                        public_key=interface_key_pairs[1],
+                        private_key_retrieval_method=user_input.private_key_retrieval_method,
+                        post_up=self.__add_secret_retrieval_to_post_up(
+                            (),
+                            'interfaces',
+                            'wg-federation0',
+                            user_input.private_key_retrieval_method,
+                            user_input.root_passphrase_command
+                        ),
+                        name='wg-federation0',
+                        kind=InterfaceKind.INTERFACE,
+                        shared_psk=self._wireguard_key_generator.generate_psk(),
                     ),
                 ),
             ),

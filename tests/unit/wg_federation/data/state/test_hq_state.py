@@ -1,9 +1,11 @@
 import pytest
 
-from unit.wg_federation import hq_state
+from unit.wg_federation import hq_state, wireguard_configuration_valid1, wireguard_configuration_valid2, \
+    wireguard_configuration_valid3
 from wg_federation.data.state.federation import Federation
 from wg_federation.data.state.hq_state import HQState
 from wg_federation.data.state.interface_kind import InterfaceKind
+from wg_federation.data.state.wireguard_configuration import WireguardConfiguration
 from wg_federation.data.state.wireguard_interface import WireguardInterface
 
 
@@ -24,35 +26,17 @@ class TestState:
         """ it returns its data """
         assert 'a_name' == self._subject.federation.name
         assert 'wg-federation0' == self._subject.interfaces[0].name
-        assert 'qufw3QuU9lMWBTDLmgWpsk1fQsRTG4UZwyPYgUi9l34=' == self._subject.forums[0].public_key
-        assert 44100 == self._subject.phone_lines[0].listen_port
+        assert 'qufw3QuU9lMWBTDLmgWpsk1fQsRTG4UZwyPYgUi9l34=' == self._subject.forums[0].interface.public_key
+        assert 44100 == self._subject.phone_lines[0].interface.listen_port
 
     def test_check_interface_unique(self):
-        """ it raises an error when two interfaces have the same names """
+        """ it raises an error when two configurations have the same names """
         with pytest.raises(ValueError) as error:
             HQState(
                 federation=Federation(name='a_name'),
-                interfaces=(WireguardInterface(
-                    private_key='7mMIFixIzNmbRASMK2QUHUnNNujLvxfL57HHcqMsOxo=',
-                    public_key='YIgDvmfnI2BBgoYkCxhnnK3Ja0kDBAKTaKfT09qL6A4=',
-                ), WireguardInterface(
-                    private_key='5D1jfCDCtzj3TomvcXGPfM3AMpJcAJD26B48wxdTvVU=',
-                    public_key='wyj+owdxHy9fJLAoQPOXjVNVfi/f6dzuiFmwAaZAJEc=',
-                ),),
-                forums=(WireguardInterface(
-                    name='forum0',
-                    private_key='GIITfONf5p+7fX5yGY5U7PWV3Uc+SEfYMGUY9F4/BUc=',
-                    public_key='qufw3QuU9lMWBTDLmgWpsk1fQsRTG4UZwyPYgUi9l34=',
-                    address=(('10.10.10.1/24',)),
-                    listen_port=44200,
-                ),),
-                phone_lines=(WireguardInterface(
-                    name='phone_lines0',
-                    private_key='mozYFDybwVjHvy94hWP8Zyff3080xIygsNqDHB0MjkY=',
-                    public_key='nLt1mnBG6VyThOASx7b8XFSuldf6R9g4+QYfM1V+8gk=',
-                    address=(('10.10.200.1/24',)),
-                    listen_port=44100,
-                ),)
+                interfaces=(wireguard_configuration_valid1(), wireguard_configuration_valid1()),
+                forums=(wireguard_configuration_valid2(),),
+                phone_lines=(wireguard_configuration_valid3(),)
             )
         assert 'the same name of another interface' in str(error.value)
 
@@ -61,25 +45,15 @@ class TestState:
         with pytest.raises(ValueError) as error:
             HQState(
                 federation=Federation(name='a_name'),
-                interfaces=(WireguardInterface(
-                    private_key='bRdbrR9E1nKXa2g7qkTVSty9GXZ6Vvj9p2TDpEEGLFE=',
-                    public_key='MDuAwX+2NvIiYuagR1k5LnM1K3jCp0BB7uZZJB1tPmM=',
-                    address=('192.168.0.0/16',)
-
-                ),),
-                forums=(WireguardInterface(
-                    name='forum0',
-                    private_key='GIITfONf5p+7fX5yGY5U7PWV3Uc+SEfYMGUY9F4/BUc=',
-                    public_key='qufw3QuU9lMWBTDLmgWpsk1fQsRTG4UZwyPYgUi9l34=',
-                    address=('192.168.50.0/24',),
-                    listen_port=44200,
-                ),),
-                phone_lines=(WireguardInterface(
+                interfaces=(wireguard_configuration_valid1(),),
+                forums=(wireguard_configuration_valid2(),),
+                phone_lines=(WireguardConfiguration(
                     name='phone_lines0',
-                    private_key='mozYFDybwVjHvy94hWP8Zyff3080xIygsNqDHB0MjkY=',
-                    public_key='nLt1mnBG6VyThOASx7b8XFSuldf6R9g4+QYfM1V+8gk=',
-                    address=(('10.10.200.1/24',)),
-                    listen_port=44100,
+                    interface=WireguardInterface(
+                        private_key='mozYFDybwVjHvy94hWP8Zyff3080xIygsNqDHB0MjkY=',
+                        public_key='nLt1mnBG6VyThOASx7b8XFSuldf6R9g4+QYfM1V+8gk=',
+                        address=(('10.10.0.1/16',)),  # This overlaps with forum address
+                    )
                 ),)
             )
         assert 'overlaps with another address' in str(error.value)
@@ -89,29 +63,16 @@ class TestState:
         with pytest.raises(ValueError) as error:
             HQState(
                 federation=Federation(name='a_name'),
-                interfaces=(WireguardInterface(
-                    private_key='Ee862wOc4Fv9ttqUOYCLsTVUQm0kbwdGyq0v8e3cGhs=',
-                    public_key='W7ExEOJEEcLFcsf/Y2B4nOViCiT8bK4XGPYy/uSAf0g=',
-                    address=('192.168.50.0/24',),
-                    listen_port=44100,
+                interfaces=(WireguardConfiguration(
+                    interface=WireguardInterface(
+                        public_key='9BMRLFuETS7c2PSgR1UqP3TxFwEaNHaGgGCdF1HoHXI=',
+                        private_key='FU2N9kCSHDPOucnBgB0qRECPN0aw+I5H0rHrcyH8F3o=',
+                        listen_port=44200,  # Same port as forum
+                    ),
                     kind=InterfaceKind.INTERFACE,
                 ),),
-                phone_lines=(WireguardInterface(
-                    name='phone_lines0',
-                    private_key='mozYFDybwVjHvy94hWP8Zyff3080xIygsNqDHB0MjkY=',
-                    public_key='nLt1mnBG6VyThOASx7b8XFSuldf6R9g4+QYfM1V+8gk=',
-                    address=(('10.10.200.1/24',)),
-                    listen_port=44100,
-                    kind=InterfaceKind.PHONE_LINE,
-                ),),
-                forums=(WireguardInterface(
-                    name='forum0',
-                    private_key='GIITfONf5p+7fX5yGY5U7PWV3Uc+SEfYMGUY9F4/BUc=',
-                    public_key='qufw3QuU9lMWBTDLmgWpsk1fQsRTG4UZwyPYgUi9l34=',
-                    address=(('10.10.10.1/24',)),
-                    listen_port=44200,
-                    kind=InterfaceKind.FORUM,
-                ),),
+                forums=(wireguard_configuration_valid2(),),
+                phone_lines=(wireguard_configuration_valid3(),)
             )
         assert 'has the same listen_port' in str(error.value)
 
@@ -120,28 +81,16 @@ class TestState:
         with pytest.raises(ValueError) as error:
             HQState(
                 federation=Federation(name='a_name'),
-                interfaces=(WireguardInterface(
-                    public_key='9BMRLFuETS7c2PSgR1UqP3TxFwEaNHaGgGCdF1HoHXI=',
-                    private_key='FU2N9kCSHDPOucnBgB0qRECPN0aw+I5H0rHrcyH8F3o=',
-                    shared_psk='mwn0Dfc4IwYlq/jDL08f9VTCM+mQbV2tJlRdIDAy5CA=',
-                    listen_port=44201,
-                    kind=InterfaceKind.INTERFACE,
-                ),),
-                forums=(WireguardInterface(
-                    name='forum0',
-                    private_key='GIITfONf5p+7fX5yGY5U7PWV3Uc+SEfYMGUY9F4/BUc=',
-                    public_key='qufw3QuU9lMWBTDLmgWpsk1fQsRTG4UZwyPYgUi9l34=',
-                    address=(('10.10.10.1/24',)),
-                    listen_port=44200,
-                    kind=InterfaceKind.FORUM,
-                ),),
-                phone_lines=(WireguardInterface(
+                interfaces=(wireguard_configuration_valid1(),),
+                forums=(wireguard_configuration_valid2(),),
+                phone_lines=(WireguardConfiguration(
                     name='phone_lines0',
-                    private_key='mozYFDybwVjHvy94hWP8Zyff3080xIygsNqDHB0MjkY=',
-                    public_key='nLt1mnBG6VyThOASx7b8XFSuldf6R9g4+QYfM1V+8gk=',
-                    address=(('10.10.200.1/24',)),
-                    listen_port=44100,
-                    kind=InterfaceKind.PHONE_LINE,
+                    interface=WireguardInterface(
+                        private_key='mozYFDybwVjHvy94hWP8Zyff3080xIygsNqDHB0MjkY=',
+                        public_key='nLt1mnBG6VyThOASx7b8XFSuldf6R9g4+QYfM1V+8gk=',
+                        address=(('10.10.200.1/24',)),
+                        listen_port=44201,  # Not within the phone line range
+                    )
                 ),)
             )
 
@@ -152,60 +101,39 @@ class TestState:
         with pytest.raises(ValueError) as error:
             HQState(
                 federation=Federation(name='a_name'),
-                interfaces=(WireguardInterface(
-                    public_key='9BMRLFuETS7c2PSgR1UqP3TxFwEaNHaGgGCdF1HoHXI=',
-                    private_key='FU2N9kCSHDPOucnBgB0qRECPN0aw+I5H0rHrcyH8F3o=',
-                    shared_psk='mwn0Dfc4IwYlq/jDL08f9VTCM+mQbV2tJlRdIDAy5CA=',
-                    listen_port=44101,
-                    kind=InterfaceKind.INTERFACE,
-                ),),
-                forums=(WireguardInterface(
+                interfaces=(wireguard_configuration_valid1(),),
+                forums=(WireguardConfiguration(
+                    interface=WireguardInterface(
+                        private_key='GIITfONf5p+7fX5yGY5U7PWV3Uc+SEfYMGUY9F4/BUc=',
+                        public_key='qufw3QuU9lMWBTDLmgWpsk1fQsRTG4UZwyPYgUi9l34=',
+                        address=(('10.10.10.1/24',)),
+                        listen_port=44110,  # Within the phone line range
+                    ),
                     name='forum0',
-                    private_key='GIITfONf5p+7fX5yGY5U7PWV3Uc+SEfYMGUY9F4/BUc=',
-                    public_key='qufw3QuU9lMWBTDLmgWpsk1fQsRTG4UZwyPYgUi9l34=',
-                    address=(('10.10.10.1/24',)),
-                    listen_port=44200,
                     kind=InterfaceKind.FORUM,
                 ),),
-                phone_lines=(WireguardInterface(
-                    name='phone_lines0',
-                    private_key='mozYFDybwVjHvy94hWP8Zyff3080xIygsNqDHB0MjkY=',
-                    public_key='nLt1mnBG6VyThOASx7b8XFSuldf6R9g4+QYfM1V+8gk=',
-                    address=(('10.10.200.1/24',)),
-                    listen_port=44100,
-                    kind=InterfaceKind.PHONE_LINE,
-                ),)
+                phone_lines=(wireguard_configuration_valid3(),)
             )
 
         assert 'Make sure the port is in the allowed range and not the same' in str(error.value)
 
     def test_check_interface_unique6(self):
-        """ it raises an error when an forum’s listen port is not within the forums range """
+        """ it raises an error when a forum’s listen port is not within the forums range """
         with pytest.raises(ValueError) as error:
             HQState(
                 federation=Federation(name='a_name'),
-                interfaces=(WireguardInterface(
-                    public_key='9BMRLFuETS7c2PSgR1UqP3TxFwEaNHaGgGCdF1HoHXI=',
-                    private_key='FU2N9kCSHDPOucnBgB0qRECPN0aw+I5H0rHrcyH8F3o=',
-                    shared_psk='mwn0Dfc4IwYlq/jDL08f9VTCM+mQbV2tJlRdIDAy5CA=',
-                    kind=InterfaceKind.INTERFACE,
-                ),),
-                forums=(WireguardInterface(
+                interfaces=(wireguard_configuration_valid1(),),
+                forums=(WireguardConfiguration(
+                    interface=WireguardInterface(
+                        private_key='GIITfONf5p+7fX5yGY5U7PWV3Uc+SEfYMGUY9F4/BUc=',
+                        public_key='qufw3QuU9lMWBTDLmgWpsk1fQsRTG4UZwyPYgUi9l34=',
+                        address=(('10.10.10.1/24',)),
+                        listen_port=54110,  # Not within the allowed forum range
+                    ),
                     name='forum0',
-                    private_key='GIITfONf5p+7fX5yGY5U7PWV3Uc+SEfYMGUY9F4/BUc=',
-                    public_key='qufw3QuU9lMWBTDLmgWpsk1fQsRTG4UZwyPYgUi9l34=',
-                    address=(('10.10.10.1/24',)),
-                    listen_port=5000,
                     kind=InterfaceKind.FORUM,
                 ),),
-                phone_lines=(WireguardInterface(
-                    name='phone_lines0',
-                    private_key='mozYFDybwVjHvy94hWP8Zyff3080xIygsNqDHB0MjkY=',
-                    public_key='nLt1mnBG6VyThOASx7b8XFSuldf6R9g4+QYfM1V+8gk=',
-                    address=(('10.10.200.1/24',)),
-                    listen_port=44100,
-                    kind=InterfaceKind.PHONE_LINE,
-                ),)
+                phone_lines=(wireguard_configuration_valid3(),)
             )
 
         assert 'Make sure the port is in the allowed range and not the same' in str(error.value)
@@ -215,24 +143,16 @@ class TestState:
         with pytest.raises(ValueError) as error:
             HQState(
                 federation=Federation(name='a_name'),
-                interfaces=(WireguardInterface(
-                    public_key='9BMRLFuETS7c2PSgR1UqP3TxFwEaNHaGgGCdF1HoHXI=',
-                    private_key='FU2N9kCSHDPOucnBgB0qRECPN0aw+I5H0rHrcyH8F3o=',
-                    shared_psk='mwn0Dfc4IwYlq/jDL08f9VTCM+mQbV2tJlRdIDAy5CA=',
-                ),),
-                forums=(WireguardInterface(
-                    name='forum0',
-                    private_key='GIITfONf5p+7fX5yGY5U7PWV3Uc+SEfYMGUY9F4/BUc=',
-                    public_key='qufw3QuU9lMWBTDLmgWpsk1fQsRTG4UZwyPYgUi9l34=',
-                    address=(('10.10.10.1/24',)),
-                    listen_port=44200,
-                ),),
-                phone_lines=(WireguardInterface(
+                interfaces=(wireguard_configuration_valid1(),),
+                forums=(wireguard_configuration_valid2(),),
+                phone_lines=(WireguardConfiguration(
                     name='phone_lines0',
-                    private_key='mozYFDybwVjHvy94hWP8Zyff3080xIygsNqDHB0MjkY=',
-                    public_key='nLt1mnBG6VyThOASx7b8XFSuldf6R9g4+QYfM1V+8gk=',
-                    address=(('10.10.200.1/24',)),
-                    listen_port=5000,
+                    interface=WireguardInterface(
+                        private_key='mozYFDybwVjHvy94hWP8Zyff3080xIygsNqDHB0MjkY=',
+                        public_key='nLt1mnBG6VyThOASx7b8XFSuldf6R9g4+QYfM1V+8gk=',
+                        address=(('10.10.200.1/24',)),
+                        listen_port=54201,  # Not within the allowed phone line range
+                    )
                 ),)
             )
 

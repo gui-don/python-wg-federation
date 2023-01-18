@@ -32,11 +32,11 @@ class HQGetPrivateKeyController(EventSubscriber[UserInput]):
     def run(self, data: UserInput) -> UserInput:
         hq_state = self._state_data_manager.reload()
 
-        interface = hq_state.find_interface_by_name(data.interface_kind, data.interface_name)
+        wireguard_configuration = hq_state.find_interface_by_name(data.interface_kind, data.interface_name)
 
-        if not interface:
+        if not wireguard_configuration:
             return data
 
-        print(interface.private_key.get_secret_value())
+        print(wireguard_configuration.interface.private_key.get_secret_value())
 
         return data
