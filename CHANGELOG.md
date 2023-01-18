@@ -2,6 +2,7 @@
 =======
 - feat: handle WireGuard Peers in configurations
 - fix: create Wireguard configurations full paths before trying to lock files
+- fix: fix WireGuard configuration `PostUp` command: `interface-type` is `interface-kind`
 
 0.6.0
 =====

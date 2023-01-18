@@ -187,14 +187,14 @@ class StateDataManager:
     def __add_secret_retrieval_to_post_up(
             self,
             post_up: tuple[str, ...],
-            interface_type: str,
+            interface_kind: str,
             interface_name: str,
             private_key_retrieval_method: SecretRetrievalMethod,
             root_passphrase_command: str,
     ) -> tuple[str, ...]:
         if not self.__should_use_insecure_private_key(private_key_retrieval_method):
             post_up += (f'wg set %i private-key <(wg-federation hq get-private-key '
-                        f'--interface-type {interface_type} '
+                        f'--interface-kind {interface_kind} '
                         f'--interface-name {interface_name}'
                         f'{self.__get_root_passphrase(private_key_retrieval_method, root_passphrase_command)}'
                         f')',)
