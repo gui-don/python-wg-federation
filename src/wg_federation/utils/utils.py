@@ -1,3 +1,4 @@
+import os
 import re
 from collections.abc import MutableMapping, MutableSet, MutableSequence, Sequence
 from enum import Enum
@@ -83,6 +84,18 @@ class Utils:
             mode = mode[:-1]
 
         return open(file=file, mode=mode, encoding=encoding)
+
+    @staticmethod
+    def chmod(path: str, mode: int) -> None:
+        """
+        Chmod a file
+        This method simplifies mocking of the os.chmod
+        :param path:
+        :param mode:
+        :return:
+        """
+
+        return os.chmod(path, mode)
 
     @staticmethod
     def enums_to_list(values: list[Enum]) -> list[Any]:

@@ -42,7 +42,6 @@ class WireguardInterfaceConfigurationEventSubscribe(EventSubscriber[HQState]):
                 'a++',
                 'UTF-8'
             )
-
             with self._configuration_locker.lock_exclusively(self.__get_wireguard_configuration_path(wg_configuration)):
                 self.__prepare_ini_file(wg_configuration)
 
@@ -73,7 +72,7 @@ class WireguardInterfaceConfigurationEventSubscribe(EventSubscriber[HQState]):
         with Utils.open(self.__get_wireguard_configuration_path(wg_configuration), 'a++', 'UTF-8') as wg_config:
             config.write(wg_config)
 
-        self._os_lib.chmod(self.__get_wireguard_configuration_path(wg_configuration), stat.S_IREAD | stat.S_IWRITE)
+        Utils.chmod(self.__get_wireguard_configuration_path(wg_configuration), stat.S_IREAD | stat.S_IWRITE)
 
     def __get_wireguard_configuration_path(self, wg_configuration: WireguardConfiguration) -> str:
         if InterfaceKind.INTERFACE == wg_configuration.kind:

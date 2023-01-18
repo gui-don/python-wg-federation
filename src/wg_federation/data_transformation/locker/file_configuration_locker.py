@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os.path
 from contextlib import contextmanager, _GeneratorContextManager
 from types import ModuleType
 
@@ -35,7 +36,7 @@ class FileConfigurationLocker(ConfigurationLockerInterface):
         )
 
     def is_default_for(self, location: str) -> bool:
-        return self._path_lib.Path(location).parent.is_dir()
+        return os.path.isdir(str(self._path_lib.Path(location).parent))
 
     @contextmanager
     def _do_lock(self, location: str, mode: str, flags: portalocker.LockFlags):

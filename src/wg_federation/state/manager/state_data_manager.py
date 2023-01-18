@@ -167,10 +167,10 @@ class StateDataManager:
                             user_input.private_key_retrieval_method,
                             user_input.root_passphrase_command
                         ),
-                        name='wg-federation0',
-                        kind=InterfaceKind.INTERFACE,
-                        shared_psk=self._wireguard_key_generator.generate_psk(),
                     ),
+                    name='wg-federation0',
+                    kind=InterfaceKind.INTERFACE,
+                    shared_psk=self._wireguard_key_generator.generate_psk(),
                 ),
             ),
         )

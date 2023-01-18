@@ -17,6 +17,7 @@ def before_scenario(context, scenario):
     patch(os.path.exists, mock_path_exists)
     patch(os.path.isfile, mock_is_file)
     patch(os.path.isdir, mock_is_dir)
+    patch(Utils.chmod, mock_chmod)
 
     patch(Utils.open, mock_open)
     # pylint: disable=protected-access
@@ -30,6 +31,11 @@ def after_scenario(context, scenario):
 
     if os.path.exists(TEST_PATH):
         context.add_cleanup(clean_files)
+
+
+def mock_chmod(path: str, mode: int) -> None:
+    """ Mock the os.chmod function to use test path """
+    os.chmod(get_modified_path(path), mode)
 
 
 def mock_path_exists(path: str) -> bool:

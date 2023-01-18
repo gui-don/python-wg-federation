@@ -4,6 +4,7 @@ import re
 import shutil
 from pathlib import Path
 
+import xdg
 from behave import given, then
 from behave.runner import Context
 from mockito import when, unstub
@@ -46,14 +47,14 @@ def system_file_not_exists(context: Context, path: str):
 def system_file_contains(context: Context, path: str, reg_pattern: str):
     """ Step impl """
     with open(file=get_modified_path(path), mode='r', encoding='UTF-8') as file:
-        assert re.match(reg_pattern, file.read())
+        assert re.search(reg_pattern, file.read(), re.MULTILINE)
 
 
 @then('the system file “{path}” should not contain “{reg_pattern}”')
 def system_file_not_contains(context: Context, path: str, reg_pattern: str):
     """ Step impl """
     with open(file=get_modified_path(path), mode='r', encoding='UTF-8') as file:
-        assert not re.match(reg_pattern, file.read())
+        assert not re.search(reg_pattern, file.read(), re.MULTILINE)
 
 
 @given('the environment variable "{env_var_name}" contains "{env_var_value}"')
@@ -109,4 +110,5 @@ def get_path(path: str) -> str:
     :param path:
     :return:
     """
-    return path.replace('~', os.path.expanduser('~'))
+    path = path.replace('~', os.path.expanduser('~'))
+    return path.replace('${XDG_RUNTIME_DIR}', str(xdg.XDG_RUNTIME_DIR))
