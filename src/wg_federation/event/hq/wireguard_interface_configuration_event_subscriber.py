@@ -36,9 +36,15 @@ class WireguardInterfaceConfigurationEventSubscribe(EventSubscriber[HQState]):
         return [HQEvent.STATE_CREATED, HQEvent.STATE_UPDATED]
 
     def run(self, data: HQState) -> HQState:
-        for interface in data.interfaces + data.phone_lines + data.forums:
-            with self._configuration_locker.lock_exclusively(self.__get_wireguard_configuration_path(interface)):
-                self.__prepare_ini_file(interface)
+        for wg_configuration in data.interfaces + data.phone_lines + data.forums:
+            Utils.open(
+                self.__get_wireguard_configuration_path(wg_configuration),
+                'a++',
+                'UTF-8'
+            )
+
+            with self._configuration_locker.lock_exclusively(self.__get_wireguard_configuration_path(wg_configuration)):
+                self.__prepare_ini_file(wg_configuration)
 
         return data
 

@@ -11,6 +11,7 @@ Feature: HQ bootstrap
     Then the system file “~/.local/share/wg-federation/state.json” should not contain “.+"private_key": "”
     Then the system file “~/.local/share/wg-federation/state.json” should not contain “.+"psk": "”
     Then the system file “~/.local/share/wg-federation/state.digest” should contain “^[a-f0-9]+$”
+    Then the stderr does not contain "Traceback (most recent call last)"
 
   @hq-bootstrap
   Scenario: hq bootstrap do not run when `hq bootstrap` are not the arguments
@@ -18,6 +19,7 @@ Feature: HQ bootstrap
     Then the system file “~/.local/share/wg-federation/state.digest” should not exist
     Then the system file “~/.local/share/wg-federation/state.json” should not exist
     Then the system file “~/.local/share/wg-federation/salt.txt” should not exist
+    Then the stderr does not contain "Traceback (most recent call last)"
 
   @hq-bootstrap
   Scenario: hq bootstrap creates puts the digest within the state file when specified
@@ -28,6 +30,7 @@ Feature: HQ bootstrap
     Then the system file “~/.local/share/wg-federation/state.json” should contain “^{"data": {"federation":”
     Then the system file “~/.local/share/wg-federation/state.json” should contain “.+"digest": "[a-f0-9]+"}$”
     Then the system file “~/.local/share/wg-federation/state.json” should contain “.+"post_up": \["wg set %i private-key <\(wg-federation hq get-private-key.+”
+    Then the stderr does not contain "Traceback (most recent call last)"
 
   @hq-bootstrap
   Scenario: hq bootstrap shows a warning if the 'private-key-retrieval-method' is set to cleartext
@@ -38,6 +41,7 @@ Feature: HQ bootstrap
     Then the system file “~/.local/share/wg-federation/state.json” should contain “^{"data": {"federation":”
     Then the system file “~/.local/share/wg-federation/state.json” should not contain “.+"post_up": .+”
     Then the stderr contains "The root passphrase retrieval method has been set to “TEST_INSECURE_CLEARTEXT”. This is insecure"
+    Then the stderr does not contain "Traceback (most recent call last)"
 
   @hq-bootstrap
   Scenario: hq bootstrap can fetch the root passphrase from a subcommand
@@ -49,13 +53,16 @@ Feature: HQ bootstrap
     Then the system file “~/.local/share/wg-federation/state.json” should contain “.+"post_up": \["wg set %i private-key <\(wg-federation hq get-private-key.+”
     Then the stderr does not contain "The root passphrase retrieval method has been set to “TEST_INSECURE_CLEARTEXT”. This is insecure"
     Then the stderr does not contain "A root-passphrase-command was set but the root passphrase was retrieved through other means."
+    Then the stderr does not contain "Traceback (most recent call last)"
 
   @hq-bootstrap
   Scenario: hq bootstrap displays a warning if root passphrase and root subcommands are both used together
     When we run program with "hq bootstrap -P root-pass --Pcmd "echo dangerous do not do echo secrets like that" --private-key-retrieval-method WG_FEDERATION_COMMAND"
     Then the stderr contains "A root-passphrase-command was set but the root passphrase was retrieved through other means."
+    Then the stderr does not contain "Traceback (most recent call last)"
 
   @hq-bootstrap
   Scenario: hq bootstrap fails when the private key retrieval method is WG_FEDERATION_COMMAND but no command is provided
     When we run program with "hq bootstrap -P root-pass --private-key-retrieval-method WG_FEDERATION_COMMAND"
     Then the stderr contains "The method to retrieve WireGuard interface’s private keys was set to “WG_FEDERATION_COMMAND” \(the default value for this setting\), but you did not provide a command to get the root passphrase dynamically. Please set --root-passphrase-command or choose another method."
+    Then the stderr does not contain "Traceback (most recent call last)"
